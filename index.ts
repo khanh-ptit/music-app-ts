@@ -9,6 +9,7 @@ database.connect()
 const app: Express = express()
 const port: number = parseInt(process.env.PORT.toString())
 
+app.use(express.static("public"))
 app.set("views", "./views")
 app.set("view engine", "pug")
 
