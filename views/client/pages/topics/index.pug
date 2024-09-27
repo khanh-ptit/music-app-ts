@@ -1,7 +1,8 @@
-doctype html 
-html 
-    head 
-        title Trang chủ đề bài hát 
-    
-    body 
-        h1 Trang chủ đề bài hát
+extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+
+block main 
+    .container.my-3 
+        .row 
+            .col-12 
+                +box-head("Chủ đề bài hát")
