@@ -34,7 +34,27 @@ export const list = async (req: Request, res: Response): Promise<void> => {
 // [GET] /songs/detail/:slug
 export const detail = async (req: Request, res: Response): Promise<void> => {
     const slug = req.params.slug
+    const song = await Song.findOne({
+        slug: slug,
+        status: "active",
+        deleted: false
+    })
+
+    const singerInfo = await Singer.findOne({
+        _id: song.singerId,
+        deleted: false,
+        status: "active"
+    }).select("fullName")  
+    song["singerInfo"] = singerInfo
+
+    const topicInfo = await Topic.findOne({
+        _id: song.topicId,
+        deleted: false
+    })
+    song["topicInfo"] = topicInfo
+
     res.render("client/pages/songs/detail.pug", {
-        pageTitle: "Chi tiết bài hát"
+        pageTitle: "Chi tiết bài hát",
+        song: song
     })
 }
