@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import Topic from "../../models/topic.model"
 import Song from "../../models/song.model"
 import Singer from "../../models/singer.model"
+import FavoriteSong from "../../models/favorite-song.model"
 
 // [GET] /songs/:slugTopic
 export const list = async (req: Request, res: Response): Promise<void> => {
@@ -58,9 +59,15 @@ export const detail = async (req: Request, res: Response): Promise<void> => {
             _id: song.topicId,
             deleted: false
         })
+
+        const isFavorite = await FavoriteSong.findOne({
+            songId: song.id
+        })
+
+        song["isFavorite"] = (isFavorite != null) ? true : false
         song["topicInfo"] = topicInfo
         res.render("client/pages/songs/detail.pug", {
-            pageTitle: "Chi tiết bài hát",
+            pageTitle: `${song.title} | ${singerInfo.fullName}`,
             song: song
         })
     } catch (error) {
@@ -105,4 +112,36 @@ export const like = async (req: Request, res: Response) => {
         req.flash("error", "Đường dẫn không tồn tại!")
         res.redirect("back")
     }
+}
+
+// [PATCH] /songs/favorite/:typeFavorite/:idSong
+export const favorite = async (req: Request, res: Response) => {
+    const idSong: string = req.params.idSong
+    const typeFavorite: string = req.params.typeFavorite
+
+    switch (typeFavorite) {
+        case "favorite":
+            const existFavoriteSong = await FavoriteSong.findOne({
+                songId: idSong
+            })
+            if (!existFavoriteSong) {
+                const newFavoriteSong = new FavoriteSong({
+                    // userId: "", (sau này làm tính năng đăng nhập thì add vào)
+                    songId: idSong
+                })
+                await newFavoriteSong.save()
+            }
+            break;
+        case "unfavorite":
+            await FavoriteSong.deleteOne({
+                songId: idSong
+            })
+            break;
+        default:
+            break;
+    }
+
+    res.json({
+        code: 200
+    })
 }

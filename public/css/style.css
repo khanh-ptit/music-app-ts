@@ -167,6 +167,14 @@
     color: #f57
 }
 
+.singer-detail .inner-heart.active {
+    color: #f57;
+}
+
+.singer-detail .inner-heart.active i {
+    font-weight: 900;
+}
+
 /* Ensure avatar and audio player are in the same row */
 .singer-detail .inner-play {
     display: flex;  /* Use Flexbox to align elements horizontally */

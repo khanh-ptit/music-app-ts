@@ -17,7 +17,7 @@ if (aplayer) {
     });
 
     const innerAvatar = document.querySelector(".inner-avatar")
-    
+
     ap.on('play', () => {
         innerAvatar.style.animationPlayState = "running"
     })
@@ -51,7 +51,7 @@ const btnLike = document.querySelector("[button-like]")
 if (btnLike) {
     btnLike.addEventListener("click", () => {
         const idSong = btnLike.getAttribute("button-like")
-        
+        console.log("*")
         const isActive = btnLike.classList.contains("active")
         let typeLike = (isActive) ? "dislike" : "like"
 
@@ -59,15 +59,42 @@ if (btnLike) {
         const option = {
             method: "PATCH"
         }
-        
+
         fetch(link, option)
             .then(res => res.json())
             .then(data => {
-                const span = btnLike.querySelector("span")
-                span.innerHTML = `${data.like} Thích`
+                if (data.code == 200) {
+                    const span = btnLike.querySelector("span")
+                    span.innerHTML = `${data.like} Thích`
 
-                btnLike.classList.toggle("active")
+                    btnLike.classList.toggle("active")
+                }
             })
-    })    
+    })
 }
 // End button like
+
+// Button favorite
+const btnFavorite = document.querySelector("[button-favorite]")
+if (btnFavorite) {
+    btnFavorite.addEventListener("click", () => {
+        const idSong = btnFavorite.getAttribute("button-favorite")
+
+        const isActive = btnFavorite.classList.contains("active")
+        let typeFavorite = (isActive) ? "unfavorite" : "favorite"
+
+        const link = `/songs/favorite/${typeFavorite}/${idSong}`
+        const option = {
+            method: "PATCH"
+        }
+
+        fetch(link, option)
+            .then(res => res.json())
+            .then(data => {
+                if (data.code == 200) {
+                    btnFavorite.classList.toggle("active")
+                }
+            })
+    })
+}
+// End button favorite
