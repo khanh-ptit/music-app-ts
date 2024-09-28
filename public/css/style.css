@@ -152,6 +152,15 @@
 /* Like and Heart icons */
 .singer-detail .inner-like i {
     color: #004cd0;
+    cursor: pointer;
+}
+
+.singer-detail .inner-like.active {
+    color: #004cd0;
+}
+
+.singer-detail .inner-like.active i {
+    font-weight: 900;
 }
 
 .singer-detail .inner-heart i {
@@ -177,7 +186,7 @@
     animation-duration: 12s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
-    /* animation-play-state: paused; */
+    animation-play-state: paused;
 }
 
 @keyframes spin {
@@ -214,3 +223,42 @@
     padding: 10px 15px;
 }
 /* End detail */
+
+/* Show-alert */
+/* [show-alert] {
+    position: fixed;
+    max-width: 300px;
+    top: 70px;
+    right: 15px;
+    z-index: 999999999999;
+} */
+
+[show-alert].alert-hidden {
+    animation-name: alert-hidden;
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+@keyframes alert-hidden {
+    from {
+        right: 15px;
+    }
+    to {
+        right: -100%;
+        display: none;
+    }
+}
+
+.btn-cancel {
+    background: #fff;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-weight: 600;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    margin-left: 10px;
+}
+/* End show-alert */
