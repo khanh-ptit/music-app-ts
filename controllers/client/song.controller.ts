@@ -30,3 +30,11 @@ export const list = async (req: Request, res: Response): Promise<void> => {
         songs: songs
     })
 }
+
+// [GET] /songs/detail/:slug
+export const detail = async (req: Request, res: Response): Promise<void> => {
+    const slug = req.params.slug
+    res.render("client/pages/songs/detail.pug", {
+        pageTitle: "Chi tiết bài hát"
+    })
+}
