@@ -1,9 +1,12 @@
 extends ../../layouts/default.pug
 include ../../mixins/filter-status.pug
 include ../../mixins/form-search.pug
+include ../../mixins/form-change-multi.pug
+include ../../mixins/alert.pug
 
 block main
-    //- +alert-success(5000)
+    +alert-success(5000)
+    +alert-error(5000)
     h1 Danh sách bài hát
 
     .card.mb-3 
@@ -21,15 +24,13 @@ block main
         .card-header Danh sách
         .card-body
                 .row
-                    //- if (role.permissions.includes('songs_edit'))
-                    //-     .col-8
-                    //-         +form-change-multi(`${prefixAdmin}/songs/change-multi?_method=PATCH`, 'songs')
-                    //- if (role.permissions.includes('songs_create'))
-                    //-     .col-4 
-                    //-         a(
-                    //-             href=`${prefixAdmin}/songs/create`
-                    //-             class="btn btn-outline-success"
-                    //-         ) + Thêm mới
+                    .col-8
+                        +form-change-multi(`${prefixAdmin}/songs/change-multi?_method=PATCH`, 'songs')
+                    .col-4 
+                        a(
+                            href=`${prefixAdmin}/songs/create`
+                            class="btn btn-outline-success"
+                        ) + Thêm mới
 
 
     .card.mb-3 
