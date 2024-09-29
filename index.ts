@@ -5,6 +5,9 @@ import routeClient from "./routes/client/index.route"
 import flash from "express-flash"
 import cookieParser from "cookie-parser"
 import session from "express-session"
+import { routeAdmin } from "./routes/admin/index.route"
+import { systemConfig } from "./config/system"
+import path from "path"
 
 dotenv.config()
 database.connect()
@@ -26,8 +29,15 @@ app.use(session({
 }));
 app.use(flash());
 
+// TinyMCE
+app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
+// End TinyMCE
+
+// App local variables
+app.locals.prefixAdmin = systemConfig.prefixAdmin
 
 routeClient(app)
+routeAdmin(app)
 
 app.get("*", (req, res) => {
     res.render("client/pages/error/404", {
