@@ -145,3 +145,35 @@ export const favorite = async (req: Request, res: Response) => {
         code: 200
     })
 }
+
+// [PATCH] /songs/listen/:idSong
+export const listen = async (req: Request, res: Response) => {
+    const id = req.params.idSong
+    
+    const song = await Song.findOne({
+        _id: id,
+        deleted: false
+    })
+
+    if (song) {
+        let countListen = song.listen + 1
+        
+        // Use findOneAndUpdate to return the updated document
+        await Song.updateOne({
+            _id: id,
+            deleted: false
+        }, {
+            listen: countListen
+        })
+
+        const updatedSong = await Song.findOne({
+            _id: id,
+            deleted: false
+        })
+
+        res.json({
+            code: 200,
+            listen: updatedSong.listen
+        })
+    }
+}

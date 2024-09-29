@@ -25,6 +25,22 @@ if (aplayer) {
     ap.on('pause', () => {
         innerAvatar.style.animationPlayState = "paused"
     })
+
+    // Sau này bọc tính năng trong setTimeout để tránh bị spam lượt xem
+    ap.on('ended', () => {
+        const link = `/songs/listen/${dataSong._id}`
+        
+        const option = {
+            method: "PATCH"
+        }
+
+        fetch(link, option)
+            .then(res => res.json())
+            .then(data => {
+                const spanCountListen = document.querySelector(".inner-listen span")
+                spanCountListen.innerHTML = `${data.listen} Lượt nghe`
+            })
+    })
 }
 // End aplayer
 
@@ -51,7 +67,6 @@ const btnLike = document.querySelector("[button-like]")
 if (btnLike) {
     btnLike.addEventListener("click", () => {
         const idSong = btnLike.getAttribute("button-like")
-        console.log("*")
         const isActive = btnLike.classList.contains("active")
         let typeLike = (isActive) ? "dislike" : "like"
 

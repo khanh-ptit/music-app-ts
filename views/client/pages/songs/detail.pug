@@ -23,7 +23,10 @@ block main
                             <span>#{song.like} Thích</span>
                         div(class=`inner-action inner-heart ${(song.isFavorite) ? "active" : ""}` button-favorite=song.id)
                             <i class="fa-regular fa-heart"></i> Bài hát yêu thích
-                    
+                        div(class="inner-action inner-listen")
+                            <i class="fa-solid fa-headphones"></i>
+                            span #{song.listen} Lượt nghe
+
                     .inner-play 
                         .inner-avatar 
                             img(src=song.avatar)
