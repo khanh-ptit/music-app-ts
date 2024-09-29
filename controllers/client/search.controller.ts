@@ -5,12 +5,15 @@ import slugify from "slugify"
 
 // [GET] /search
 export const result = async (req: Request, res: Response) => {
+    const type: string = req.params.type
     const keyword: string = req.query.keyword.toString()
 
     let find = {
         deleted: false
     }
     
+    let newSongs = []
+
     if (keyword) {
         const slug = slugify(keyword, {
             lower: true,       // Chuyển về chữ thường
@@ -30,11 +33,39 @@ export const result = async (req: Request, res: Response) => {
             deleted: false
         })
         item["singerInfo"] = singerInfo 
-    }
 
-    res.render("client/pages/search/result", {
-        pageTitle: `Kết quả: ${keyword}`,
-        keyword: keyword,
-        songs: songs
-    })
+        newSongs.push({
+            id: item.id,
+            title: item.title,
+            avatar: item.avatar,
+            like: item.like,
+            slug: item.slug,
+            singerInfo: {
+                fullName: singerInfo.fullName
+            }
+        })
+    }
+    switch (type) {
+        case "result":
+            res.render("client/pages/search/result", {
+                pageTitle: `Kết quả: ${keyword}`,
+                keyword: keyword,
+                songs: songs
+            })
+            break;
+        case "suggest":
+            res.json({
+                code: 200,
+                message: "Thành công!",
+                songs: newSongs
+            })
+            break;
+        default:
+            res.json({
+                code: 404,
+                message: "Không tồn tại!"
+            })
+            break;
+    }
+    
 }

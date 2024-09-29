@@ -100,3 +100,54 @@ if (listbtnFavorite.length > 0) {
     })
 }
 // End button favorite
+
+// Search suggest
+const boxSearch = document.querySelector(".box-search")
+if (boxSearch) {
+    const input = boxSearch.querySelector("input[name='keyword']")
+    const boxSuggest = boxSearch.querySelector(".inner-suggest")
+
+    input.addEventListener("keyup", (e) => {
+        const keyword = input.value
+
+        const link = `/search/suggest?keyword=${keyword}`
+
+        fetch(link)
+            .then(res => res.json())
+            .then(data => {
+                const songs = data.songs
+                if (songs.length > 0) {
+                    boxSuggest.classList.add("show")
+                    let htmls = []
+
+                    songs.forEach(song => {
+                        htmls.push(`
+                            <a class="inner-item" href="/songs/detail/${song.slug}">
+                                <div class="inner-image"><img src=${song.avatar} /></div>
+                                <div class="inner-info">
+                                    <div class="inner-title">${song.title}</div>
+                                    <div class="inner-singer"><i class="fa-solid fa-microphone-lines"> </i> ${song.singerInfo.fullName}</div>
+                                </div>
+                            </a>
+                        `)
+                    })
+                    
+                    const boxList = boxSuggest.querySelector(".inner-list")
+                    boxList.innerHTML = htmls.join("")
+                    htmls.forEach(item => {
+                        console.log(item)
+                    })
+                } else {
+                    boxSuggest.classList.remove("show")
+                }
+            })
+    })
+
+    document.addEventListener("click", (event) => {
+        // Check if the clicked target is not the input or the suggestion box
+        if (!boxSearch.contains(event.target)) {
+            boxSuggest.classList.remove("show")
+        }
+    })
+}
+// End search suggest
