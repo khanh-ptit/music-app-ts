@@ -32,15 +32,22 @@ export const index = async (req: Request, res: Response) => {
 
 // [PATCH] /admin/change-status/:status/:id
 export const changeStatus = async (req: Request, res: Response) => {
-    const status = req.params.status
-    const id = req.params.id
-
-    await Song.updateOne({
-        _id: id
-    }, {
-        status: status
-    })
-
-    req.flash("success", "Cập nhật trạng thái thành công!")
-    res.redirect("back")
+    try {
+        const status = req.params.status
+        const id = req.params.id
+    
+        await Song.updateOne({
+            _id: id
+        }, {
+            status: status
+        })
+    
+        req.flash("success", "Cập nhật trạng thái thành công!")
+        res.redirect("back")
+    } catch (error) {
+        res.status(404).json({
+            message: "Nghịch cái đb"
+        })
+    }
+    
 }
