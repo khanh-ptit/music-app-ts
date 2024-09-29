@@ -75,7 +75,7 @@
     white-space: pre-wrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    /* -webkit-line-clamp: 1; */
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     display: -webkit-box;
     margin-bottom: 5px;
@@ -110,6 +110,21 @@
     font-size: 13px;
     font-weight: 500;
     color: #585858;
+}
+
+.song-item .inner-content .inner-heart {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
+.song-item .inner-content .inner-heart.active {
+    color: #f57;
+}
+
+.song-item .inner-content .inner-heart.active i{
+    font-weight: 900;
 }
 /* song-item */
 

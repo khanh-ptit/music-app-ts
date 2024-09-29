@@ -16,9 +16,9 @@ block main
                         div(class="inner-content")
                             div(class="inner-title")
                                 a(href=`/songs/detail/${item.slug}`) #{item.title}
-                                div(class="inner-singer")
-                                    i(class="fa-solid fa-microphone-lines")
-                                    |  #{item.singerInfo.fullName}
+                            div(class="inner-singer")
+                                i(class="fa-solid fa-microphone-lines")
+                                |  #{item.singerInfo.fullName}
                             div(class="inner-like")
                                 i(class="fa-solid fa-thumbs-up")
                                 |  #{item.like}
