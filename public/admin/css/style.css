@@ -124,4 +124,24 @@
 .hidden {
     display: none;   
 }
-/* End Image Preview *
+/* End Image Preview */
+
+/* Audio preview */
+.audio-preview {
+    width: 150px;
+    height: auto;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.audio-preview[src=""] {
+    display: none;
+}
+
+.audio-container {
+    position: relative;
+    display: inline-block;
+}
+/* End audio preview */

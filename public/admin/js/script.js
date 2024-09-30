@@ -199,3 +199,45 @@ if (uploadImages.length > 0) {
     })
 }
 // End upload image
+
+// Upload audio
+const uploadAudios = document.querySelectorAll("[upload-audio]");
+console.log(uploadAudios)
+
+if (uploadAudios.length > 0) {
+    uploadAudios.forEach(uploadAudio => {
+        const btnCancel = uploadAudio.querySelector(".audio-container .button-cancel");
+        const uploadAudioInput = uploadAudio.querySelector("[upload-audio-input]");
+        const uploadAudioPreview = uploadAudio.querySelector("[upload-audio-preview]");
+
+        btnCancel.classList.add("hidden")
+        console.log(btnCancel)
+
+        if (uploadAudioInput && uploadAudioPreview && btnCancel) {
+            uploadAudioInput.addEventListener("change", (e) => {
+                const file = e.target.files[0]; // Lấy ra giá trị đầu tiên
+                if (file) {
+                    const sourceAudio = uploadAudioPreview.querySelector("source")
+                    // console.log(sourceAudio)
+                    sourceAudio.src = URL.createObjectURL(file)
+                    uploadAudioPreview.load()
+                    btnCancel.classList.remove("hidden"); // Hiển thị nút khi có ảnh
+                }
+            });
+
+            btnCancel.addEventListener("click", () => {
+                btnCancel.classList.add("hidden");
+                uploadAudioPreview.src = ""; // Xóa ảnh preview
+                uploadAudioInput.value = ""; // Xóa giá trị input
+            });
+
+            // Kiểm tra nếu không có file được chọn, ẩn nút hủy
+            uploadAudioInput.addEventListener("input", () => {
+                if (!uploadAudioInput.value) {
+                    btnCancel.classList.add("hidden");
+                }
+            });
+        }
+    })
+}
+// End upload audio

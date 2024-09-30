@@ -59,7 +59,10 @@ block main
                     class="image-preview"
                 )
                 span.button-cancel X
-        div(class="form-group")
+        div(
+            upload-audio
+            class="form-group"
+        )
             label(for="audio") File âm thanh 
             input(
                 type="file"
@@ -67,7 +70,12 @@ block main
                 id="audio"
                 name="audio"
                 accept="audio/*"
+                upload-audio-input
             )
+            div(class="audio-container mt-2")
+                audio(controls upload-audio-preview)
+                    source(src="") 
+                span.button-cancel X
         div(class="form-group")
             label(for="desc") Mô tả
             textarea(
