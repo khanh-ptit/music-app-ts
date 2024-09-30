@@ -18,7 +18,7 @@ const app: Express = express()
 const port: number = parseInt(process.env.PORT.toString())
 
 app.use(express.static(`${__dirname}/public`))
-app.set("views", `${__dirname}/.views`)
+app.set("views", `${__dirname}/views`)
 app.set("view engine", "pug")
 
 // Flash

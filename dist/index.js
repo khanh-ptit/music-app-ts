@@ -43,7 +43,7 @@ database.connect();
 const app = (0, express_1.default)();
 const port = parseInt(process.env.PORT.toString());
 app.use(express_1.default.static(`${__dirname}/public`));
-app.set("views", `${__dirname}/.views`);
+app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 app.use((0, cookie_parser_1.default)("khanhleis11"));
 app.use((0, express_session_1.default)({
