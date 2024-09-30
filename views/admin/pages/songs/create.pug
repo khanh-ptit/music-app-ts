@@ -60,6 +60,15 @@ block main
                 )
                 span.button-cancel X
         div(class="form-group")
+            label(for="audio") File âm thanh 
+            input(
+                type="file"
+                class="form-control-file"
+                id="audio"
+                name="audio"
+                accept="audio/*"
+            )
+        div(class="form-group")
             label(for="desc") Mô tả
             textarea(
                 class="form-control textarea-mce"

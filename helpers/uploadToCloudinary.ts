@@ -1,23 +1,24 @@
-import { v2 as cloudinary } from "cloudinary";
-import streamifier from 'streamifier';
-import dotenv from "dotenv"
+import { v2 as cloudinary } from "cloudinary";  // Importing v2 version
+import streamifier from "streamifier";
+import dotenv from "dotenv";
 dotenv.config();
 
+// cloudinary
 cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME as string,
-    api_key: process.env.CLOUD_KEY as string,
-    api_secret: process.env.CLOUD_SECRET as string
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_KEY,
+    api_secret: process.env.CLOUD_SECRET,
 });
+// End cloudinary
 
-const streamUpload = (buffer: Buffer): Promise<any> => {
+const streamUpload = (buffer: any) => {
     return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
+        let stream = cloudinary.uploader.upload_stream(
+            { resource_type: "auto" },
             (error, result) => {
                 if (result) {
-                    // console.log("Upload success:", result);
                     resolve(result);
                 } else {
-                    // console.error("Upload error:", error);
                     reject(error);
                 }
             }
@@ -26,7 +27,7 @@ const streamUpload = (buffer: Buffer): Promise<any> => {
     });
 };
 
-export default async (buffer: Buffer): Promise<string> => {
-    const result = await streamUpload(buffer);
-    return result.url;
+export const uploadToCloudinary = async (buffer: any) => {
+    let result = await streamUpload(buffer);
+    return result["url"];
 };

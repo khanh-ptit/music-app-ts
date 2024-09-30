@@ -22,6 +22,12 @@ router.delete("/delete/:id", controller.deleteSong);
 // Sử dụng asyncHandler để xử lý middleware async
 router.get("/create", controller.create);
 
-router.post("/create", upload.single("avatar"), asyncHandler(uploadCloud.upload), controller.createPost);
+router.post("/create", 
+  upload.fields([
+    {name: "avatar", maxCount: 1},
+    {name: "audio", maxCount: 1},
+  ]), 
+  asyncHandler(uploadCloud.uploadFields), 
+  controller.createPost);
 
 export const songRoutes: Router = router;
