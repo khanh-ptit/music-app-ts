@@ -7,11 +7,17 @@ if (aplayer) {
     dataSinger = JSON.parse(dataSinger)
     const ap = new APlayer({
         container: aplayer,
+        lrcType: 1,
         audio: [{
             name: dataSong.title,
             artist: dataSinger.fullName,
             url: dataSong.audio,
             cover: dataSong.avatar,
+            lrc: `
+                [00:00.00]APlayer
+                [00:04.01]is
+                [00:08.02]amazing
+            `
         }],
         autoplay: true
     });
