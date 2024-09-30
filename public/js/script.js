@@ -1,8 +1,21 @@
+function decodeHtml(html) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = html;
+    return textArea.value;
+}
+
+function removeBrTags(str) {
+    return str.replace(/<br\s*\/?>/gi, '\n');  // Replace <br> tags with newline or other separator
+}
+
 // Aplayer
 const aplayer = document.getElementById("aplayer")
 if (aplayer) {
     let dataSong = aplayer.getAttribute("data-song")
     dataSong = JSON.parse(dataSong)
+    dataSong.lyrics = decodeHtml(dataSong.lyrics);
+    dataSong.lyrics = removeBrTags(dataSong.lyrics);
+    console.log(dataSong.lyrics)
     let dataSinger = aplayer.getAttribute("data-singer")
     dataSinger = JSON.parse(dataSinger)
     const ap = new APlayer({
@@ -13,11 +26,7 @@ if (aplayer) {
             artist: dataSinger.fullName,
             url: dataSong.audio,
             cover: dataSong.avatar,
-            lrc: `
-                [00:00.00]APlayer
-                [00:04.01]is
-                [00:08.02]amazing
-            `
+            lrc: dataSong.lyrics
         }],
         autoplay: true
     });
@@ -35,7 +44,7 @@ if (aplayer) {
     // Sau này bọc tính năng trong setTimeout để tránh bị spam lượt xem
     ap.on('ended', () => {
         const link = `/songs/listen/${dataSong._id}`
-        
+
         const option = {
             method: "PATCH"
         }
@@ -152,7 +161,7 @@ if (boxSearch) {
                             </a>
                         `)
                     })
-                    
+
                     const boxList = boxSuggest.querySelector(".inner-list")
                     boxList.innerHTML = htmls.join("")
                     htmls.forEach(item => {

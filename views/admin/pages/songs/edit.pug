@@ -4,7 +4,7 @@ block main
     h1.mb-4 #{pageTitle}
 
     form(
-        action=`${prefixAdmin}/songs/create`
+        action=`${prefixAdmin}/songs/edit/${song.id}?_method=PATCH`
         method="POST"
         enctype="multipart/form-data"
     )
@@ -15,6 +15,7 @@ block main
                 class="form-control"
                 id="title"
                 name="title"
+                value=song.title
                 required
             )
         div(class="form-group")
@@ -25,9 +26,8 @@ block main
                 class="form-control"
                 required
             )
-                option(value="" disabled selected) -- Chọn chủ đề -- 
                 each item in topics
-                    option(value=item.id) #{item.title}
+                    option(value=item.id selected=(item.id == song.topicId ? true : false)) #{item.title}
         div(class="form-group")
             label(for="singer") Ca sĩ
             select(
@@ -36,9 +36,9 @@ block main
                 class="form-control"
                 required
             )
-                option(value="" disabled selected) -- Chọn ca sĩ -- 
+                //- option(value="" disabled selected) -- Chọn ca sĩ -- 
                 each item in singers
-                    option(value=item.id) #{item.fullName} 
+                    option(value=item.id selected=(item.id == song.singerId ? true : false)) #{item.fullName} 
         div(
             upload-image
             class="form-group"
@@ -54,7 +54,7 @@ block main
             )
             div(class="image-container")
                 img(
-                    src=""
+                    src=song.avatar
                     upload-image-preview
                     class="image-preview"
                 )
@@ -74,7 +74,7 @@ block main
             )
             div(class="audio-container mt-2")
                 audio(controls upload-audio-preview)
-                    source(src="") 
+                    source(src=song.audio) 
                 span.button-cancel X
         div(class="form-group")
             label(for="desc") Mô tả
@@ -83,7 +83,7 @@ block main
                 id="desc"
                 name="description"
                 rows="5"
-            )
+            ) !{song.description}
         div(class="form-group")
             label(for="lyrics") Lời bài hát 
             textarea(
@@ -91,7 +91,7 @@ block main
                 name="lyrics"
                 id="lyrics"
                 rows="5"
-            )
+            ) !{song.lyrics}
         div(class="form-group")
             label(for="position") Vị trí
             input(
@@ -100,11 +100,8 @@ block main
                 name="position"
                 class="form-control"
                 min=countSong
-                value=countSong + 1
-                placeholder="Tự động tăng nếu để trống"
-                readonly
+                value=song.position
             )
-        
         div(class="form-group form-check form-check-inline")
             input(
                 type="radio"
@@ -112,7 +109,7 @@ block main
                 id="statusActive"
                 name="status"
                 value="active"
-                checked
+                checked=(song.status == "active" ? true : false)
             )
             label(for="statusActive" class="form-check-label") Hoạt động
         div(class="form-group form-check form-check-inline")
@@ -122,11 +119,12 @@ block main
                 id="statusInActive"
                 name="status"
                 value="inactive"
+                checked=(song.status == "inactive" ? true : false)
             )
             label(for="statusInActive" class="form-check-label") Dừng hoạt động 
         div(class="form-group")
             button(
                 type="submit"
                 class="btn btn-primary"
-            ) Tạo mới 
+            ) Cập nhật
     

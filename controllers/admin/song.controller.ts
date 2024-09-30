@@ -168,6 +168,9 @@ export const deleteSong = async (req: Request, res: Response) => {
 
 // [GET] /admin/songs/create
 export const create = async (req: Request, res: Response) => {
+    const countSong = await Song.countDocuments({
+        deleted: false
+    })
     const topics = await Topic.find({
         deleted: false,
         status: "active"
@@ -181,7 +184,8 @@ export const create = async (req: Request, res: Response) => {
     res.render("admin/pages/songs/create", {
         pageTitle: "Thêm mới bài hát",
         topics: topics,
-        singers: singers
+        singers: singers,
+        countSong: countSong
     })
 }
 
@@ -235,5 +239,75 @@ export const createPost = async (req: Request, res: Response) => {
     await newSong.save()
 
     req.flash("success", "Tạo thành công bài hát!")
+    res.redirect(`${systemConfig.prefixAdmin}/songs`)
+}
+
+// [GET] /admin/songs/edit/:id
+export const edit = async (req: Request, res: Response) => {
+    const id = req.params.id
+    const song = await Song.findOne({
+        _id: id,
+        deleted: false
+    })
+
+    const topics = await Topic.find({
+        deleted: false,
+        status: "active"
+    }).select("title")
+
+    const singers = await Singer.find({
+        deleted: false,
+        status: "active"
+    }).select("fullName")
+
+    res.render("admin/pages/songs/edit.pug", {
+        pageTitle: "Chỉnh sửa bài hát",
+        song: song,
+        topics: topics,
+        singers: singers
+    })
+}
+
+// [PATCH] /admin/songs/edit/:id
+export const editPatch = async (req: Request, res: Response) => {
+    const id = req.params.id
+    interface DataSong {
+        title: String,
+        topicId: String,
+        singerId: String,
+        position: Number,
+        lyrics?: String,
+        audio?: String,
+        status: String,
+        avatar?: String,
+        description: String
+    }
+
+    let avatar = ""
+    let audio = ""
+
+    const dataSong: DataSong = {
+        title: req.body.title,
+        topicId: req.body.topicId,
+        singerId: req.body.singerId,
+        description: req.body.description,
+        status: req.body.status,
+        position: parseInt(req.body.position),
+        lyrics: req.body.lyrics
+    }
+
+    if (req.body.avatar) {
+        dataSong.avatar = req.body.avatar[0]
+    }
+
+    if (req.body.audio) {
+        dataSong.audio = req.body.audio[0]
+    }
+    
+    await Song.updateOne({
+        _id: id
+    }, dataSong)
+
+    req.flash("success", "Cập nhật thành công bài hát!")
     res.redirect(`${systemConfig.prefixAdmin}/songs`)
 }
