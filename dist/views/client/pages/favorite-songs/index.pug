@@ -1,0 +1,28 @@
+extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+
+block main 
+    .container.my-3 
+        .row 
+            .col-12 
+                +box-head("Bài hát yêu thích")
+        .row
+            each item in songs 
+                .col-6.mb-3
+                    div(class="song-item")
+                        div(class="inner-image")
+                            a(href=`/songs/detail/${item.songInfo.slug}`)
+                                img(src=item.songInfo.avatar)
+                        div(class="inner-content")
+                            div(class="inner-title") 
+                                a(href=`/songs/detail/cat-doi-noi-sau`) #{item.songInfo.title}
+                            div(class="inner-singer")
+                                i(class="fa-solid fa-microphone-lines")
+                                |  #{item.singerInfo.fullName}
+                            div(class="inner-heart active" button-favorite=item.songInfo.id)
+                                i(class="fa-regular fa-heart")
+                                |  Yêu thích 
+                            div(class="inner-time")
+                                i(class="fa-regular fa-clock")
+                                |  20/10/2023 
+                                //- Tích hợp thư viện moment để format

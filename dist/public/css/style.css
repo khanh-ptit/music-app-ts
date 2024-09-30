@@ -1,0 +1,386 @@
+/* Header */
+.header {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.header .container {
+    padding-left: 0; /* Đảm bảo container không có padding trái */
+}
+
+.header .inner-logo {
+    margin-left: 0; /* Đảm bảo logo sát lề trái */
+}
+
+.header .inner-logo img {
+    max-height: 50px;
+    max-width: 100%;
+}
+
+.header .box-search {
+    display: flex;
+    justify-content: center;
+}
+
+/* .header .box-search .form-group {
+    display: flex;
+    width: 100%;
+} */
+
+.header .inner-menu {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.header .inner-menu > ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.header .inner-menu > ul > li {
+    margin-left: 20px;
+}
+
+
+/* Footer */
+.footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+
+/* box-head */
+.box-head {
+    margin-bottom: 30px;
+}
+
+.box-head .inner-title {
+    margin-bottom: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: green
+}
+
+/* end box-head */
+
+/* Song-item */
+.song-item {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.song-item .inner-image {
+    width: 115px;
+    aspect-ratio: 1/1;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.song-item .inner-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.song-item .inner-content {
+    padding: 10px;
+    flex: 1;
+}
+
+.song-item .inner-content .inner-title {
+    white-space: pre-wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    margin-bottom: 5px;
+}
+
+.song-item .inner-content .inner-title a {
+    font-size: 14px;
+    font-weight: 700;
+    color: #4d007d;
+}
+
+.song-item .inner-content .inner-title a:hover {
+    color: #7c00c8;
+    text-decoration: none;
+}
+
+.song-item .inner-content .inner-singer {
+    font-size: 13px;
+    font-weight: 500;
+    color: #282828;
+    margin-bottom: 2px;
+}
+
+.song-item .inner-content .inner-like {
+    font-size: 13px;
+    font-weight: 500;
+    color: #004cd0;
+    margin-bottom: 2px;
+}
+
+.song-item .inner-content .inner-time {
+    font-size: 13px;
+    font-weight: 500;
+    color: #585858;
+}
+
+.song-item .inner-content .inner-heart {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
+.song-item .inner-content .inner-heart.active {
+    color: #f57;
+}
+
+.song-item .inner-content .inner-heart.active i{
+    font-weight: 900;
+}
+/* song-item */
+
+/* song-detail */
+.singer-detail .container {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+.singer-detail .inner-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #f57f20;
+    margin-bottom: 10px;
+}
+
+/* Action items (date, singer, genre, likes, favorite) */
+.singer-detail .inner-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.singer-detail .inner-action {
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+
+.singer-detail .inner-action i {
+    margin-right: 5px;
+    color: #f57f20;
+}
+
+/* Like and Heart icons */
+.singer-detail .inner-like i {
+    color: #004cd0;
+    cursor: pointer;
+}
+
+.singer-detail .inner-like.active {
+    color: #004cd0;
+}
+
+.singer-detail .inner-like.active i {
+    font-weight: 900;
+}
+
+.singer-detail .inner-heart i {
+    color: #f57
+}
+
+.singer-detail .inner-heart.active {
+    color: #f57;
+}
+
+.singer-detail .inner-heart.active i {
+    font-weight: 900;
+}
+
+/* Ensure avatar and audio player are in the same row */
+.singer-detail .inner-play {
+    display: flex;  /* Use Flexbox to align elements horizontally */
+    align-items: center;  /* Vertically align avatar and audio player */
+    margin-bottom: 20px;  /* Add space below the audio section */
+}
+
+/* The avatar will keep its current styling and width */
+.singer-detail .inner-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #F57F20;
+    margin-right: 20px;  /* Space between avatar and audio */
+    animation-name: spin;
+    animation-duration: 12s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-play-state: paused;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    } 
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.singer-detail .inner-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* The audio player will take up the remaining space */
+.singer-detail .inner-audio {
+    flex: 1;  /* Allow the audio player to expand and take up remaining space */
+}
+
+/* Descriptions (Mô tả and Lời bài hát) */
+.singer-detail .inner-desc .inner-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #F57F20;
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.singer-detail .inner-desc .inner-text {
+    font-size: 14px;
+    padding: 10px 15px;
+}
+/* End detail */
+
+/* Show-alert */
+/* [show-alert] {
+    position: fixed;
+    max-width: 300px;
+    top: 70px;
+    right: 15px;
+    z-index: 999999999999;
+} */
+
+[show-alert].alert-hidden {
+    animation-name: alert-hidden;
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+@keyframes alert-hidden {
+    from {
+        right: 15px;
+    }
+    to {
+        right: -100%;
+        display: none;
+    }
+}
+
+.btn-cancel {
+    background: #fff;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-weight: 600;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    margin-left: 10px;
+}
+/* End show-alert */
+
+/* box-search */
+.box-search {
+    position: relative;
+}
+
+.box-search .inner-suggest {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 300px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    z-index: 1;
+    overflow-y: auto;
+    display: none;
+}
+
+.box-search .inner-suggest.show {
+    display: block;
+}
+
+.box-search .inner-suggest .inner-item {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.box-search .inner-suggest .inner-item:hover {
+    background: #efefef;
+    text-decoration: none;
+}
+
+.box-search .inner-suggest .inner-item:last-child {
+    border-bottom: 0;
+}
+
+.box-search .inner-suggest .inner-item .inner-image {
+    width: 60px;
+    aspect-ratio: 1/1;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.box-search .inner-suggest .inner-item .inner-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.box-search .inner-suggest .inner-item .inner-info {
+    flex: 1;
+    margin-left: 10px;
+}
+
+.box-search .inner-suggest .inner-item .inner-info .inner-title {
+    white-space: pre-wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #4d007d;
+}
+
+.box-search .inner-suggest .inner-item .inner-info .inner-singer {
+    font-size: 13px;
+    font-weight: 500;
+    color: #282828;
+    margin-bottom: 2px;
+}
+/* End box-search */
