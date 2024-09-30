@@ -117,3 +117,47 @@ if (showAlert) {
     }, time);
 };
 // End show success status
+
+// Sort item
+const sort = document.querySelector("[sort]");
+if (sort) {
+    let url = new URL(window.location.href);
+    const sortSelect = sort.querySelector("[sort-select]");
+    const btnClear = sort.querySelector("[sort-clear]");
+
+    // Set the selected option based on URL parameters
+    const sortKey = url.searchParams.get("sortKey");
+    const sortValue = url.searchParams.get("sortValue");
+    if (sortKey && sortValue) {
+        const selectedValue = `${sortKey}-${sortValue}`;
+        console.log(selectedValue)
+        // sortSelect.value = selectedValue; Cách 1
+        const selected = sort.querySelector(`option[value='${selectedValue}']`); // Cách 2
+        if (selected) {
+            selected.selected = true; // Ensure the option is selected
+        }
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener("change", () => {
+            let str = sortSelect.value.split('-');
+            let sortKey = str[0];
+            let sortValue = str[1];
+            console.log(sortKey + " " + sortValue);
+
+            url.searchParams.set("sortKey", sortKey);
+            url.searchParams.set("sortValue", sortValue);
+
+            window.location.href = url.href;
+        });
+    }
+
+    // Clear the sort selection
+    if (btnClear) {
+        btnClear.addEventListener("click", () => {
+            url.searchParams.delete("sortKey");
+            url.searchParams.delete("sortValue");
+            window.location.href = url.href;
+        });
+    }
+}

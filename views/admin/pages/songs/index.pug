@@ -3,6 +3,7 @@ include ../../mixins/filter-status.pug
 include ../../mixins/form-search.pug
 include ../../mixins/form-change-multi.pug
 include ../../mixins/alert.pug
+include ../../mixins/sort.pug
 
 block main
     +alert-success(5000)
@@ -18,7 +19,7 @@ block main
                     .col-6 
                         +form-search()
 
-    //- +sort()
+    +sort()
 
     .card.mb-3
         .card-header Danh sách
@@ -47,7 +48,7 @@ block main
                             th STT
                             th Hình ảnh
                             th Tiêu đề
-                            //- th Vị trí
+                            th Vị trí
                             th Trạng thái
                             th Hành động
                     tbody
@@ -66,14 +67,14 @@ block main
                                         width="100px" 
                                         height="auto")
                                 td #{item.title}
-                                //- td 
-                                //-     input(
-                                //-         type="number"
-                                //-         value=item.position 
-                                //-         style="width: 60px"
-                                //-         min="1"
-                                //-         name="position"
-                                //-     )
+                                td 
+                                    input(
+                                        type="number"
+                                        value=item.position 
+                                        style="width: 60px"
+                                        min="1"
+                                        name="position"
+                                    )
                                 td
                                     if (item.status == "active")
                                         a(

@@ -2,12 +2,21 @@ import { Request, Response } from "express";
 import Song from "../../models/song.model";
 import filterStatusHelper from "../../helpers/filterStatus";
 import searchHelper from "../../helpers/search";
+import { SortOrder } from "mongoose";
 
 // [GET] /admin/songs
 export const index = async (req: Request, res: Response) => {
     const filterStatus = filterStatusHelper(req.query) 
     let find = {
         deleted: false
+    }
+
+    interface Sort {
+        [key: string]: SortOrder
+    }
+
+    let objectSort: Sort = {
+        position: "asc".toLowerCase() as SortOrder
     }
 
     // Filter status
@@ -21,7 +30,16 @@ export const index = async (req: Request, res: Response) => {
         find["slug"] = objectSearch["regex"]
     }
 
-    const songs = await Song.find(find)
+    // sort
+    if (req.query.sortKey && req.query.sortValue) {
+        const sortKey = req.query.sortKey.toString()
+        const sortValue = req.query.sortValue.toString() as SortOrder
+        if (sortValue == "asc" || sortValue == "desc") {
+            objectSort[sortKey] = sortValue
+        }
+    }
+
+    const songs = await Song.find(find).sort(objectSort)
     res.render("admin/pages/songs/index", {
         pageTitle: "Danh sách bài hát",
         songs: songs,
