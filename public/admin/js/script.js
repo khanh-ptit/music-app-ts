@@ -61,10 +61,14 @@ if (formChangeMulti) {
         // console.log(textField)
 
         const typeChange = e.target.elements.type.value;
+        if (typeChange == "--Chọn hành động--") {
+            alert("Vui lòng chọn hành động muốn thực hiện!")
+            return
+        }
         console.log(typeChange)
 
         if (typeChange == "delete-all") {
-            const confirmDelete = confirm("Bạn có muốn xóa tất cả các sản phẩm này?")
+            const confirmDelete = confirm("Bạn có muốn xóa tất cả các bản ghi này?")
             if (!confirmDelete) {
                 return
             }

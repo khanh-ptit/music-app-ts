@@ -9,6 +9,7 @@ import { routeAdmin } from "./routes/admin/index.route"
 import { systemConfig } from "./config/system"
 import path from "path"
 import methodOverride from "method-override"
+import bodyParser from "body-parser"
 
 dotenv.config()
 database.connect()
@@ -30,6 +31,7 @@ app.use(session({
 }));
 app.use(flash());
 app.use(methodOverride("_method"))
+app.use(bodyParser.urlencoded({extended: false}))
 
 // TinyMCE
 app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
