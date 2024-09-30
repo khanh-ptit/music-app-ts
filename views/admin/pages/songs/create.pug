@@ -1,0 +1,94 @@
+extends ../../layouts/default.pug
+
+block main 
+    h1.mb-4 #{pageTitle}
+
+    form(
+        action=`${prefixAdmin}/songs/create`
+        method="POST"
+        enctype="multipart/form-data"
+    )
+        div(class="form-group")
+            label(for="title") Tiêu đề
+            input(
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+            )
+        div(class="form-group")
+            label(for="topic") Chủ đề
+            select(
+                id="topic"
+                name="topicId"
+                class="form-control"
+                required
+            )
+                option(value="" disabled selected) -- Chọn chủ đề -- 
+                each item in topics
+                    option(value=item.id) #{item.title}
+        div(class="form-group")
+            label(for="singer") Ca sĩ
+            select(
+                id="singer"
+                name="singerId"
+                class="form-control"
+                required
+            )
+                option(value="" disabled selected) -- Chọn ca sĩ -- 
+                each item in singers
+                    option(value=item.id) #{item.fullName} 
+        div(
+            upload-image
+            class="form-group"
+        )
+            label(for="avatar") Ảnh
+            input(
+                type="file"
+                class="form-control-file"
+                id="avatar"
+                name="avatar"
+                accept="image/*"
+                upload-image-input
+            )
+            div(class="image-container")
+                img(
+                    src=""
+                    upload-image-preview
+                    class="image-preview"
+                )
+                span.button-cancel X
+        div(class="form-group")
+            label(for="desc") Mô tả
+            textarea(
+                class="form-control textarea-mce"
+                id="desc"
+                name="description"
+                rows="5"
+            )
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusActive"
+                name="status"
+                value="active"
+                checked
+            )
+            label(for="statusActive" class="form-check-label") Hoạt động
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusInActive"
+                name="status"
+                value="inactive"
+            )
+            label(for="statusInActive" class="form-check-label") Dừng hoạt động 
+        div(class="form-group")
+            button(
+                type="submit"
+                class="btn btn-primary"
+            ) Tạo mới 
+    

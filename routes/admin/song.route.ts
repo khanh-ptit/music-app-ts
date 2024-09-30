@@ -1,14 +1,27 @@
 import { Router } from "express";
-const router: Router = Router()
+import multer from "multer";
+const router: Router = Router();
 
-import * as controller from "../../controllers/admin/song.controller"
+import * as controller from "../../controllers/admin/song.controller";
+const upload = multer();
+import * as uploadCloud from "../../middlewares/admin/uploadCloud.middleware";
 
-router.get("/", controller.index)
+// Middleware để xử lý Promise trong middleware async
+const asyncHandler = (fn: any) => (req: any, res: any, next: any) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
 
-router.patch("/change-status/:status/:id", controller.changeStatus)
+router.get("/", controller.index);
 
-router.patch("/change-multi", controller.changeMulti)
+router.patch("/change-status/:status/:id", controller.changeStatus);
 
-router.delete("/delete/:id", controller.deleteSong)
+router.patch("/change-multi", controller.changeMulti);
 
-export const songRoutes: Router = router
+router.delete("/delete/:id", controller.deleteSong);
+
+// Sử dụng asyncHandler để xử lý middleware async
+router.get("/create", controller.create);
+
+router.post("/create", upload.single("avatar"), asyncHandler(uploadCloud.upload), controller.createPost);
+
+export const songRoutes: Router = router;

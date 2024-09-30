@@ -3,6 +3,9 @@ import Song from "../../models/song.model";
 import filterStatusHelper from "../../helpers/filterStatus";
 import searchHelper from "../../helpers/search";
 import { SortOrder } from "mongoose";
+import Topic from "../../models/topic.model";
+import Singer from "../../models/singer.model";
+import { systemConfig } from "../../config/system";
 
 // [GET] /admin/songs
 export const index = async (req: Request, res: Response) => {
@@ -161,4 +164,64 @@ export const deleteSong = async (req: Request, res: Response) => {
             message: "Nghịch cái đb"
         })
     }
+}
+
+// [GET] /admin/songs/create
+export const create = async (req: Request, res: Response) => {
+    const topics = await Topic.find({
+        deleted: false,
+        status: "active"
+    }).select("title")
+
+    const singers = await Singer.find({
+        deleted: false,
+        status: "active"
+    }).select("fullName")
+
+    res.render("admin/pages/songs/create", {
+        pageTitle: "Thêm mới bài hát",
+        topics: topics,
+        singers: singers
+    })
+}
+
+// [POST] /admin/songs/create
+export const createPost = async (req: Request, res: Response) => {
+    const countSong = await Song.countDocuments({
+        deleted: false
+    })
+   
+    interface DataSong {
+        title: String,
+        topicId: String,
+        singerId: String,
+        position: Number,
+        lyrics?: String,
+        audio?: String,
+        status: String,
+        avatar: String,
+        description: String
+    }
+
+    const dataSong: DataSong = {
+        title: req.body.title,
+        topicId: req.body.topicId,
+        singerId: req.body.singerId,
+        position: req.body.position,
+        description: req.body.description,
+        status: req.body.status,
+        avatar: req.body.avatar
+    }
+
+    if (req.body.postion) {
+        dataSong.position = parseInt(req.body.position)
+    } else {
+        dataSong.position = countSong + 1
+    }
+    
+    const newSong = new Song(dataSong)
+    await newSong.save()
+
+    req.flash("success", "Tạo thành công bài hát!")
+    res.redirect(`${systemConfig.prefixAdmin}/songs`)
 }
