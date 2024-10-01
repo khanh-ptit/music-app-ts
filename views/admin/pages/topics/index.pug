@@ -2,6 +2,8 @@ extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 include ../../mixins/filter-status.pug
 include ../../mixins/form-search.pug
+include ../../mixins/form-change-multi.pug
+include ../../mixins/sort.pug
 
 block main 
     +alert-success(5000)
@@ -16,6 +18,20 @@ block main
                     +filter-status(filterStatus)
                 .col-6
                     +form-search()
+
+    +sort()
+
+    .card.mb-3 
+        .card-header Danh sách 
+        .card-body 
+            .row 
+                .col-8
+                    +form-change-multi(`${prefixAdmin}/topics/change-multi?_method=PATCH`) 
+                .col-4
+                    a(
+                        href=`${prefixAdmin}/topics/create`
+                        class="btn btn-outline-success"
+                    ) + Thêm mới
 
     .card.mb-3 
         .card-header Danh sách chủ đề

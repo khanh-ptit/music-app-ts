@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.changeStatus = exports.index = void 0;
+exports.changeMulti = exports.deleteItem = exports.changeStatus = exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const system_1 = require("../../config/system");
 const filterStatus_1 = __importDefault(require("../../helpers/filterStatus"));
@@ -29,7 +29,13 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (objectSearch["regex"]) {
         find["slug"] = objectSearch["regex"];
     }
-    const topics = yield topic_model_1.default.find(find);
+    let sort = {};
+    if (req.query.sortKey && req.query.sortValue) {
+        const sortKey = req.query.sortKey.toString();
+        const sortValue = req.query.sortValue.toString();
+        sort[sortKey] = sortValue;
+    }
+    const topics = yield topic_model_1.default.find(find).sort(sort);
     res.render("admin/pages/topics/index", {
         pageTitle: "Danh sách chủ đề",
         topics: topics,
@@ -99,3 +105,57 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteItem = deleteItem;
+const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const type = req.body.type;
+        const ids = req.body.ids.split(", ");
+        switch (type) {
+            case "active":
+                yield topic_model_1.default.updateMany({
+                    _id: {
+                        $in: ids
+                    }
+                }, {
+                    status: "active"
+                });
+                req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`);
+                res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+                break;
+            case "inactive":
+                yield topic_model_1.default.updateMany({
+                    _id: {
+                        $in: ids
+                    }
+                }, {
+                    status: "inactive"
+                });
+                req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`);
+                res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+                break;
+            case "delete-all":
+                yield topic_model_1.default.updateMany({
+                    _id: {
+                        $in: ids
+                    }
+                }, {
+                    deleted: true
+                });
+                req.flash("success", `Đã xóa ${ids.length} bản ghi`);
+                res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+                break;
+            default:
+                res.json({
+                    code: 400,
+                    message: "Có lỗi xảy ra!"
+                });
+                break;
+        }
+    }
+    catch (error) {
+        res.json({
+            code: 400,
+            message: "Có lỗi xảy ra!"
+        });
+    }
+});
+exports.changeMulti = changeMulti;

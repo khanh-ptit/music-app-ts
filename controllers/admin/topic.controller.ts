@@ -3,6 +3,7 @@ import Topic from "../../models/topic.model";
 import { systemConfig } from "../../config/system";
 import filterStatusHelper from "../../helpers/filterStatus";
 import searchHelper from "../../helpers/search";
+import { SortOrder } from "mongoose";
 
 // [GET] /admin/topics/
 export const index = async (req: Request, res: Response) => {
@@ -24,7 +25,20 @@ export const index = async (req: Request, res: Response) => {
     }
     // End search
     
-    const topics = await Topic.find(find)
+    interface ObjectSort {
+        [key: string]: SortOrder
+    }
+
+    let sort = {}
+
+    if (req.query.sortKey && req.query.sortValue) {
+        const sortKey = req.query.sortKey.toString()
+        const sortValue = req.query.sortValue.toString() as SortOrder
+
+        sort[sortKey] = sortValue
+    }
+
+    const topics = await Topic.find(find).sort(sort)
     // console.log(topics)
     res.render("admin/pages/topics/index", {
         pageTitle: "Danh sách chủ đề",
@@ -99,6 +113,60 @@ export const deleteItem = async (req: Request, res: Response) => {
         res.json({
             code: 400,
             message: "Nghịch cái đb"
+        })
+    }
+}
+
+// [PATCH] /admin/topics/change-multi
+export const changeMulti = async (req: Request, res: Response) => {
+    try {
+        const type = req.body.type
+        const ids = req.body.ids.split(", ")
+        switch (type) {
+            case "active":
+                await Topic.updateMany({
+                    _id: {
+                        $in: ids
+                    }
+                }, {
+                    status: "active"
+                })
+                req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`)
+                res.redirect(`${systemConfig.prefixAdmin}/topics`)
+                break;
+            case "inactive":
+                await Topic.updateMany({
+                    _id: {
+                        $in: ids
+                    }
+                }, {
+                    status: "inactive"
+                })
+                req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`)
+                res.redirect(`${systemConfig.prefixAdmin}/topics`)
+                break;
+            case "delete-all":
+                await Topic.updateMany({
+                    _id: {
+                        $in: ids
+                    }
+                }, {
+                    deleted: true
+                })
+                req.flash("success", `Đã xóa ${ids.length} bản ghi`)
+                res.redirect(`${systemConfig.prefixAdmin}/topics`)
+                break;
+            default:
+                res.json({
+                    code: 400,
+                    message: "Có lỗi xảy ra!"
+                })
+                break;
+        }
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Có lỗi xảy ra!"
         })
     }
 }
