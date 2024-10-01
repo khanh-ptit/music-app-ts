@@ -164,7 +164,7 @@ if (sort) {
 
 // Upload image
 const uploadImages = document.querySelectorAll("[upload-image]");
-console.log(uploadImages)
+// console.log(uploadImages)
 
 if (uploadImages.length > 0) {
     uploadImages.forEach(uploadImage => {
@@ -202,7 +202,7 @@ if (uploadImages.length > 0) {
 
 // Upload audio
 const uploadAudios = document.querySelectorAll("[upload-audio]");
-console.log(uploadAudios)
+// console.log(uploadAudios)
 
 if (uploadAudios.length > 0) {
     uploadAudios.forEach(uploadAudio => {
