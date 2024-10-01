@@ -145,3 +145,8 @@
     display: inline-block;
 }
 /* End audio preview */
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+}

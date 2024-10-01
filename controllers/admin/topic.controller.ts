@@ -4,6 +4,7 @@ import { systemConfig } from "../../config/system";
 import filterStatusHelper from "../../helpers/filterStatus";
 import searchHelper from "../../helpers/search";
 import { SortOrder } from "mongoose";
+import { skip } from "node:test";
 
 // [GET] /admin/topics/
 export const index = async (req: Request, res: Response) => {
@@ -29,7 +30,7 @@ export const index = async (req: Request, res: Response) => {
         [key: string]: SortOrder
     }
 
-    let sort = {}
+    let sort: ObjectSort = {}
 
     if (req.query.sortKey && req.query.sortValue) {
         const sortKey = req.query.sortKey.toString()
@@ -38,13 +39,43 @@ export const index = async (req: Request, res: Response) => {
         sort[sortKey] = sortValue
     }
 
-    const topics = await Topic.find(find).sort(sort)
+    // Pagination
+    const objectPagination = {
+        limitItems: 4,
+        skip: 0,
+        currentPage: 1
+    }
+
+    const countDocuments = await Topic.countDocuments({
+        deleted: false
+    })
+    objectPagination["totalPages"] = Math.ceil(countDocuments / objectPagination.limitItems)
+    if (req.query.page) {
+        let page = parseInt(req.query.page.toString())
+        if (page < 1) {
+            res.redirect(`?page=1`)
+            return
+        } else if (page > objectPagination["totalPages"]) {
+            res.redirect(`?page=${objectPagination["totalPages"]}`)
+            return
+        }
+        objectPagination.currentPage = page
+        objectPagination.skip = (page - 1) * objectPagination.limitItems
+    }
+    // End pagination
+
+    const topics = await Topic
+        .find(find)
+        .sort(sort)
+        .limit(objectPagination.limitItems)
+        .skip(objectPagination.skip)
     // console.log(topics)
     res.render("admin/pages/topics/index", {
         pageTitle: "Danh sách chủ đề",
         topics: topics,
         filterStatus: filterStatus,
-        keyword: objectSearch.keyword
+        keyword: objectSearch.keyword,
+        pagination: objectPagination
     })
 }
 

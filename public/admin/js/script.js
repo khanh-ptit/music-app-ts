@@ -241,3 +241,22 @@ if (uploadAudios.length > 0) {
     })
 }
 // End upload audio
+
+// Pagination
+const listButtonPagination = document.querySelectorAll("[button-pagination]")
+// console.log(listButtonPagination)
+if (listButtonPagination.length > 0) {
+    let url = new URL(window.location.href)
+    listButtonPagination.forEach(button => {
+        button.addEventListener("click", () => {
+            const currentPage = button.getAttribute("button-pagination")
+            if (currentPage) {
+                url.searchParams.set("page", currentPage)
+            } else {
+                url.searchParams.delete("page")
+            }
+            window.location.href = url.href
+        })
+    })
+}
+// Pagination

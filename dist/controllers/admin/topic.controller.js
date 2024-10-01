@@ -35,12 +35,39 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const sortValue = req.query.sortValue.toString();
         sort[sortKey] = sortValue;
     }
-    const topics = yield topic_model_1.default.find(find).sort(sort);
+    const objectPagination = {
+        limitItems: 4,
+        skip: 0,
+        currentPage: 1
+    };
+    const countDocuments = yield topic_model_1.default.countDocuments({
+        deleted: false
+    });
+    objectPagination["totalPages"] = Math.ceil(countDocuments / objectPagination.limitItems);
+    if (req.query.page) {
+        let page = parseInt(req.query.page.toString());
+        if (page < 1) {
+            res.redirect(`?page=1`);
+            return;
+        }
+        else if (page > objectPagination["totalPages"]) {
+            res.redirect(`?page=${objectPagination["totalPages"]}`);
+            return;
+        }
+        objectPagination.currentPage = page;
+        objectPagination.skip = (page - 1) * objectPagination.limitItems;
+    }
+    const topics = yield topic_model_1.default
+        .find(find)
+        .sort(sort)
+        .limit(objectPagination.limitItems)
+        .skip(objectPagination.skip);
     res.render("admin/pages/topics/index", {
         pageTitle: "Danh sách chủ đề",
         topics: topics,
         filterStatus: filterStatus,
-        keyword: objectSearch.keyword
+        keyword: objectSearch.keyword,
+        pagination: objectPagination
     });
 });
 exports.index = index;

@@ -103,6 +103,29 @@ block main
                                     button-delete 
                                     data-id=item.id
                                 ) Xóa
+                                
+    nav
+        .pagination-container
+            ul.pagination
+                if (pagination.currentPage > 1)   
+                    li.page-item
+                        button(
+                        class="page-link"
+                        button-pagination=pagination.currentPage - 1
+                    ) Trang trước
+                - for (var i = 1; i <= pagination.totalPages; i++)
+                    li(class=`page-item ${pagination.currentPage == i ? "active" : ""}`)
+                        button(
+                            class=`page-link`
+                            button-pagination=i
+                        ) #{i}
+                if (pagination.currentPage < pagination.totalPages)
+                    li.page-item
+                        button(
+                            class="page-link"
+                            button-pagination=pagination.currentPage + 1
+                        ) Trang sau
+
     form(
         action=``
         method="POST"
