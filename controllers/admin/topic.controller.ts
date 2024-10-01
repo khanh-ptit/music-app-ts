@@ -170,3 +170,122 @@ export const changeMulti = async (req: Request, res: Response) => {
         })
     }
 }
+
+// [GET] /admin/topics/edit/:id
+export const edit = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+        // console.log(id)
+
+        const existTopic = await Topic.findOne({
+            _id: id,
+            deleted: false
+        })
+
+        if (!existTopic) {
+            req.flash("error", "Đường dẫn không tồn tại!")
+            res.redirect(`${systemConfig.prefixAdmin}/topics`)
+            return
+        }
+
+        const topic = await Topic.findOne({
+            _id: id,
+            deleted: false
+        })
+        res.render("admin/pages/topics/edit", {
+            pageTitle: "Chỉnh sửa chủ đề",
+            topic: topic
+        })
+    } catch (error) {
+        req.flash("error", "Đường dẫn không tồn tại!")
+        res.redirect(`${systemConfig.prefixAdmin}/topics`)
+    }
+}
+
+// [PATCH] /admin/topics/edit/:id
+export const editPatch = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+        const existTopic = await Topic.findOne({
+            _id: id,
+            deleted: false
+        })
+
+        if (!existTopic) {
+            res.json({
+                code: 400,
+                message: "Topic không tồn tại!"
+            })
+            return
+        }
+
+        interface Topic {
+            title: String,
+            avatar?: String,
+            description?: String,
+            position: Number,
+            status: String
+        }
+    
+        const dataTopic: Topic = {
+            title: req.body.title,
+            position: parseInt(req.body.position),
+            status: req.body.status
+        }
+
+        if (req.body.avatar) {
+            dataTopic.avatar = req.body.avatar
+        }
+
+        if (req.body.description) {
+            dataTopic.description = req.body.description
+        }
+        await Topic.updateOne({
+            _id: id
+        }, dataTopic)
+
+        req.flash("success", "Cập nhật thành công chủ đề!")
+        res.redirect(`${systemConfig.prefixAdmin}/topics`)
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Nghịch cái đb"
+        })
+    }
+}
+
+// [GET] /admin/topics/create
+export const create = async (req: Request, res: Response) => {
+    const countTopic = await Topic.countDocuments({
+        deleted: false
+    })
+    res.render("admin/pages/topics/create.pug", {
+        pageTitle: "Thêm mới danh mục",
+        countTopic: countTopic
+    })
+}
+
+// [POST] /admin/topics/create
+export const createPost = async (req: Request, res: Response) => {
+    interface Topic {
+        title: String,
+        avatar: String,
+        description: String,
+        position: Number,
+        status: String
+    }
+
+    const dataTopic: Topic = {
+        title: req.body.title,
+        avatar: req.body.avatar,
+        description: req.body.description,
+        position: parseInt(req.body.position),
+        status: req.body.status
+    }
+
+    const newTopic = new Topic(dataTopic)
+    await newTopic.save()
+
+    req.flash("success", "Tạo thành công chủ đề!")
+    res.redirect(`${systemConfig.prefixAdmin}/topics`)
+}

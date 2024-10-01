@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeMulti = exports.deleteItem = exports.changeStatus = exports.index = void 0;
+exports.createPost = exports.create = exports.editPatch = exports.edit = exports.changeMulti = exports.deleteItem = exports.changeStatus = exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const system_1 = require("../../config/system");
 const filterStatus_1 = __importDefault(require("../../helpers/filterStatus"));
@@ -159,3 +159,93 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.changeMulti = changeMulti;
+const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const existTopic = yield topic_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!existTopic) {
+            req.flash("error", "Đường dẫn không tồn tại!");
+            res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+            return;
+        }
+        const topic = yield topic_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        res.render("admin/pages/topics/edit", {
+            pageTitle: "Chỉnh sửa chủ đề",
+            topic: topic
+        });
+    }
+    catch (error) {
+        req.flash("error", "Đường dẫn không tồn tại!");
+        res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+    }
+});
+exports.edit = edit;
+const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const existTopic = yield topic_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!existTopic) {
+            res.json({
+                code: 400,
+                message: "Topic không tồn tại!"
+            });
+            return;
+        }
+        const dataTopic = {
+            title: req.body.title,
+            position: parseInt(req.body.position),
+            status: req.body.status
+        };
+        if (req.body.avatar) {
+            dataTopic.avatar = req.body.avatar;
+        }
+        if (req.body.description) {
+            dataTopic.description = req.body.description;
+        }
+        yield topic_model_1.default.updateOne({
+            _id: id
+        }, dataTopic);
+        req.flash("success", "Cập nhật thành công chủ đề!");
+        res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+    }
+    catch (error) {
+        res.json({
+            code: 400,
+            message: "Nghịch cái đb"
+        });
+    }
+});
+exports.editPatch = editPatch;
+const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const countTopic = yield topic_model_1.default.countDocuments({
+        deleted: false
+    });
+    res.render("admin/pages/topics/create.pug", {
+        pageTitle: "Thêm mới danh mục",
+        countTopic: countTopic
+    });
+});
+exports.create = create;
+const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const dataTopic = {
+        title: req.body.title,
+        avatar: req.body.avatar,
+        description: req.body.description,
+        position: parseInt(req.body.position),
+        status: req.body.status
+    };
+    const newTopic = new topic_model_1.default(dataTopic);
+    yield newTopic.save();
+    req.flash("success", "Tạo thành công chủ đề!");
+    res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+});
+exports.createPost = createPost;

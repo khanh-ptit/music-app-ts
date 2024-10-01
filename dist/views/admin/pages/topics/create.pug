@@ -1,0 +1,80 @@
+extends ../../layouts/default.pug
+
+block main 
+    h1.mb-3 Thêm mới chủ đề
+
+    form(
+        action=`${prefixAdmin}/topics/create`
+        method="POST"
+        enctype="multipart/form-data"
+    )
+        div(class="form-group")
+            label(for="title") Tiêu đề
+            input(
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+            )
+        div(
+            class="form-group"
+            upload-image
+        )
+            label(for="avatar") Ảnh 
+            input(
+                type="file"
+                class="form-control-file"
+                id="avatar"
+                name="avatar"
+                accept="image/*"
+                upload-image-input
+            )
+            div(class="image-container")
+                img(
+                    src=""
+                    class="image-preview"
+                    upload-image-preview
+                )
+                span.button-cancel X
+        div(class="form-group")
+            label(for="description") Mô tả
+            input(
+                type="text"
+                class="form-control"
+                id="description"
+                name="description"
+            )
+        div(class="form-group")
+            label(for="position") Vị trí
+            input(
+                class="form-control"
+                type="number"
+                id="position"
+                name="position"
+                value=countTopic + 1
+                readonly
+            )
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                name="status"
+                value="active"
+                id="statusActive"
+            )
+            label(for="statusActive" class="form-check-label") Hoạt động
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                name="status"
+                value="inactive"
+                id="statusInactive"
+            )
+            label(for="statusInactive" class="form-check-label") Dừng hoạt động
+        div(class="form-group")
+            button(
+                class="btn btn-primary"
+                type="submit"
+            ) Tạo mới
