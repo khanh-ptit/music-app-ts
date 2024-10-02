@@ -20,6 +20,7 @@ const port: number = parseInt(process.env.PORT.toString())
 app.use(express.static(`${__dirname}/public`))
 app.set("views", `${__dirname}/views`)
 app.set("view engine", "pug")
+app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
 
 // Flash
 app.use(cookieParser("khanhleis11"));
