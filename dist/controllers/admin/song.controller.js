@@ -19,6 +19,7 @@ const search_1 = __importDefault(require("../../helpers/search"));
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const singer_model_1 = __importDefault(require("../../models/singer.model"));
 const system_1 = require("../../config/system");
+const pagination_1 = __importDefault(require("../../helpers/pagination"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filterStatus = (0, filterStatus_1.default)(req.query);
     let find = {
@@ -41,28 +42,12 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             objectSort[sortKey] = sortValue;
         }
     }
-    let objectPagination = {
-        currentPage: 1,
-        skip: 0,
-        limitItems: 4
-    };
     const countSong = yield song_model_1.default.countDocuments({
         deleted: false
     });
-    objectPagination["totalPages"] = Math.ceil(countSong / objectPagination.limitItems);
-    if (req.query.page) {
-        const page = parseInt(req.query.page.toString());
-        if (page < 1) {
-            res.redirect(`${system_1.systemConfig.prefixAdmin}/songs/?page=1`);
-            return;
-        }
-        if (page > objectPagination["totalPages"]) {
-            res.redirect(`${system_1.systemConfig.prefixAdmin}/songs/?page=${objectPagination["totalPages"]}`);
-            return;
-        }
-        objectPagination.currentPage = page;
-        objectPagination.skip = (page - 1) * objectPagination.limitItems;
-    }
+    const objectPagination = (0, pagination_1.default)(req.query, res, countSong);
+    if (!objectPagination)
+        return;
     const songs = yield song_model_1.default
         .find(find)
         .sort(objectSort)
@@ -110,7 +95,6 @@ exports.changeStatus = changeStatus;
 const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const type = req.body.type;
     const ids = req.body.ids.split(", ");
-    console.log(type, ids);
     switch (type) {
         case "active":
             yield song_model_1.default.updateMany({
@@ -143,6 +127,20 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 deleted: true
             });
             req.flash("success", `Xóa thành công ${ids.length} bài hát`);
+            res.redirect("back");
+            break;
+        case "change-position":
+            for (const item of ids) {
+                const arr = item.split("-");
+                const id = arr[0];
+                const pos = parseInt(arr[1]);
+                yield song_model_1.default.updateOne({
+                    _id: id
+                }, {
+                    position: pos
+                });
+            }
+            req.flash("success", `Đã cập nhật vị trí cho ${ids.length} bài hát`);
             res.redirect("back");
             break;
         default:

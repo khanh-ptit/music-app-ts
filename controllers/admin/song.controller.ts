@@ -6,6 +6,7 @@ import { SortOrder } from "mongoose";
 import Topic from "../../models/topic.model";
 import Singer from "../../models/singer.model";
 import { systemConfig } from "../../config/system";
+import paginationHelper from "../../helpers/pagination";
 
 // [GET] /admin/songs
 export const index = async (req: Request, res: Response) => {
@@ -43,29 +44,12 @@ export const index = async (req: Request, res: Response) => {
     }
 
     // Pagination 
-    let objectPagination = {
-        currentPage: 1,
-        skip: 0,
-        limitItems: 4
-    }
     const countSong = await Song.countDocuments({
         deleted: false
     })
-    objectPagination["totalPages"] = Math.ceil(countSong / objectPagination.limitItems)
-    if (req.query.page) {
-        const page = parseInt(req.query.page.toString())
-        if (page < 1) {
-            res.redirect(`${systemConfig.prefixAdmin}/songs/?page=1`)
-            return
-        }
-        if (page > objectPagination["totalPages"]) {
-            res.redirect(`${systemConfig.prefixAdmin}/songs/?page=${objectPagination["totalPages"]}`)
-            return
-        }
-        objectPagination.currentPage = page
-        objectPagination.skip = (page - 1) * objectPagination.limitItems
-    }
-    // Pagination 
+    const objectPagination = paginationHelper(req.query, res, countSong)
+
+    if (!objectPagination) return;
 
     const songs = await Song
         .find(find)
@@ -121,7 +105,6 @@ export const changeMulti = async (req: Request, res: Response) => {
     // console.log(req.body)
     const type: string = req.body.type
     const ids: string[] = req.body.ids.split(", ")
-    console.log(type, ids)
     switch (type) {
         case "active":
             await Song.updateMany({
@@ -154,6 +137,20 @@ export const changeMulti = async (req: Request, res: Response) => {
                 deleted: true
             })
             req.flash("success", `Xóa thành công ${ids.length} bài hát`)
+            res.redirect("back")
+            break;
+        case "change-position":
+            for (const item of ids) {
+                const arr = item.split("-")
+                const id = arr[0]
+                const pos = parseInt(arr[1])
+                await Song.updateOne({
+                    _id: id
+                }, {
+                    position: pos
+                })
+            }
+            req.flash("success", `Đã cập nhật vị trí cho ${ids.length} bài hát`)
             res.redirect("back")
             break;
         default:

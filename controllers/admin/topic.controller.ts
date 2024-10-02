@@ -4,7 +4,7 @@ import { systemConfig } from "../../config/system";
 import filterStatusHelper from "../../helpers/filterStatus";
 import searchHelper from "../../helpers/search";
 import { SortOrder } from "mongoose";
-import { skip } from "node:test";
+import paginationHelper from "../../helpers/pagination";
 
 // [GET] /admin/topics/
 export const index = async (req: Request, res: Response) => {
@@ -30,7 +30,9 @@ export const index = async (req: Request, res: Response) => {
         [key: string]: SortOrder
     }
 
-    let sort: ObjectSort = {}
+    let sort: ObjectSort = {
+        position: "asc"
+    }
 
     if (req.query.sortKey && req.query.sortValue) {
         const sortKey = req.query.sortKey.toString()
@@ -40,28 +42,11 @@ export const index = async (req: Request, res: Response) => {
     }
 
     // Pagination
-    const objectPagination = {
-        limitItems: 4,
-        skip: 0,
-        currentPage: 1
-    }
-
     const countDocuments = await Topic.countDocuments({
         deleted: false
     })
-    objectPagination["totalPages"] = Math.ceil(countDocuments / objectPagination.limitItems)
-    if (req.query.page) {
-        let page = parseInt(req.query.page.toString())
-        if (page < 1) {
-            res.redirect(`?page=1`)
-            return
-        } else if (page > objectPagination["totalPages"]) {
-            res.redirect(`?page=${objectPagination["totalPages"]}`)
-            return
-        }
-        objectPagination.currentPage = page
-        objectPagination.skip = (page - 1) * objectPagination.limitItems
-    }
+    const objectPagination = paginationHelper(req.query, res, countDocuments)
+    if (!objectPagination) return
     // End pagination
 
     const topics = await Topic
@@ -186,6 +171,20 @@ export const changeMulti = async (req: Request, res: Response) => {
                 })
                 req.flash("success", `Đã xóa ${ids.length} bản ghi`)
                 res.redirect(`${systemConfig.prefixAdmin}/topics`)
+                break;
+            case "change-position":
+                for (const item of ids) {
+                    const arr = item.split("-")
+                    const id = arr[0]
+                    const pos = parseInt(arr[1])
+                    await Topic.updateOne({
+                        _id: id
+                    }, {
+                        position: pos
+                    })
+                }
+                req.flash("success", `Đã cập nhật vị trí cho ${ids.length} bản ghi`)
+                res.redirect("back")
                 break;
             default:
                 res.json({

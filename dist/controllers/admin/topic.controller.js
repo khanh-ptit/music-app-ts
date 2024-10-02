@@ -17,6 +17,7 @@ const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const system_1 = require("../../config/system");
 const filterStatus_1 = __importDefault(require("../../helpers/filterStatus"));
 const search_1 = __importDefault(require("../../helpers/search"));
+const pagination_1 = __importDefault(require("../../helpers/pagination"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filterStatus = (0, filterStatus_1.default)(req.query);
     let find = {
@@ -29,34 +30,20 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (objectSearch["regex"]) {
         find["slug"] = objectSearch["regex"];
     }
-    let sort = {};
+    let sort = {
+        position: "asc"
+    };
     if (req.query.sortKey && req.query.sortValue) {
         const sortKey = req.query.sortKey.toString();
         const sortValue = req.query.sortValue.toString();
         sort[sortKey] = sortValue;
     }
-    const objectPagination = {
-        limitItems: 4,
-        skip: 0,
-        currentPage: 1
-    };
     const countDocuments = yield topic_model_1.default.countDocuments({
         deleted: false
     });
-    objectPagination["totalPages"] = Math.ceil(countDocuments / objectPagination.limitItems);
-    if (req.query.page) {
-        let page = parseInt(req.query.page.toString());
-        if (page < 1) {
-            res.redirect(`?page=1`);
-            return;
-        }
-        else if (page > objectPagination["totalPages"]) {
-            res.redirect(`?page=${objectPagination["totalPages"]}`);
-            return;
-        }
-        objectPagination.currentPage = page;
-        objectPagination.skip = (page - 1) * objectPagination.limitItems;
-    }
+    const objectPagination = (0, pagination_1.default)(req.query, res, countDocuments);
+    if (!objectPagination)
+        return;
     const topics = yield topic_model_1.default
         .find(find)
         .sort(sort)
@@ -169,6 +156,20 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 });
                 req.flash("success", `Đã xóa ${ids.length} bản ghi`);
                 res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+                break;
+            case "change-position":
+                for (const item of ids) {
+                    const arr = item.split("-");
+                    const id = arr[0];
+                    const pos = parseInt(arr[1]);
+                    yield topic_model_1.default.updateOne({
+                        _id: id
+                    }, {
+                        position: pos
+                    });
+                }
+                req.flash("success", `Đã cập nhật vị trí cho ${ids.length} bản ghi`);
+                res.redirect("back");
                 break;
             default:
                 res.json({

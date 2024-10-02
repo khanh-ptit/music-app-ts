@@ -34,10 +34,6 @@ app.use(flash());
 app.use(methodOverride("_method"))
 app.use(bodyParser.urlencoded({extended: false}))
 
-// TinyMCE
-app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
-// End TinyMCE
-
 // App local variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin
 
