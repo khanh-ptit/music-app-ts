@@ -1,0 +1,28 @@
+extends ../../layouts/default.pug
+
+block main 
+    if (topic.title)
+        h1.mb-4 #{topic.title}
+    
+    if (topic.description)
+        div.mb-4 <b>Mô tả:</b> #{topic.description}
+    
+    if (topic.avatar)
+        div.mb-4 
+            <b>Ảnh: </b> 
+            img(src=topic.avatar, alt=topic.title, style="width: 160px")
+    
+    if (topic.position)   
+        div.mb-4 <b>Vị trí: </b> #{topic.position}
+
+    if (topic.status)
+        div.mb-4 <b>Trạng thái: </b>
+            if (topic.status == "active")
+                span(class="badge badge-success") Hoạt động
+            else 
+                span(class="badge badge-danger") Dừng hoạt động
+    
+    a(
+        href=`${prefixAdmin}/topics/edit/${topic.id}`
+        class="btn btn-warning"
+    ) Chỉnh sửa

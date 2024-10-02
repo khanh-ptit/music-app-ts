@@ -244,7 +244,6 @@ if (uploadAudios.length > 0) {
 
 // Pagination
 const listButtonPagination = document.querySelectorAll("[button-pagination]")
-// console.log(listButtonPagination)
 if (listButtonPagination.length > 0) {
     let url = new URL(window.location.href)
     listButtonPagination.forEach(button => {

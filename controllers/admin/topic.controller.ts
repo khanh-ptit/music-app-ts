@@ -320,3 +320,34 @@ export const createPost = async (req: Request, res: Response) => {
     req.flash("success", "Tạo thành công chủ đề!")
     res.redirect(`${systemConfig.prefixAdmin}/topics`)
 }
+
+// [GET] /admin/topics/detail/:id
+export const detail = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+
+        const existTopic = await Topic.findOne({
+            _id: id,
+            deleted: false
+        })
+
+        if (!existTopic) {
+            req.flash("error", "Đường dẫn không tồn tại!")
+            res.redirect(`${systemConfig.prefixAdmin}/topics`)
+            return
+        }
+
+        const topic = await Topic.findOne({
+            _id: id,
+            deleted: false
+        })
+
+        res.render("admin/pages/topics/detail.pug", {
+            pageTitle: "Chi tiết chủ đề",
+            topic: topic
+        })
+    } catch (error) {
+        req.flash("error", "Đường dẫn không hợp lệ")
+        res.redirect(`${systemConfig.prefixAdmin}/topics`)
+    }
+}

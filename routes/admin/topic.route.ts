@@ -27,4 +27,6 @@ router.get("/create", controller.create)
 
 router.post("/create", upload.single("avatar"), asyncHandler(uploadCloud.uploadSingle), controller.createPost)
 
+router.get("/detail/:id", controller.detail)
+
 export const topicRoutes: Router = router

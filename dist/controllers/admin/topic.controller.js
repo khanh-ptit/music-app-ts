@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPost = exports.create = exports.editPatch = exports.edit = exports.changeMulti = exports.deleteItem = exports.changeStatus = exports.index = void 0;
+exports.detail = exports.createPost = exports.create = exports.editPatch = exports.edit = exports.changeMulti = exports.deleteItem = exports.changeStatus = exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const system_1 = require("../../config/system");
 const filterStatus_1 = __importDefault(require("../../helpers/filterStatus"));
@@ -276,3 +276,30 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
 });
 exports.createPost = createPost;
+const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const existTopic = yield topic_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!existTopic) {
+            req.flash("error", "Đường dẫn không tồn tại!");
+            res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+            return;
+        }
+        const topic = yield topic_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        res.render("admin/pages/topics/detail.pug", {
+            pageTitle: "Chi tiết chủ đề",
+            topic: topic
+        });
+    }
+    catch (error) {
+        req.flash("error", "Đường dẫn không hợp lệ");
+        res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
+    }
+});
+exports.detail = detail;
