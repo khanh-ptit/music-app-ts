@@ -26,6 +26,7 @@
     "express-flash": "^0.0.2",
     "express-session": "^1.18.0",
     "fs-extra": "^11.2.0",
+    "md5": "^2.3.0",
     "method-override": "^3.0.0",
     "mongoose": "^8.6.4",
     "mongoose-slug-updater": "^3.3.0",

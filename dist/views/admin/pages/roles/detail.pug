@@ -1,0 +1,12 @@
+extends ../../layouts/default.pug
+
+block main 
+    h1.mb-3 #{role.title}
+
+    if (role.description)
+        div(class="mb-4") Mô tả: !{role.description} 
+    
+    a(
+        class="btn btn-warning"
+        href=`${prefixAdmin}/roles/edit/${role.id}`
+    ) Chỉnh sửa

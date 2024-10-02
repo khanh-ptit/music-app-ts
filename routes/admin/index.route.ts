@@ -4,6 +4,8 @@ import { dashboardRoutes } from "./dashboard.route";
 import { songRoutes } from "./song.route";
 import { uploadRoutes } from "./upload.route";
 import { topicRoutes } from "./topic.route";
+import { accountRoutes } from "./account.route";
+import { roleRoutes } from "./role.route";
 
 export const routeAdmin = (app: Application) => {
     const PATH_ADMIN = systemConfig.prefixAdmin
@@ -12,4 +14,6 @@ export const routeAdmin = (app: Application) => {
     app.use(PATH_ADMIN + "/songs", songRoutes)
     app.use(PATH_ADMIN + "/upload", uploadRoutes)
     app.use(PATH_ADMIN + "/topics", topicRoutes)
+    app.use(PATH_ADMIN + "/accounts", accountRoutes)
+    app.use(PATH_ADMIN + "/roles", roleRoutes)
 }
