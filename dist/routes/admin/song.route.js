@@ -50,4 +50,5 @@ router.patch("/edit/:id", upload.fields([
     { name: "avatar", maxCount: 1 },
     { name: "audio", maxCount: 1 },
 ]), asyncHandler(uploadCloud.uploadFields), controller.editPatch);
+router.get("/detail/:id", controller.detail);
 exports.songRoutes = router;

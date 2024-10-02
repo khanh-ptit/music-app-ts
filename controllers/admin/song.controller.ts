@@ -42,12 +42,42 @@ export const index = async (req: Request, res: Response) => {
         }
     }
 
-    const songs = await Song.find(find).sort(objectSort)
+    // Pagination 
+    let objectPagination = {
+        currentPage: 1,
+        skip: 0,
+        limitItems: 4
+    }
+    const countSong = await Song.countDocuments({
+        deleted: false
+    })
+    objectPagination["totalPages"] = Math.ceil(countSong / objectPagination.limitItems)
+    if (req.query.page) {
+        const page = parseInt(req.query.page.toString())
+        if (page < 1) {
+            res.redirect(`${systemConfig.prefixAdmin}/songs/?page=1`)
+            return
+        }
+        if (page > objectPagination["totalPages"]) {
+            res.redirect(`${systemConfig.prefixAdmin}/songs/?page=${objectPagination["totalPages"]}`)
+            return
+        }
+        objectPagination.currentPage = page
+        objectPagination.skip = (page - 1) * objectPagination.limitItems
+    }
+    // Pagination 
+
+    const songs = await Song
+        .find(find)
+        .sort(objectSort)
+        .limit(objectPagination.limitItems)
+        .skip(objectPagination.skip)
     res.render("admin/pages/songs/index", {
         pageTitle: "Danh sách bài hát",
         songs: songs,
         filterStatus: filterStatus,
-        keyword: objectSearch["keyword"]
+        keyword: objectSearch["keyword"],
+        pagination: objectPagination,
     })
 }
 
@@ -244,70 +274,138 @@ export const createPost = async (req: Request, res: Response) => {
 
 // [GET] /admin/songs/edit/:id
 export const edit = async (req: Request, res: Response) => {
-    const id = req.params.id
-    const song = await Song.findOne({
-        _id: id,
-        deleted: false
-    })
+    try {
+        const id = req.params.id
+        const song = await Song.findOne({
+            _id: id,
+            deleted: false
+        })
 
-    const topics = await Topic.find({
-        deleted: false,
-        status: "active"
-    }).select("title")
+        if (!song) {
+            req.flash("error", "Đường dẫn không tồn tại!")
+            res.redirect(`${systemConfig.prefixAdmin}/songs`)
+            return
+        }
 
-    const singers = await Singer.find({
-        deleted: false,
-        status: "active"
-    }).select("fullName")
+        const topics = await Topic.find({
+            deleted: false,
+            status: "active"
+        }).select("title")
 
-    res.render("admin/pages/songs/edit.pug", {
-        pageTitle: "Chỉnh sửa bài hát",
-        song: song,
-        topics: topics,
-        singers: singers
-    })
+        const singers = await Singer.find({
+            deleted: false,
+            status: "active"
+        }).select("fullName")
+
+        res.render("admin/pages/songs/edit.pug", {
+            pageTitle: "Chỉnh sửa bài hát",
+            song: song,
+            topics: topics,
+            singers: singers
+        })
+    } catch (error) {
+        req.flash("error", "Đường dẫn không tồn tại!")
+        res.redirect(`${systemConfig.prefixAdmin}/songs`)
+    }    
 }
 
 // [PATCH] /admin/songs/edit/:id
 export const editPatch = async (req: Request, res: Response) => {
-    const id = req.params.id
-    interface DataSong {
-        title: String,
-        topicId: String,
-        singerId: String,
-        position: Number,
-        lyrics?: String,
-        audio?: String,
-        status: String,
-        avatar?: String,
-        description: String
+    try {
+        const id = req.params.id
+        
+        const existTopic = await Song.findOne({
+            _id: id,
+            deleted: false
+        })
+
+        if (!existTopic) {
+            res.json({
+                code: 400,
+                message: "Bài hát không tồn tại!"
+            })
+            return
+        }
+
+        interface DataSong {
+            title: String,
+            topicId: String,
+            singerId: String,
+            position: Number,
+            lyrics?: String,
+            audio?: String,
+            status: String,
+            avatar?: String,
+            description: String
+        }
+
+        const dataSong: DataSong = {
+            title: req.body.title,
+            topicId: req.body.topicId,
+            singerId: req.body.singerId,
+            description: req.body.description,
+            status: req.body.status,
+            position: parseInt(req.body.position),
+            lyrics: req.body.lyrics
+        }
+
+        if (req.body.avatar) {
+            dataSong.avatar = req.body.avatar[0]
+        }
+
+        if (req.body.audio) {
+            dataSong.audio = req.body.audio[0]
+        }
+        
+        await Song.updateOne({
+            _id: id
+        }, dataSong)
+
+        req.flash("success", "Cập nhật thành công bài hát!")
+        res.redirect(`${systemConfig.prefixAdmin}/songs`)
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Nghịch cái đb"
+        }) 
     }
+}
 
-    let avatar = ""
-    let audio = ""
+// [GET] /admin/songs/detail/:id
+export const detail = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+        const song = await Song.findOne({
+            _id: id,
+            deleted: false
+        })
 
-    const dataSong: DataSong = {
-        title: req.body.title,
-        topicId: req.body.topicId,
-        singerId: req.body.singerId,
-        description: req.body.description,
-        status: req.body.status,
-        position: parseInt(req.body.position),
-        lyrics: req.body.lyrics
+        if (!song) {
+            req.flash("error", "Đường dẫn không tồn tại!")
+            res.redirect(`${systemConfig.prefixAdmin}/songs`)
+            return
+        }
+
+        const topic = await Topic.findOne({
+            deleted: false,
+            status: "active",
+            _id: song.topicId
+        }).select("title")
+        song["topicInfo"] = topic
+
+        const singer = await Singer.findOne({
+            deleted: false,
+            status: "active",
+            _id: song.singerId
+        }).select("fullName")
+        song["singerInfo"] = singer
+
+        res.render("admin/pages/songs/detail.pug", {
+            pageTitle: "Chi tiết bài hát",
+            song: song,
+        })
+    } catch (error) {
+        req.flash("error", "Đường dẫn không tồn tại!")
+        res.redirect(`${systemConfig.prefixAdmin}/songs`)
     }
-
-    if (req.body.avatar) {
-        dataSong.avatar = req.body.avatar[0]
-    }
-
-    if (req.body.audio) {
-        dataSong.audio = req.body.audio[0]
-    }
-    
-    await Song.updateOne({
-        _id: id
-    }, dataSong)
-
-    req.flash("success", "Cập nhật thành công bài hát!")
-    res.redirect(`${systemConfig.prefixAdmin}/songs`)
 }

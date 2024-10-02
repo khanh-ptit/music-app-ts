@@ -1,0 +1,53 @@
+extend ../../layouts/default.pug
+
+block main 
+    h1.mb-4 Chi tiết bài hát
+
+    if (song.title)
+        div(class="mb-3") <b>Tiêu đề: </b> #{song.title}
+    
+    if (song.singerId)
+        div(class="mb-3") <b>Ca sĩ: </b> #{song.singerInfo.fullName}
+
+    if (song.topicId)
+        div(class="mb-3") <b>Chủ đề: </b> #{song.topicInfo.title}
+    
+    if (song.avatar)
+        .mb-1 
+            <b class="mb-1">Ảnh: </b> 
+        div(class="mb-3") 
+            img(src=song.avatar, alt=song.title, style="width: 160px")
+    
+    if (song.audio)
+        div(class="mb-1") 
+            <b>File âm thanh: </b> 
+        div(class="mb-3")
+            audio(controls)
+                source(src=song.audio) 
+    
+    if (song.description)
+        div(class="mb-1") 
+            <b>Mô tả: </b> 
+        div(class="mb-3") !{song.description}
+    
+    if (song.lyrics)
+        div(class="mb-1") 
+            <b>Lời bài hát: </b> 
+        div(class="mb-3") !{song.lyrics}
+    
+    if (song.position)
+        div(class="mb-3") <b>Vị trí: </b> #{song.position}
+    
+    if (song.status)
+        div(class="mb-3") <b>Trạng thái: </b>
+            if (song.status == "active")
+                span(class="badge badge-success") Hoạt động 
+            else 
+                span(class="badge badge-danger") Dừng hoạt động
+    
+    a(
+        href=`${prefixAdmin}/songs/edit/${song.id}`
+        class="btn btn-warning"
+    ) Chỉnh sửa
+
+            

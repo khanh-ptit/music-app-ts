@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editPatch = exports.edit = exports.createPost = exports.create = exports.deleteSong = exports.changeMulti = exports.changeStatus = exports.index = void 0;
+exports.detail = exports.editPatch = exports.edit = exports.createPost = exports.create = exports.deleteSong = exports.changeMulti = exports.changeStatus = exports.index = void 0;
 const song_model_1 = __importDefault(require("../../models/song.model"));
 const filterStatus_1 = __importDefault(require("../../helpers/filterStatus"));
 const search_1 = __importDefault(require("../../helpers/search"));
@@ -41,12 +41,39 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             objectSort[sortKey] = sortValue;
         }
     }
-    const songs = yield song_model_1.default.find(find).sort(objectSort);
+    let objectPagination = {
+        currentPage: 1,
+        skip: 0,
+        limitItems: 4
+    };
+    const countSong = yield song_model_1.default.countDocuments({
+        deleted: false
+    });
+    objectPagination["totalPages"] = Math.ceil(countSong / objectPagination.limitItems);
+    if (req.query.page) {
+        const page = parseInt(req.query.page.toString());
+        if (page < 1) {
+            res.redirect(`${system_1.systemConfig.prefixAdmin}/songs/?page=1`);
+            return;
+        }
+        if (page > objectPagination["totalPages"]) {
+            res.redirect(`${system_1.systemConfig.prefixAdmin}/songs/?page=${objectPagination["totalPages"]}`);
+            return;
+        }
+        objectPagination.currentPage = page;
+        objectPagination.skip = (page - 1) * objectPagination.limitItems;
+    }
+    const songs = yield song_model_1.default
+        .find(find)
+        .sort(objectSort)
+        .limit(objectPagination.limitItems)
+        .skip(objectPagination.skip);
     res.render("admin/pages/songs/index", {
         pageTitle: "Danh sách bài hát",
         songs: songs,
         filterStatus: filterStatus,
-        keyword: objectSearch["keyword"]
+        keyword: objectSearch["keyword"],
+        pagination: objectPagination,
     });
 });
 exports.index = index;
@@ -210,50 +237,113 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.createPost = createPost;
 const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    const song = yield song_model_1.default.findOne({
-        _id: id,
-        deleted: false
-    });
-    const topics = yield topic_model_1.default.find({
-        deleted: false,
-        status: "active"
-    }).select("title");
-    const singers = yield singer_model_1.default.find({
-        deleted: false,
-        status: "active"
-    }).select("fullName");
-    res.render("admin/pages/songs/edit.pug", {
-        pageTitle: "Chỉnh sửa bài hát",
-        song: song,
-        topics: topics,
-        singers: singers
-    });
+    try {
+        const id = req.params.id;
+        const song = yield song_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!song) {
+            req.flash("error", "Đường dẫn không tồn tại!");
+            res.redirect(`${system_1.systemConfig.prefixAdmin}/songs`);
+            return;
+        }
+        const topics = yield topic_model_1.default.find({
+            deleted: false,
+            status: "active"
+        }).select("title");
+        const singers = yield singer_model_1.default.find({
+            deleted: false,
+            status: "active"
+        }).select("fullName");
+        res.render("admin/pages/songs/edit.pug", {
+            pageTitle: "Chỉnh sửa bài hát",
+            song: song,
+            topics: topics,
+            singers: singers
+        });
+    }
+    catch (error) {
+        req.flash("error", "Đường dẫn không tồn tại!");
+        res.redirect(`${system_1.systemConfig.prefixAdmin}/songs`);
+    }
 });
 exports.edit = edit;
 const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    let avatar = "";
-    let audio = "";
-    const dataSong = {
-        title: req.body.title,
-        topicId: req.body.topicId,
-        singerId: req.body.singerId,
-        description: req.body.description,
-        status: req.body.status,
-        position: parseInt(req.body.position),
-        lyrics: req.body.lyrics
-    };
-    if (req.body.avatar) {
-        dataSong.avatar = req.body.avatar[0];
+    try {
+        const id = req.params.id;
+        const existTopic = yield song_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!existTopic) {
+            res.json({
+                code: 400,
+                message: "Bài hát không tồn tại!"
+            });
+            return;
+        }
+        const dataSong = {
+            title: req.body.title,
+            topicId: req.body.topicId,
+            singerId: req.body.singerId,
+            description: req.body.description,
+            status: req.body.status,
+            position: parseInt(req.body.position),
+            lyrics: req.body.lyrics
+        };
+        if (req.body.avatar) {
+            dataSong.avatar = req.body.avatar[0];
+        }
+        if (req.body.audio) {
+            dataSong.audio = req.body.audio[0];
+        }
+        yield song_model_1.default.updateOne({
+            _id: id
+        }, dataSong);
+        req.flash("success", "Cập nhật thành công bài hát!");
+        res.redirect(`${system_1.systemConfig.prefixAdmin}/songs`);
     }
-    if (req.body.audio) {
-        dataSong.audio = req.body.audio[0];
+    catch (error) {
+        res.json({
+            code: 400,
+            message: "Nghịch cái đb"
+        });
     }
-    yield song_model_1.default.updateOne({
-        _id: id
-    }, dataSong);
-    req.flash("success", "Cập nhật thành công bài hát!");
-    res.redirect(`${system_1.systemConfig.prefixAdmin}/songs`);
 });
 exports.editPatch = editPatch;
+const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const song = yield song_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!song) {
+            req.flash("error", "Đường dẫn không tồn tại!");
+            res.redirect(`${system_1.systemConfig.prefixAdmin}/songs`);
+            return;
+        }
+        const topic = yield topic_model_1.default.findOne({
+            deleted: false,
+            status: "active",
+            _id: song.topicId
+        }).select("title");
+        song["topicInfo"] = topic;
+        const singer = yield singer_model_1.default.findOne({
+            deleted: false,
+            status: "active",
+            _id: song.singerId
+        }).select("fullName");
+        song["singerInfo"] = singer;
+        res.render("admin/pages/songs/detail.pug", {
+            pageTitle: "Chi tiết bài hát",
+            song: song,
+        });
+    }
+    catch (error) {
+        req.flash("error", "Đường dẫn không tồn tại!");
+        res.redirect(`${system_1.systemConfig.prefixAdmin}/songs`);
+    }
+});
+exports.detail = detail;
