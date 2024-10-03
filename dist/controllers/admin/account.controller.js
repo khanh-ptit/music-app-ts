@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.changeStatus = exports.createPost = exports.create = exports.index = void 0;
+exports.editPatch = exports.edit = exports.deleteItem = exports.changeStatus = exports.createPost = exports.create = exports.index = void 0;
 const role_model_1 = __importDefault(require("../../models/role.model"));
 const md5_1 = __importDefault(require("md5"));
 const account_model_1 = __importDefault(require("../../models/account.model"));
@@ -148,3 +148,88 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteItem = deleteItem;
+const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const existAccount = yield account_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!existAccount) {
+            req.flash("error", "Đường dẫn không tồn tại!");
+            res.redirect(`${system_1.systemConfig.prefixAdmin}/accounts`);
+            return;
+        }
+        const account = yield account_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        const roles = yield role_model_1.default.find({
+            deleted: false
+        });
+        res.render("admin/pages/accounts/edit.pug", {
+            pageTitle: "Chỉnh sửa tài khoản admin",
+            account: account,
+            roles: roles
+        });
+    }
+    catch (error) {
+        req.flash("error", "Đường dẫn không hợp lệ");
+        res.redirect(`${system_1.systemConfig.prefixAdmin}/accounts`);
+    }
+});
+exports.edit = edit;
+const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const existAccount = yield account_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!existAccount) {
+            res.json({
+                code: 404,
+                message: "Không tồn tại tài khoản!"
+            });
+            return;
+        }
+        const email = req.body.email;
+        const existEmail = yield account_model_1.default.findOne({
+            _id: {
+                $ne: id
+            },
+            email: email,
+            deleted: false
+        });
+        if (existEmail) {
+            req.flash("error", "Email đã tồn tại!");
+            res.redirect("back");
+            return;
+        }
+        const dataAccount = {
+            fullName: req.body.fullName,
+            email: req.body.email,
+            phone: req.body.phone,
+            role_id: req.body.role_id,
+            status: req.body.status
+        };
+        if (req.body.password) {
+            dataAccount.password = (0, md5_1.default)(req.body.password);
+        }
+        if (req.body.avatar) {
+            dataAccount.avatar = (0, md5_1.default)(req.body.avatar);
+        }
+        yield account_model_1.default.updateOne({
+            _id: id
+        }, dataAccount);
+        req.flash("success", "Cập nhật tài khoản thành công!");
+        res.redirect("back");
+    }
+    catch (error) {
+        res.json({
+            code: 400,
+            message: "Nghịch cái đb"
+        });
+    }
+});
+exports.editPatch = editPatch;
