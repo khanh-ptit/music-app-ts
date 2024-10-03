@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.detail = exports.editPatch = exports.edit = exports.deleteItem = exports.createPost = exports.create = exports.index = void 0;
+exports.permissionsPatch = exports.permissions = exports.detail = exports.editPatch = exports.edit = exports.deleteItem = exports.createPost = exports.create = exports.index = void 0;
 const system_1 = require("../../config/system");
 const role_model_1 = __importDefault(require("../../models/role.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -159,3 +159,28 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.detail = detail;
+const permissions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const roles = yield role_model_1.default.find({
+        deleted: false
+    });
+    res.render("admin/pages/roles/permissions.pug", {
+        pageTitle: "Phân quyền",
+        roles: roles
+    });
+});
+exports.permissions = permissions;
+const permissionsPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let permissions = JSON.parse(req.body.permissions);
+    for (const item of permissions) {
+        const id = item.id;
+        const itemPermission = item.permissions;
+        yield role_model_1.default.updateOne({
+            _id: id
+        }, {
+            permissions: itemPermission
+        });
+    }
+    req.flash("success", "Đã cập nhật phân quyền!");
+    res.redirect("back");
+});
+exports.permissionsPatch = permissionsPatch;

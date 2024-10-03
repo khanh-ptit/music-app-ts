@@ -179,3 +179,32 @@ export const detail = async (req: Request, res: Response) => {
         res.redirect(`${systemConfig.prefixAdmin}/roles`)
     }
 }
+
+// [GET] /admin/roles/permissions
+export const permissions = async (req: Request, res: Response) => {
+    const roles = await Role.find({
+        deleted: false
+    })
+
+    res.render("admin/pages/roles/permissions.pug", {
+        pageTitle: "Phân quyền",
+        roles: roles
+    })
+}
+
+// [PATCH] /admin/roles/permissions
+export const permissionsPatch = async (req: Request, res: Response) => {
+    let permissions = JSON.parse(req.body.permissions)
+    for (const item of permissions) {
+        const id = item.id
+        const itemPermission = item.permissions
+        // console.log(id, itemPermission)
+        await Role.updateOne({
+            _id: id
+        }, {
+            permissions: itemPermission
+        })
+    }
+    req.flash("success", "Đã cập nhật phân quyền!")
+    res.redirect("back")
+}
