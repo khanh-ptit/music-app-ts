@@ -21,4 +21,8 @@ router.get("/edit/:id", controller.edit)
 
 router.patch("/edit/:id", upload.single("avatar"), uploadCloud.uploadSingle, validate.editPatch, controller.editPatch)
 
+router.get("/detail/:id", controller.detail)
+
+router.patch("/change-multi", controller.changeMulti)
+
 export const accountRoutes: Router = router

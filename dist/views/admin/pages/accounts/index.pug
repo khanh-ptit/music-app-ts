@@ -21,7 +21,7 @@ block main
         .card-body 
             .row 
                 .col-8
-                    +form-change-multi()
+                    +form-change-multi(`${prefixAdmin}/accounts/change-multi?_method=PATCH`, 'accounts')
                 .col-4
                     a(
                         href=`${prefixAdmin}/accounts/create`

@@ -27,7 +27,7 @@ block main
         .card-body 
             .row 
                 .col-8
-                    +form-change-multi(`${prefixAdmin}/topics/change-multi?_method=PATCH`) 
+                    +form-change-multi(`${prefixAdmin}/topics/change-multi?_method=PATCH`, 'topics') 
                 .col-4
                     a(
                         href=`${prefixAdmin}/topics/create`

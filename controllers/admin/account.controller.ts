@@ -208,7 +208,7 @@ export const edit = async (req: Request, res: Response) => {
 }
 
 // [PATCH] /admin/accounts/edit/:id
-export const editPatch = async(req: Request, res: Response) => {
+export const editPatch = async (req: Request, res: Response) => {
     try {
         const id = req.params.id
 
@@ -277,5 +277,93 @@ export const editPatch = async(req: Request, res: Response) => {
             code: 400,
             message: "Nghịch cái đb"
         })
+    }
+}
+
+// [GET] /admin/accounts/detail/:id
+export const detail = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+
+        const existAccount = await Account.findOne({
+            _id: id,
+            deleted: false
+        })
+
+        if (!existAccount) {
+            req.flash("error", "Đường dẫn không tồn tại!")
+            res.redirect(`${systemConfig.prefixAdmin}/accounts`)
+            return
+        }
+
+        const account = await Account.findOne({
+            _id: id, 
+            deleted: false
+        })
+
+        const roles = await Role.find({
+            deleted: false
+        })
+        
+        for (const item of roles) {
+            const roleInfo = await Role.findOne({
+                _id: account.role_id
+            })
+            account["roleInfo"] = roleInfo
+        }
+
+        res.render("admin/pages/accounts/detail.pug", {
+            pageTitle: "Chi tiết tài khoản admin",
+            account: account,
+            roles: roles
+        })
+    } catch (error) {
+        req.flash("error", "Đường dẫn không hợp lệ")
+        res.redirect(`${systemConfig.prefixAdmin}/accounts`)
+    }
+}
+
+// [PATCH] /admin/accounts/change-multi
+export const changeMulti = async (req: Request, res: Response) => {
+    const type = req.body.type
+    const ids = req.body.ids.split(", ")
+    switch (type) {
+        case "active":
+            await Account.updateMany({
+                _id: {
+                    $in: ids
+                }
+            }, {
+                status: "active"
+            })
+            req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} tài khoản`)
+            res.redirect("back")
+            break;
+        case "inactive":
+            await Account.updateMany({
+                _id: {
+                    $in: ids
+                }
+            }, {
+                status: "inactive"
+            })
+            req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} tài khoản`)
+            res.redirect("back")
+            break;
+        case "delete-all":
+            await Account.updateMany({
+                _id: {
+                    $in: ids
+                }
+            }, {
+                deleted: true
+            })
+            req.flash("success", `Đã xóa ${ids.length} tài khoản`)
+            res.redirect("back")
+            break;
+        default:
+            req.flash("error", `Có lỗi xảy ra`)
+            res.redirect("back")
+            break;
     }
 }

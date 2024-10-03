@@ -1,0 +1,31 @@
+extends ../../layouts/default.pug
+
+block main 
+    if (account.fullName)
+        h1.mb-4 #{account.fullName}
+    
+    if (account.email)
+        div.mb-4 <b>Email:</b> #{account.email}
+    
+    if (account.phone)
+        div.mb-4 <b>Số điện thoại:</b> #{account.phone}
+
+    if (account.role_id)
+        div.mb-4 <b>Nhóm quyền:</b> #{account.roleInfo.title}
+
+    if (account.avatar)
+        div.mb-4 
+            <b>Ảnh: </b> 
+            img(src=account.avatar, alt=account.fullName, style="width: 160px")
+
+    if (account.status)
+        div.mb-4 <b>Trạng thái: </b>
+            if (account.status == "active")
+                span(class="badge badge-success") Hoạt động
+            else 
+                span(class="badge badge-danger") Dừng hoạt động
+    
+    a(
+        href=`${prefixAdmin}/accounts/edit/${account.id}`
+        class="btn btn-warning"
+    ) Chỉnh sửa
