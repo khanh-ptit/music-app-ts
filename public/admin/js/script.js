@@ -259,3 +259,25 @@ if (listButtonPagination.length > 0) {
     })
 }
 // Pagination
+
+// Đảm bảo toastr đã được nhúng vào trước đoạn cấu hình này
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": true,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+};
+
+// toastr.options.onShown = function() {
+//     $(".toast").css("margin-top", "50px"); // Hoặc giá trị mà bạn muốn
+// };

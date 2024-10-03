@@ -23,7 +23,6 @@ export const index = async (req: Request, res: Response) => {
     // Pagination
     const countDocuments = await Account.countDocuments(find)
     const objectPagination = paginationHelper(req.query, res, countDocuments, "accounts")
-    console.log(objectPagination)
     // End pgination
 
     const accounts = await Account
@@ -95,4 +94,43 @@ export const createPost = async (req: Request, res: Response) => {
     await newAccount.save()
     req.flash("success", "Tạo thành công tài khoản!")
     res.redirect(`${systemConfig.prefixAdmin}/accounts`)
+}
+
+// [PATCH] /admin/accounts/change-status/:status/:id
+export const changeStatus = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+        const status = req.params.status
+    
+        const existAccount = await Account.findOne({
+            _id: id,
+            deleted: false
+        })
+
+        if (!existAccount) {
+            res.json({
+                code: 404,
+                message: "Không tồn tại tài khoản!"
+            })
+            return
+        }
+
+        await Account.updateOne({
+            _id: id
+        }, {
+            status: status
+        })
+    
+        res.status(200).json({
+            code: 200, 
+            message: "Cập nhật trạng thái thành công!",
+            status: status
+        })
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Nghịch cái đb"
+        })
+    } 
+    
 }

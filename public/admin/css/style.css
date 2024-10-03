@@ -150,3 +150,50 @@
     display: flex;
     justify-content: center;
 }
+
+.toast-container {
+    margin-top: 50px; /* Hoặc giá trị bạn muốn */
+    top: 0; /* Hoặc giá trị khác tùy thuộc vào vị trí bạn muốn */
+}
+
+.toast {
+    display: none; /* Ẩn thông báo ban đầu */
+}
+
+.toast {
+    position: fixed; /* Giữ vị trí cố định */
+    top: 50px; /* Kéo xuống từ đỉnh */
+    right: 0px; /* Kéo sang bên phải */
+}
+
+/* Màu nền cho thông báo thành công */
+.toast-success {
+    position: relative; /* Để có thể điều chỉnh vị trí */
+    margin-top: 20px; /* Kéo thấp thông báo xuống thêm 10px */
+    background-color: #D4EDDA !important; /* Màu xanh đậm giống như màu khi hover */
+    color: #155724 !important; /* Màu chữ trắng */
+}
+
+/* Màu nền cho thông báo lỗi */
+.toast-error {
+    position: relative;
+    margin-top: 20px; /* Kéo thấp thông báo xuống thêm 10px */
+    background-color: #dc3545 !important; /* Màu đỏ đậm */
+    color: #ffffff !important; /* Màu chữ trắng */
+}
+
+/* Màu nền cho thông báo cảnh báo */
+.toast-warning {
+    position: relative;
+    margin-top: 20px; /* Kéo thấp thông báo xuống thêm 10px */
+    background-color: #ffc107 !important; /* Màu vàng đậm */
+    color: #212529 !important; /* Màu chữ tối */
+}
+
+/* Màu nền cho thông báo thông tin */
+.toast-info {
+    position: relative;
+    margin-top: 20px; /* Kéo thấp thông báo xuống thêm 10px */
+    background-color: #17a2b8 !important; /* Màu xanh da trời đậm */
+    color: #ffffff !important; /* Màu chữ trắng */
+}

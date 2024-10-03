@@ -64,15 +64,15 @@ block main
                             td #{item.roleInfo.title}
                             td
                                 if (item.status == "active")
-                                    a(
-                                        href="javascript:;" 
+                                    button(
+                                        style="border: none"
                                         data-status="active"
                                         data-id=item.id
                                         button-change-status
                                         class="badge badge-success") Hoạt động
                                 else 
-                                    a(
-                                        href="javascript:;"
+                                    button(
+                                        style="border: none"
                                         data-status="inactive"
                                         data-id=item.id
                                         button-change-status
@@ -93,3 +93,5 @@ block main
                                 ) Xóa
 
     +pagination(pagination)
+
+    script(src="/admin/js/account.js") 

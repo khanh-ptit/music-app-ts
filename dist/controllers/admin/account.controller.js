@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPost = exports.create = exports.index = void 0;
+exports.changeStatus = exports.createPost = exports.create = exports.index = void 0;
 const role_model_1 = __importDefault(require("../../models/role.model"));
 const md5_1 = __importDefault(require("md5"));
 const account_model_1 = __importDefault(require("../../models/account.model"));
@@ -29,7 +29,6 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const countDocuments = yield account_model_1.default.countDocuments(find);
     const objectPagination = (0, pagination_1.default)(req.query, res, countDocuments, "accounts");
-    console.log(objectPagination);
     const accounts = yield account_model_1.default
         .find(find)
         .select("-token -password");
@@ -83,3 +82,37 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     res.redirect(`${system_1.systemConfig.prefixAdmin}/accounts`);
 });
 exports.createPost = createPost;
+const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const status = req.params.status;
+        const existAccount = yield account_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!existAccount) {
+            res.json({
+                code: 404,
+                message: "Không tồn tại tài khoản!"
+            });
+            return;
+        }
+        yield account_model_1.default.updateOne({
+            _id: id
+        }, {
+            status: status
+        });
+        res.status(200).json({
+            code: 200,
+            message: "Cập nhật trạng thái thành công!",
+            status: status
+        });
+    }
+    catch (error) {
+        res.json({
+            code: 400,
+            message: "Nghịch cái đb"
+        });
+    }
+});
+exports.changeStatus = changeStatus;

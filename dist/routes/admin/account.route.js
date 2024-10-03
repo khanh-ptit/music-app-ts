@@ -37,4 +37,5 @@ const validate = __importStar(require("../../validates/admin/account.validate"))
 router.get("/", controller.index);
 router.get("/create", controller.create);
 router.post("/create", upload.single("avatar"), uploadCloud.uploadSingle, validate.createPost, controller.createPost);
+router.patch("/change-status/:status/:id", controller.changeStatus);
 exports.accountRoutes = router;
