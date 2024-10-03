@@ -15,4 +15,6 @@ router.post("/create", upload.single("avatar"), uploadCloud.uploadSingle, valida
 
 router.patch("/change-status/:status/:id", controller.changeStatus)
 
+router.delete("/delete/:id", controller.deleteItem)
+
 export const accountRoutes: Router = router

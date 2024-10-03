@@ -134,3 +134,39 @@ export const changeStatus = async (req: Request, res: Response) => {
     } 
     
 }
+
+// [DELETE] /admin/accounts/delete/:id
+export const deleteItem = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+    
+        const existAccount = await Account.findOne({
+            _id: id,
+            deleted: false
+        })
+
+        if (!existAccount) {
+            res.json({
+                code: 404,
+                message: "Không tồn tại tài khoản!"
+            })
+            return
+        }
+
+        await Account.updateOne({
+            _id: id
+        }, {
+            deleted: true
+        })
+    
+        res.json({
+            code: 200,
+            message: "Đã xóa thành công"
+        })
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Nghịch cái đb"
+        })
+    } 
+}

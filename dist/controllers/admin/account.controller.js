@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changeStatus = exports.createPost = exports.create = exports.index = void 0;
+exports.deleteItem = exports.changeStatus = exports.createPost = exports.create = exports.index = void 0;
 const role_model_1 = __importDefault(require("../../models/role.model"));
 const md5_1 = __importDefault(require("md5"));
 const account_model_1 = __importDefault(require("../../models/account.model"));
@@ -116,3 +116,35 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.changeStatus = changeStatus;
+const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const existAccount = yield account_model_1.default.findOne({
+            _id: id,
+            deleted: false
+        });
+        if (!existAccount) {
+            res.json({
+                code: 404,
+                message: "Không tồn tại tài khoản!"
+            });
+            return;
+        }
+        yield account_model_1.default.updateOne({
+            _id: id
+        }, {
+            deleted: true
+        });
+        res.json({
+            code: 200,
+            message: "Đã xóa thành công"
+        });
+    }
+    catch (error) {
+        res.json({
+            code: 400,
+            message: "Nghịch cái đb"
+        });
+    }
+});
+exports.deleteItem = deleteItem;
