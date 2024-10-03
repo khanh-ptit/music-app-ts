@@ -45,7 +45,7 @@ export const index = async (req: Request, res: Response) => {
     const countDocuments = await Topic.countDocuments({
         deleted: false
     })
-    const objectPagination = paginationHelper(req.query, res, countDocuments)
+    const objectPagination = paginationHelper(req.query, res, countDocuments, "topics")
     if (!objectPagination) return
     // End pagination
 

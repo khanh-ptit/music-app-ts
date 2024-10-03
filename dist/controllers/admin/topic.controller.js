@@ -41,7 +41,7 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const countDocuments = yield topic_model_1.default.countDocuments({
         deleted: false
     });
-    const objectPagination = (0, pagination_1.default)(req.query, res, countDocuments);
+    const objectPagination = (0, pagination_1.default)(req.query, res, countDocuments, "topics");
     if (!objectPagination)
         return;
     const topics = yield topic_model_1.default

@@ -4,6 +4,7 @@ import md5 from "md5"
 import Account from "../../models/account.model"
 import { systemConfig } from "../../config/system"
 import filterStatusHelper from "../../helpers/filterStatus"
+import paginationHelper from "../../helpers/pagination"
 
 // [GET] /admin/accounts/
 export const index = async (req: Request, res: Response) => {
@@ -18,6 +19,12 @@ export const index = async (req: Request, res: Response) => {
     }
     // End filter status
 
+
+    // Pagination
+    const countDocuments = await Account.countDocuments(find)
+    const objectPagination = paginationHelper(req.query, res, countDocuments, "accounts")
+    console.log(objectPagination)
+    // End pgination
 
     const accounts = await Account
         .find(find)
@@ -34,7 +41,8 @@ export const index = async (req: Request, res: Response) => {
     res.render("admin/pages/accounts/index.pug", {
         pageTitle: "Tài khoản admin",
         accounts: accounts,
-        filterStatus: filterStatus
+        filterStatus: filterStatus,
+        pagination: objectPagination
     })
 }
 

@@ -18,6 +18,7 @@ const md5_1 = __importDefault(require("md5"));
 const account_model_1 = __importDefault(require("../../models/account.model"));
 const system_1 = require("../../config/system");
 const filterStatus_1 = __importDefault(require("../../helpers/filterStatus"));
+const pagination_1 = __importDefault(require("../../helpers/pagination"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let find = {
         deleted: false
@@ -26,6 +27,9 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.query.status) {
         find["status"] = req.query.status;
     }
+    const countDocuments = yield account_model_1.default.countDocuments(find);
+    const objectPagination = (0, pagination_1.default)(req.query, res, countDocuments, "accounts");
+    console.log(objectPagination);
     const accounts = yield account_model_1.default
         .find(find)
         .select("-token -password");
@@ -39,7 +43,8 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render("admin/pages/accounts/index.pug", {
         pageTitle: "Tài khoản admin",
         accounts: accounts,
-        filterStatus: filterStatus
+        filterStatus: filterStatus,
+        pagination: objectPagination
     });
 });
 exports.index = index;

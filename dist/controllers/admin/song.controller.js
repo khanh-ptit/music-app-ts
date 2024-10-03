@@ -45,7 +45,7 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const countSong = yield song_model_1.default.countDocuments({
         deleted: false
     });
-    const objectPagination = (0, pagination_1.default)(req.query, res, countSong);
+    const objectPagination = (0, pagination_1.default)(req.query, res, countSong, "songs");
     if (!objectPagination)
         return;
     const songs = yield song_model_1.default
