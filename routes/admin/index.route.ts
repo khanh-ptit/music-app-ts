@@ -6,14 +6,17 @@ import { uploadRoutes } from "./upload.route";
 import { topicRoutes } from "./topic.route";
 import { accountRoutes } from "./account.route";
 import { roleRoutes } from "./role.route";
+import { authRoutes } from "./auth.route";
+import * as authMiddleware from "../../middlewares/admin/auth.middleware";
 
 export const routeAdmin = (app: Application) => {
     const PATH_ADMIN = systemConfig.prefixAdmin
-    
-    app.use(PATH_ADMIN + "/dashboard", dashboardRoutes)
-    app.use(PATH_ADMIN + "/songs", songRoutes)
-    app.use(PATH_ADMIN + "/upload", uploadRoutes)
-    app.use(PATH_ADMIN + "/topics", topicRoutes)
-    app.use(PATH_ADMIN + "/accounts", accountRoutes)
-    app.use(PATH_ADMIN + "/roles", roleRoutes)
+
+    app.use(PATH_ADMIN + "/dashboard", authMiddleware.requireAuth, dashboardRoutes)
+    app.use(PATH_ADMIN + "/songs", authMiddleware.requireAuth, songRoutes)
+    app.use(PATH_ADMIN + "/upload", authMiddleware.requireAuth, uploadRoutes)
+    app.use(PATH_ADMIN + "/topics", authMiddleware.requireAuth, topicRoutes)
+    app.use(PATH_ADMIN + "/accounts", authMiddleware.requireAuth, accountRoutes)
+    app.use(PATH_ADMIN + "/roles", authMiddleware.requireAuth, roleRoutes)
+    app.use(PATH_ADMIN + "/auth", authRoutes)
 }
