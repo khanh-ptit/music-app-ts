@@ -145,17 +145,17 @@ exports.deleteItem = deleteItem;
 const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const roles = res.locals.roles;
-        if (!roles.permissions.includes("topic_edit")) {
-            res.status(403).json({
-                code: 403,
-                message: "Bạn không có quyền chỉnh sửa chủ đề!"
-            });
-            return;
-        }
         const type = req.body.type;
         const ids = req.body.ids.split(", ");
         switch (type) {
             case "active":
+                if (!roles.permissions.includes("topic_edit")) {
+                    res.status(403).json({
+                        code: 403,
+                        message: "Bạn không có quyền chỉnh sửa chủ đề!"
+                    });
+                    return;
+                }
                 yield topic_model_1.default.updateMany({
                     _id: {
                         $in: ids
@@ -167,6 +167,13 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
                 break;
             case "inactive":
+                if (!roles.permissions.includes("topic_edit")) {
+                    res.status(403).json({
+                        code: 403,
+                        message: "Bạn không có quyền chỉnh sửa chủ đề!"
+                    });
+                    return;
+                }
                 yield topic_model_1.default.updateMany({
                     _id: {
                         $in: ids
@@ -196,6 +203,13 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
                 break;
             case "change-position":
+                if (!roles.permissions.includes("topic_edit")) {
+                    res.status(403).json({
+                        code: 403,
+                        message: "Bạn không có quyền chỉnh sửa chủ đề!"
+                    });
+                    return;
+                }
                 for (const item of ids) {
                     const arr = item.split("-");
                     const id = arr[0];

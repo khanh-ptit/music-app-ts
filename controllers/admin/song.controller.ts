@@ -10,6 +10,14 @@ import paginationHelper from "../../helpers/pagination";
 
 // [GET] /admin/songs
 export const index = async (req: Request, res: Response) => {
+    const roles = res.locals.roles
+
+    if (!roles.permissions.includes("song_view")) {
+        res.render("client/pages/error/403", {
+            message: "Bạn không có quyền xem danh sách bài hát"
+        })
+    }
+    
     const filterStatus = filterStatusHelper(req.query) 
     let find = {
         deleted: false
@@ -68,6 +76,15 @@ export const index = async (req: Request, res: Response) => {
 // [PATCH] /admin/songs/change-status/:status/:id
 export const changeStatus = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+        
+        if (!roles.permissions.includes("song_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa bài hát"
+            })
+        }
+
         const status = req.params.status
         const id = req.params.id
         
@@ -102,11 +119,19 @@ export const changeStatus = async (req: Request, res: Response) => {
 
 // [PATCH] /admin/songs/change-multi
 export const changeMulti = async (req: Request, res: Response) => {
-    // console.log(req.body)
+    const roles = res.locals.roles
+
     const type: string = req.body.type
     const ids: string[] = req.body.ids.split(", ")
     switch (type) {
         case "active":
+            if (!roles.permissions.includes("song_edit")) {
+                res.status(403).json({
+                    code: 403,
+                    message: "Bạn không có quyền chỉnh sửa bài hát!"
+                });
+                return
+            }
             await Song.updateMany({
                 _id: {
                     $in: ids
@@ -118,6 +143,13 @@ export const changeMulti = async (req: Request, res: Response) => {
             res.redirect("back")
             break;
         case "inactive":
+            if (!roles.permissions.includes("song_edit")) {
+                res.status(403).json({
+                    code: 403,
+                    message: "Bạn không có quyền chỉnh sửa bài hát!"
+                });
+                return
+            }
             await Song.updateMany({
                 _id: {
                     $in: ids
@@ -129,6 +161,13 @@ export const changeMulti = async (req: Request, res: Response) => {
             res.redirect("back")
             break;
         case "delete-all":
+            if (!roles.permissions.includes("song_delete")) {
+                res.status(403).json({
+                    code: 403,
+                    message: "Bạn không có quyền xóa bài hát!"
+                });
+                return
+            }
             await Song.updateMany({
                 _id: {
                     $in: ids
@@ -140,6 +179,13 @@ export const changeMulti = async (req: Request, res: Response) => {
             res.redirect("back")
             break;
         case "change-position":
+            if (!roles.permissions.includes("song_edit")) {
+                res.status(403).json({
+                    code: 403,
+                    message: "Bạn không có quyền chỉnh sửa bài hát!"
+                });
+                return
+            }
             for (const item of ids) {
                 const arr = item.split("-")
                 const id = arr[0]
@@ -163,6 +209,15 @@ export const changeMulti = async (req: Request, res: Response) => {
 // [DELETE] /admin/songs/delete/:id
 export const deleteSong = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+
+        if (!roles.permissions.includes("song_delete")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền xóa bài hát!"
+            });
+            return
+        }
         const id = req.params.id
 
         const existSong = await Song.findOne({
@@ -195,6 +250,14 @@ export const deleteSong = async (req: Request, res: Response) => {
 
 // [GET] /admin/songs/create
 export const create = async (req: Request, res: Response) => {
+    const roles = res.locals.roles
+
+    if (!roles.permissions.includes("song_create")) {
+        res.render("client/pages/error/403", {
+            message: "Bạn không có quyền tạo mới bài hát"
+        })
+        return
+    }
     const countSong = await Song.countDocuments({
         deleted: false
     })
@@ -218,6 +281,16 @@ export const create = async (req: Request, res: Response) => {
 
 // [POST] /admin/songs/create
 export const createPost = async (req: Request, res: Response) => {
+    const roles = res.locals.roles
+
+    if (!roles.permissions.includes("song_create")) {
+        res.status(403).json({
+            code: 403,
+            message: "Bạn không có quyền tạo mới bài hát!"
+        })
+        return
+    }
+    
     const countSong = await Song.countDocuments({
         deleted: false
     })
@@ -256,7 +329,7 @@ export const createPost = async (req: Request, res: Response) => {
         audio: audio
     }
 
-    if (req.body.postion) {
+    if (req.body.position) {
         dataSong.position = parseInt(req.body.position)
     } else {
         dataSong.position = countSong + 1
@@ -272,6 +345,15 @@ export const createPost = async (req: Request, res: Response) => {
 // [GET] /admin/songs/edit/:id
 export const edit = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+
+        if (!roles.permissions.includes("song_edit")) {
+            res.render("client/pages/error/403", {
+                message: "Bạn không có quyền chỉnh sửa bài hát"
+            })
+            return
+        }
+
         const id = req.params.id
         const song = await Song.findOne({
             _id: id,
@@ -309,6 +391,16 @@ export const edit = async (req: Request, res: Response) => {
 // [PATCH] /admin/songs/edit/:id
 export const editPatch = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+
+        if (!roles.permissions.includes("song_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa bài hát!"
+            })
+            return
+        }
+
         const id = req.params.id
         
         const existTopic = await Song.findOne({
@@ -371,6 +463,15 @@ export const editPatch = async (req: Request, res: Response) => {
 // [GET] /admin/songs/detail/:id
 export const detail = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+
+        if (!roles.permissions.includes("song_view")) {
+            res.render("client/pages/error/403", {
+                message: "Bạn không có quyền xem chi tiết bài hát!"
+            })
+            return
+        }
+
         const id = req.params.id
         const song = await Song.findOne({
             _id: id,

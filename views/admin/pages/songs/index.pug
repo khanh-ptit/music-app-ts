@@ -22,17 +22,20 @@ block main
 
     +sort()
 
-    .card.mb-3
-        .card-header Danh sách
-        .card-body
-                .row
-                    .col-8
-                        +form-change-multi(`${prefixAdmin}/songs/change-multi?_method=PATCH`, 'songs')
-                    .col-4 
-                        a(
-                            href=`${prefixAdmin}/songs/create`
-                            class="btn btn-outline-success"
-                        ) + Thêm mới
+    if (roles.permissions.includes("song_edit") || roles.permissions.includes("song_create") || roles.permissions.includes("song_delete"))
+        .card.mb-3
+            .card-header Danh sách
+            .card-body
+                    .row
+                        .col-8
+                            if (roles.permissions.includes("song_edit") || roles.permissions.includes("song_delete"))
+                                +form-change-multi(`${prefixAdmin}/songs/change-multi?_method=PATCH`, 'songs')
+                        .col-4
+                            if (roles.permissions.includes("song_create"))
+                                a(
+                                    href=`${prefixAdmin}/songs/create`
+                                    class="btn btn-outline-success"
+                                ) + Thêm mới
 
 
     .card.mb-3 
@@ -77,34 +80,44 @@ block main
                                         name="position"
                                     )
                                 td
-                                    if (item.status == "active")
-                                        a(
-                                            href="javascript:;" 
-                                            data-status="active"
-                                            data-id=item.id
-                                            button-change-status
-                                            class="badge badge-success") Hoạt động
+                                    if (roles.permissions.includes("song_edit"))
+                                        if (item.status == "active")
+                                            a(
+                                                href="javascript:;" 
+                                                data-status="active"
+                                                data-id=item.id
+                                                button-change-status
+                                                class="badge badge-success") Hoạt động
+                                        else 
+                                            a(
+                                                href="javascript:;"
+                                                data-status="inactive"
+                                                data-id=item.id
+                                                button-change-status
+                                                class="badge badge-danger") Dừng hoạt động
                                     else 
-                                        a(
-                                            href="javascript:;"
-                                            data-status="inactive"
-                                            data-id=item.id
-                                            button-change-status
-                                            class="badge badge-danger") Dừng hoạt động
+                                        if (item.status == "active")
+                                            span(
+                                                class="badge badge-success") Hoạt động
+                                        else 
+                                            span(
+                                                class="badge badge-danger") Dừng hoạt động
                                 td
                                     a(
                                         href=`${prefixAdmin}/songs/detail/${item.id}`
                                         class="btn btn-secondary btn-sm"
                                     ) Chi tiết
-                                    a(
-                                        href=`${prefixAdmin}/songs/edit/${item.id}`
-                                        class="btn btn-warning btn-sm ml-1"
-                                    ) Sửa
-                                    button(
-                                        class="btn btn-danger btn-sm ml-1"
-                                        button-delete 
-                                        data-id=item.id
-                                    ) Xóa
+                                    if (roles.permissions.includes("song_edit"))
+                                        a(
+                                            href=`${prefixAdmin}/songs/edit/${item.id}`
+                                            class="btn btn-warning btn-sm ml-1"
+                                        ) Sửa
+                                    if (roles.permissions.includes("song_delete"))
+                                        button(
+                                            class="btn btn-danger btn-sm ml-1"
+                                            button-delete 
+                                            data-id=item.id
+                                        ) Xóa
 
 
     +pagination(pagination)

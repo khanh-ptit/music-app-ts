@@ -21,6 +21,12 @@ const singer_model_1 = __importDefault(require("../../models/singer.model"));
 const system_1 = require("../../config/system");
 const pagination_1 = __importDefault(require("../../helpers/pagination"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const roles = res.locals.roles;
+    if (!roles.permissions.includes("song_view")) {
+        res.render("client/pages/error/403", {
+            message: "Bạn không có quyền xem danh sách bài hát"
+        });
+    }
     const filterStatus = (0, filterStatus_1.default)(req.query);
     let find = {
         deleted: false
@@ -64,6 +70,13 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.index = index;
 const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("song_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa bài hát"
+            });
+        }
         const status = req.params.status;
         const id = req.params.id;
         const existSong = yield song_model_1.default.findOne({
@@ -93,10 +106,18 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.changeStatus = changeStatus;
 const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const roles = res.locals.roles;
     const type = req.body.type;
     const ids = req.body.ids.split(", ");
     switch (type) {
         case "active":
+            if (!roles.permissions.includes("song_edit")) {
+                res.status(403).json({
+                    code: 403,
+                    message: "Bạn không có quyền chỉnh sửa bài hát!"
+                });
+                return;
+            }
             yield song_model_1.default.updateMany({
                 _id: {
                     $in: ids
@@ -108,6 +129,13 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.redirect("back");
             break;
         case "inactive":
+            if (!roles.permissions.includes("song_edit")) {
+                res.status(403).json({
+                    code: 403,
+                    message: "Bạn không có quyền chỉnh sửa bài hát!"
+                });
+                return;
+            }
             yield song_model_1.default.updateMany({
                 _id: {
                     $in: ids
@@ -119,6 +147,13 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.redirect("back");
             break;
         case "delete-all":
+            if (!roles.permissions.includes("song_delete")) {
+                res.status(403).json({
+                    code: 403,
+                    message: "Bạn không có quyền xóa bài hát!"
+                });
+                return;
+            }
             yield song_model_1.default.updateMany({
                 _id: {
                     $in: ids
@@ -130,6 +165,13 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.redirect("back");
             break;
         case "change-position":
+            if (!roles.permissions.includes("song_edit")) {
+                res.status(403).json({
+                    code: 403,
+                    message: "Bạn không có quyền chỉnh sửa bài hát!"
+                });
+                return;
+            }
             for (const item of ids) {
                 const arr = item.split("-");
                 const id = arr[0];
@@ -152,6 +194,14 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.changeMulti = changeMulti;
 const deleteSong = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("song_delete")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền xóa bài hát!"
+            });
+            return;
+        }
         const id = req.params.id;
         const existSong = yield song_model_1.default.findOne({
             _id: id,
@@ -181,6 +231,13 @@ const deleteSong = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.deleteSong = deleteSong;
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const roles = res.locals.roles;
+    if (!roles.permissions.includes("song_create")) {
+        res.render("client/pages/error/403", {
+            message: "Bạn không có quyền tạo mới bài hát"
+        });
+        return;
+    }
     const countSong = yield song_model_1.default.countDocuments({
         deleted: false
     });
@@ -201,6 +258,14 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.create = create;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const roles = res.locals.roles;
+    if (!roles.permissions.includes("song_create")) {
+        res.status(403).json({
+            code: 403,
+            message: "Bạn không có quyền tạo mới bài hát!"
+        });
+        return;
+    }
     const countSong = yield song_model_1.default.countDocuments({
         deleted: false
     });
@@ -222,7 +287,7 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         avatar: avatar,
         audio: audio
     };
-    if (req.body.postion) {
+    if (req.body.position) {
         dataSong.position = parseInt(req.body.position);
     }
     else {
@@ -236,6 +301,13 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.createPost = createPost;
 const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("song_edit")) {
+            res.render("client/pages/error/403", {
+                message: "Bạn không có quyền chỉnh sửa bài hát"
+            });
+            return;
+        }
         const id = req.params.id;
         const song = yield song_model_1.default.findOne({
             _id: id,
@@ -269,6 +341,14 @@ const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.edit = edit;
 const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("song_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa bài hát!"
+            });
+            return;
+        }
         const id = req.params.id;
         const existTopic = yield song_model_1.default.findOne({
             _id: id,
@@ -312,6 +392,13 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.editPatch = editPatch;
 const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("song_view")) {
+            res.render("client/pages/error/403", {
+                message: "Bạn không có quyền xem chi tiết bài hát!"
+            });
+            return;
+        }
         const id = req.params.id;
         const song = yield song_model_1.default.findOne({
             _id: id,

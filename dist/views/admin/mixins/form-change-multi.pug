@@ -11,12 +11,14 @@ mixin form-change-multi(path, prefix)
                     class="form-control"
                 )
                     option(disabled selected) --Chọn hành động--
-                    option(value="active") Hoạt động
-                    option(value="inactive") Dừng hoạt động
+                    if (roles.permissions.includes(`${prefix.replace(/s$/, '')}_edit`))
+                        option(value="active") Hoạt động
+                        option(value="inactive") Dừng hoạt động
+                        if (prefix == "songs" || prefix == "topics")
+                            option(value="change-position") Thay đổi vị trí
                     if (roles.permissions.includes(`${prefix.replace(/s$/, '')}_delete`))
                         option(value="delete-all") Xóa tất cả
-                    if (prefix == "songs" || prefix == "topics")
-                        option(value="change-position") Thay đổi vị trí
+                    
             .form-group
                 input(
                     type="text" 
