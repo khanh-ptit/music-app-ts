@@ -201,6 +201,13 @@ export const changeMulti = async (req: Request, res: Response) => {
                 res.redirect(`${systemConfig.prefixAdmin}/topics`)
                 break;
             case "delete-all":
+                if (!roles.permissions.includes("topic_delete")) {
+                    res.status(403).json({
+                        code: 403,
+                        message: "Bạn không có quyền chỉnh sửa chủ đề!"
+                    });
+                    return
+                }
                 await Topic.updateMany({
                     _id: {
                         $in: ids

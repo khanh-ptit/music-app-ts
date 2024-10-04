@@ -178,6 +178,13 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 res.redirect(`${system_1.systemConfig.prefixAdmin}/topics`);
                 break;
             case "delete-all":
+                if (!roles.permissions.includes("topic_delete")) {
+                    res.status(403).json({
+                        code: 403,
+                        message: "Bạn không có quyền chỉnh sửa chủ đề!"
+                    });
+                    return;
+                }
                 yield topic_model_1.default.updateMany({
                     _id: {
                         $in: ids

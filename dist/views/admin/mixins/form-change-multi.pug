@@ -13,7 +13,8 @@ mixin form-change-multi(path, prefix)
                     option(disabled selected) --Chọn hành động--
                     option(value="active") Hoạt động
                     option(value="inactive") Dừng hoạt động
-                    option(value="delete-all") Xóa tất cả
+                    if (roles.permissions.includes(`${prefix.replace(/s$/, '')}_delete`))
+                        option(value="delete-all") Xóa tất cả
                     if (prefix == "songs" || prefix == "topics")
                         option(value="change-position") Thay đổi vị trí
             .form-group
