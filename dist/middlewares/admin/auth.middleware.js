@@ -32,11 +32,11 @@ const requireAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         res.redirect(`${system_1.systemConfig.prefixAdmin}/auth/login`);
         return;
     }
-    const role = yield role_model_1.default.findOne({
+    const roles = yield role_model_1.default.findOne({
         _id: user.role_id
     });
     res.locals.user = user;
-    res.locals.role = role;
+    res.locals.roles = roles;
     next();
 });
 exports.requireAuth = requireAuth;

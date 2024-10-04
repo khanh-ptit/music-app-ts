@@ -19,10 +19,10 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
         res.redirect(`${systemConfig.prefixAdmin}/auth/login`)
         return
     }
-    const role = await Role.findOne({
+    const roles = await Role.findOne({
         _id: user.role_id
     })
     res.locals.user = user
-    res.locals.role = role
+    res.locals.roles = roles
     next()
 }

@@ -8,6 +8,15 @@ import paginationHelper from "../../helpers/pagination";
 
 // [GET] /admin/topics/
 export const index = async (req: Request, res: Response) => {
+    const roles = res.locals.roles
+
+    if (!roles.permissions.includes("topic_view")) {
+        res.render("client/pages/error/403", {
+            message: "Bạn không có quyền xem danh sách chủ đề"
+        })
+        return
+    }
+
     const filterStatus = filterStatusHelper(req.query)
     let find = {
         deleted: false
@@ -67,6 +76,16 @@ export const index = async (req: Request, res: Response) => {
 // [PATCH] /admin/topics/change-status/:status/:id
 export const changeStatus = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+
+        if (!roles.permissions.includes("topic_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa chủ đề!"
+            });
+            return
+        }
+        
         const id = req.params.id
         const status = req.params.status
 
@@ -102,6 +121,16 @@ export const changeStatus = async (req: Request, res: Response) => {
 // [DELETE] /admin/topics/delete/:id
 export const deleteItem = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+
+        if (!roles.permissions.includes("topic_delete")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền xóa chủ đề!"
+            });
+            return
+        }
+
         const id = req.params.id
         
         const existTopic = await Topic.findOne({
@@ -136,6 +165,16 @@ export const deleteItem = async (req: Request, res: Response) => {
 // [PATCH] /admin/topics/change-multi
 export const changeMulti = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+
+        if (!roles.permissions.includes("topic_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa chủ đề!"
+            });
+            return
+        }
+
         const type = req.body.type
         const ids = req.body.ids.split(", ")
         switch (type) {
@@ -204,6 +243,14 @@ export const changeMulti = async (req: Request, res: Response) => {
 // [GET] /admin/topics/edit/:id
 export const edit = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+        if (!roles.permissions.includes("topic_edit")) {
+            res.render("client/pages/error/403", {
+                message: "Bạn không có quyền chỉnh sửa chủ đề"
+            })
+            return
+        }
+
         const id = req.params.id
         // console.log(id)
 
@@ -235,6 +282,16 @@ export const edit = async (req: Request, res: Response) => {
 // [PATCH] /admin/topics/edit/:id
 export const editPatch = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+
+        if (!roles.permissions.includes("topic_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa chủ đề!"
+            });
+            return
+        }
+
         const id = req.params.id
         const existTopic = await Topic.findOne({
             _id: id,
@@ -286,6 +343,15 @@ export const editPatch = async (req: Request, res: Response) => {
 
 // [GET] /admin/topics/create
 export const create = async (req: Request, res: Response) => {
+    const roles = res.locals.roles
+
+    if (!roles.permissions.includes("topic_create")) {
+        res.render("client/pages/error/403", {
+            message: "Bạn không có quyền tạo mới chủ đề"
+        })
+        return
+    }
+
     const countTopic = await Topic.countDocuments({
         deleted: false
     })
@@ -297,6 +363,16 @@ export const create = async (req: Request, res: Response) => {
 
 // [POST] /admin/topics/create
 export const createPost = async (req: Request, res: Response) => {
+    const roles = res.locals.roles
+
+    if (!roles.permissions.includes("topic_create")) {
+        res.status(403).json({
+            code: 403,
+            message: "Bạn không có quyền thực hiện thao tác này!"
+        });
+        return
+    }
+    
     interface Topic {
         title: String,
         avatar: String,
@@ -323,6 +399,16 @@ export const createPost = async (req: Request, res: Response) => {
 // [GET] /admin/topics/detail/:id
 export const detail = async (req: Request, res: Response) => {
     try {
+        const roles = res.locals.roles
+
+        if (!roles.permissions.includes("topic_view")) {
+            res.render("client/pages/error/403", {
+                message: "Bạn không có quyền xem chủ đề này"
+            })
+            return
+        }
+
+
         const id = req.params.id
 
         const existTopic = await Topic.findOne({

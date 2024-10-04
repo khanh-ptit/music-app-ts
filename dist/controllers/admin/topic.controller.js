@@ -19,6 +19,13 @@ const filterStatus_1 = __importDefault(require("../../helpers/filterStatus"));
 const search_1 = __importDefault(require("../../helpers/search"));
 const pagination_1 = __importDefault(require("../../helpers/pagination"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const roles = res.locals.roles;
+    if (!roles.permissions.includes("topic_view")) {
+        res.render("client/pages/error/403", {
+            message: "Bạn không có quyền xem danh sách chủ đề"
+        });
+        return;
+    }
     const filterStatus = (0, filterStatus_1.default)(req.query);
     let find = {
         deleted: false
@@ -60,6 +67,14 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.index = index;
 const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("topic_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa chủ đề!"
+            });
+            return;
+        }
         const id = req.params.id;
         const status = req.params.status;
         const existTopic = yield topic_model_1.default.findOne({
@@ -91,6 +106,14 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.changeStatus = changeStatus;
 const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("topic_delete")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền xóa chủ đề!"
+            });
+            return;
+        }
         const id = req.params.id;
         const existTopic = yield topic_model_1.default.findOne({
             _id: id,
@@ -121,6 +144,14 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.deleteItem = deleteItem;
 const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("topic_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa chủ đề!"
+            });
+            return;
+        }
         const type = req.body.type;
         const ids = req.body.ids.split(", ");
         switch (type) {
@@ -189,6 +220,13 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.changeMulti = changeMulti;
 const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("topic_edit")) {
+            res.render("client/pages/error/403", {
+                message: "Bạn không có quyền chỉnh sửa chủ đề"
+            });
+            return;
+        }
         const id = req.params.id;
         const existTopic = yield topic_model_1.default.findOne({
             _id: id,
@@ -216,6 +254,14 @@ const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.edit = edit;
 const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("topic_edit")) {
+            res.status(403).json({
+                code: 403,
+                message: "Bạn không có quyền chỉnh sửa chủ đề!"
+            });
+            return;
+        }
         const id = req.params.id;
         const existTopic = yield topic_model_1.default.findOne({
             _id: id,
@@ -254,6 +300,13 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.editPatch = editPatch;
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const roles = res.locals.roles;
+    if (!roles.permissions.includes("topic_create")) {
+        res.render("client/pages/error/403", {
+            message: "Bạn không có quyền tạo mới chủ đề"
+        });
+        return;
+    }
     const countTopic = yield topic_model_1.default.countDocuments({
         deleted: false
     });
@@ -264,6 +317,14 @@ const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.create = create;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const roles = res.locals.roles;
+    if (!roles.permissions.includes("topic_create")) {
+        res.status(403).json({
+            code: 403,
+            message: "Bạn không có quyền thực hiện thao tác này!"
+        });
+        return;
+    }
     const dataTopic = {
         title: req.body.title,
         avatar: req.body.avatar,
@@ -279,6 +340,13 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.createPost = createPost;
 const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const roles = res.locals.roles;
+        if (!roles.permissions.includes("topic_view")) {
+            res.render("client/pages/error/403", {
+                message: "Bạn không có quyền xem chủ đề này"
+            });
+            return;
+        }
         const id = req.params.id;
         const existTopic = yield topic_model_1.default.findOne({
             _id: id,
