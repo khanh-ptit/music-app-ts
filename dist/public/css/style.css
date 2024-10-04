@@ -22,11 +22,6 @@
     justify-content: center;
 }
 
-/* .header .box-search .form-group {
-    display: flex;
-    width: 100%;
-} */
-
 .header .inner-menu {
     display: flex;
     justify-content: flex-end;
@@ -43,6 +38,29 @@
 .header .inner-menu > ul > li {
     margin-left: 20px;
 }
+
+@media (max-width: 1202px) {
+    .inner-menu ul li a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .inner-menu ul li a i {
+        font-size: 20px;
+    }
+
+    .inner-menu ul li a span {
+        display: none !important; /* Ẩn chữ khi màn hình nhỏ hơn 768px */
+    }
+}
+
+
+
+.inner-menu ul li a i {
+    margin-right: 8px; /* Khoảng cách giữa icon và chữ */
+}
+
 
 
 /* Footer */

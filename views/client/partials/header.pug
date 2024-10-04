@@ -25,27 +25,26 @@ header.header
                             ) Tìm
                     .inner-suggest
                         .inner-list
-                            //- a(href="/songs/detail/:slugSong" class="inner-item")
-                            //-     .inner-image
-                            //-         img(src="https://backend.daca.vn/assets/images/cat-doi-noi-sau.jpg")
-                            //-     .inner-info
-                            //-         .inner-title Cắt đôi nỗi sầu
-                            //-         .inner-singer
-                            //-             <i class="fa-solid fa-microphone-lines"> </i> Tăng Duy Tân
-                            //- a(href="/songs/detail/:slugSong" class="inner-item")
-                            //-     .inner-image
-                            //-         img(src="https://backend.daca.vn/assets/images/ngay-mai-nguoi-ta-lay-chong.jpg")
-                            //-     .inner-info
-                            //-         .inner-title Ngày Mai Người Ta Lấy Chồng
-                            //-         .inner-singer
-                            //-             <i class="fa-solid fa-microphone-lines"> </i> Thành Đạt
-
             .col-6
                 .inner-menu 
                     ul 
                         li 
-                            a(href="/") <i class="fa-solid fa-house"></i> Trang chủ
+                            a(href="/")
+                                i(class="fa-solid fa-house")
+                                span Trang chủ
                         li 
-                            a(href="/topics") <i class="fa-solid fa-music"></i> Chủ đề
+                            a(href="/topics")
+                                i(class="fa-solid fa-music")
+                                span Chủ đề
                         li  
-                            a(href="/favorite-songs") <i class="fa-solid fa-heart"></i> Yêu thích
+                            a(href="/favorite-songs")
+                                i(class="fa-solid fa-heart")
+                                span Yêu thích
+                        li
+                            a(href="/user/register")
+                                i(class="fa-solid fa-user")
+                                span Đăng ký
+                        li
+                            a(href="/user/login")
+                                i(class="fa fa-sign-in" aria-hidden="true")
+                                span Đăng nhập
