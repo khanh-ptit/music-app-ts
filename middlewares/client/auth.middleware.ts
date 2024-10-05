@@ -10,3 +10,16 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
     
     next()
 }
+
+export const requireAuthApi = (req: Request, res: Response, next: NextFunction) => {
+    const tokenUser = req.cookies.tokenUser
+    if (!tokenUser) {
+        console.log("*")
+        res.json({
+            code: 403,
+            message: "Bạn cần đăng nhập để thực hiện quyền này!"
+        })
+        return
+    }
+    next()
+}

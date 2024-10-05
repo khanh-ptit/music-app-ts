@@ -106,7 +106,7 @@ const like = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         res.json({
             code: 200,
-            message: "Thành công!",
+            message: "Đã thích bài hát!",
             like: newLike
         });
     }
@@ -140,7 +140,8 @@ const favorite = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             break;
     }
     res.json({
-        code: 200
+        code: 200,
+        message: "Đã thêm vào danh sách yêu thích"
     });
 });
 exports.favorite = favorite;

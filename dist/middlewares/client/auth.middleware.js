@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAuth = void 0;
+exports.requireAuthApi = exports.requireAuth = void 0;
 const requireAuth = (req, res, next) => {
     const tokenUser = req.cookies.tokenUser;
     if (!tokenUser) {
@@ -11,3 +11,16 @@ const requireAuth = (req, res, next) => {
     next();
 };
 exports.requireAuth = requireAuth;
+const requireAuthApi = (req, res, next) => {
+    const tokenUser = req.cookies.tokenUser;
+    if (!tokenUser) {
+        console.log("*");
+        res.json({
+            code: 403,
+            message: "Bạn cần đăng nhập để thực hiện quyền này!"
+        });
+        return;
+    }
+    next();
+};
+exports.requireAuthApi = requireAuthApi;

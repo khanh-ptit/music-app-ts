@@ -8,6 +8,24 @@ function removeBrTags(str) {
     return str.replace(/<br\s*\/?>/gi, '\n');  // Replace <br> tags with newline or other separator
 }
 
+// Đảm bảo toastr đã được nhúng vào trước đoạn cấu hình này
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": true,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+};
+
 // Aplayer
 const aplayer = document.getElementById("aplayer")
 if (aplayer) {
@@ -96,6 +114,15 @@ if (btnLike) {
                     span.innerHTML = `${data.like} Thích`
 
                     btnLike.classList.toggle("active")
+                    if (btnLike.classList.contains("active")) {
+                        toastr.success("Đã thích bài hát")
+                    } else {
+                        toastr.success("Đã hủy thích bài hát")
+                    }
+                }
+
+                else if (data.code == 403) {
+                    toastr.error(data.message);
                 }
             })
     })
@@ -122,6 +149,18 @@ if (listbtnFavorite.length > 0) {
                 .then(data => {
                     if (data.code == 200) {
                         btnFavorite.classList.toggle("active")
+                        // console.log("*")
+                        console.log(btnFavorite.classList.contains("active"))
+                        if (btnFavorite.classList.contains("active")) {
+                            
+                            toastr.success(`Đã thêm vào danh sách yêu thích`);
+                        } else {
+                            toastr.success(`Đã xóa khỏi danh sách yêu thích`);
+                        }
+                    }
+
+                    else if (data.code == 403) {
+                        toastr.error(data.message);
                     }
                 })
         })

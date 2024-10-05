@@ -105,7 +105,7 @@ export const like = async (req: Request, res: Response) => {
 
         res.json({
             code: 200,
-            message: "Thành công!",
+            message: "Đã thích bài hát!",
             like: newLike
         })
     } catch {
@@ -142,7 +142,8 @@ export const favorite = async (req: Request, res: Response) => {
     }
 
     res.json({
-        code: 200
+        code: 200,
+        message: "Đã thêm vào danh sách yêu thích"
     })
 }
 
