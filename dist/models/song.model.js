@@ -13,8 +13,8 @@ const songSchema = new mongoose_1.default.Schema({
     description: String,
     topicId: String,
     like: {
-        type: Number,
-        default: 0
+        type: Array,
+        default: []
     },
     position: Number,
     lyrics: String,

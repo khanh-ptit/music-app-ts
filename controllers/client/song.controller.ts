@@ -65,11 +65,14 @@ export const detail = async (req: Request, res: Response): Promise<void> => {
         }
         if (res.locals.user != null) {
             find["userId"] = res.locals.user.id
-            console.log(find)
             const isFavorite = await FavoriteSong.findOne(find)
             song["isFavorite"] = (isFavorite != null) ? true : false
+
+            const isLike = song.like.includes(res.locals.user.id)
+            song["isLike"] = isLike 
         } else {
             song["isFavorite"] = false
+            song["isLike"] = false
         }
         
         song["topicInfo"] = topicInfo
@@ -98,23 +101,20 @@ export const like = async (req: Request, res: Response) => {
             status: "active"
         })
         
-        let newLike: number
         if (typeLike == "like") {
-            newLike = song.like + 1
+            if (!song.like.includes(res.locals.user.id)) {
+                song.like.push(res.locals.user.id)
+            }
         } else {
-            newLike = song.like - 1
+            song.like = song.like.filter(item => item != res.locals.user.id)
         }
 
-        await Song.updateOne({
-            _id: id
-        }, {
-            like: newLike
-        })
+        await song.save()
 
         res.json({
             code: 200,
             message: "Đã thích bài hát!",
-            like: newLike
+            like: song.like.length
         })
     } catch {
         req.flash("error", "Đường dẫn không tồn tại!")

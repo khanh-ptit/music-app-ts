@@ -204,9 +204,11 @@
 }
 
 /* Like and Heart icons */
+.inner-action.inner-like {
+    cursor: pointer;
+}
 .singer-detail .inner-like i {
     color: #004cd0;
-    cursor: pointer;
 }
 
 .singer-detail .inner-like.active {
@@ -215,6 +217,10 @@
 
 .singer-detail .inner-like.active i {
     font-weight: 900;
+}
+
+.inner-action.inner-heart {
+    cursor: pointer;
 }
 
 .singer-detail .inner-heart i {

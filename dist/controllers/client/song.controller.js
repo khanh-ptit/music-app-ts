@@ -71,12 +71,14 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         };
         if (res.locals.user != null) {
             find["userId"] = res.locals.user.id;
-            console.log(find);
             const isFavorite = yield favorite_song_model_1.default.findOne(find);
             song["isFavorite"] = (isFavorite != null) ? true : false;
+            const isLike = song.like.includes(res.locals.user.id);
+            song["isLike"] = isLike;
         }
         else {
             song["isFavorite"] = false;
+            song["isLike"] = false;
         }
         song["topicInfo"] = topicInfo;
         res.render("client/pages/songs/detail.pug", {
@@ -101,22 +103,19 @@ const like = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             deleted: false,
             status: "active"
         });
-        let newLike;
         if (typeLike == "like") {
-            newLike = song.like + 1;
+            if (!song.like.includes(res.locals.user.id)) {
+                song.like.push(res.locals.user.id);
+            }
         }
         else {
-            newLike = song.like - 1;
+            song.like = song.like.filter(item => item != res.locals.user.id);
         }
-        yield song_model_1.default.updateOne({
-            _id: id
-        }, {
-            like: newLike
-        });
+        yield song.save();
         res.json({
             code: 200,
             message: "Đã thích bài hát!",
-            like: newLike
+            like: song.like.length
         });
     }
     catch (_a) {
