@@ -203,6 +203,16 @@
     color: #f57f20;
 }
 
+.no-underline {
+    color: inherit; /* Giữ nguyên màu của văn bản */
+    text-decoration: none; /* Xóa gạch chân */
+}
+
+.no-underline:hover {
+    text-decoration: none; 
+    color: inherit; 
+}
+
 /* Like and Heart icons */
 .inner-action.inner-like {
     cursor: pointer;

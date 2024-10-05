@@ -60,7 +60,7 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             _id: song.singerId,
             deleted: false,
             status: "active"
-        }).select("fullName");
+        }).select("fullName slug");
         song["singerInfo"] = singerInfo;
         const topicInfo = yield topic_model_1.default.findOne({
             _id: song.topicId,

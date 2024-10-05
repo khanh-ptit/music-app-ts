@@ -52,7 +52,7 @@ export const detail = async (req: Request, res: Response): Promise<void> => {
             _id: song.singerId,
             deleted: false,
             status: "active"
-        }).select("fullName")  
+        }).select("fullName slug")  
         song["singerInfo"] = singerInfo
     
         const topicInfo = await Topic.findOne({
