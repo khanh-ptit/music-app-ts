@@ -1,0 +1,40 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/box-head.pug
+
+block main
+    +alert-success(5000)
+    +alert-error(5000)
+
+    .container.my-5 
+        .row.justify-content-center
+            .col-8 
+                h1(class="text-center") Đăng nhập 
+                form(
+                    action="/user/login"
+                    method="POST"
+                )
+                    div(class="form-group")
+                        label(for="email") Email *
+                        input(
+                            type="text"
+                            class="form-control"
+                            name="email"
+                            id="email"
+                        )
+                    div(class="form-group")
+                        label(for="password") Mật khẩu *
+                        input(
+                            type="password"
+                            class="form-control"
+                            name="password"
+                            id="password"
+                        )
+                    div(class="form-group text-right")
+                        a(href="/user/password/forgot") Quên mật khẩu?
+                    div(class="form-group")
+                        button(
+                            class="btn btn-primary"
+                            type="submit"
+                            style="width: 100%"
+                        ) Đăng nhập 

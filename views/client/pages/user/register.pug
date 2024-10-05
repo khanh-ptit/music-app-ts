@@ -1,0 +1,58 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main 
+    +alert-success(5000)
+    +alert-error(5000)
+    
+    .container.my-5
+        .row.justify-content-center 
+            .col-8 
+                h1(class="text-center mb-3") Đăng ký tài khoản 
+                form(
+                    action="/user/register"
+                    method="POST"
+                )
+                    div(class="form-group")
+                        label(for="fullName") Họ và tên 
+                        input(
+                            type="text"
+                            id="fullName"
+                            name="fullName"
+                            class="form-control"
+                            required
+                        ) 
+                    div(class="form-group")
+                        label(for="email") Email 
+                        input(
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-control"
+                            required
+                        ) 
+                    div(class="form-group")
+                        label(for="password") Mật khẩu
+                        input(
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            required
+                        ) 
+                    div(class="form-group")
+                        label(for="confirm_password") Nhập lại mật khẩu
+                        input(
+                            type="password"
+                            id="confirm_password"
+                            name="confirm_password"
+                            class="form-control"
+                            required
+                        ) 
+                    div(class="form-group")
+                        button(
+                            class="btn btn-primary"
+                            type="submit"
+                            style="width: 100%"
+                            
+                        ) Đăng ký

@@ -286,15 +286,7 @@
 }
 /* End detail */
 
-/* Show-alert */
-/* [show-alert] {
-    position: fixed;
-    max-width: 300px;
-    top: 70px;
-    right: 15px;
-    z-index: 999999999999;
-} */
-
+/* Show Alert */
 [show-alert].alert-hidden {
     animation-name: alert-hidden;
     animation-duration: 0.5s;
@@ -321,9 +313,9 @@
     border-radius: 50%;
     cursor: pointer;
     text-align: center;
-    margin-left: 10px;
+    margin-left: 2px;
 }
-/* End show-alert */
+
 
 /* box-search */
 .box-search {
