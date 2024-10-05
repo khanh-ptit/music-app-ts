@@ -66,11 +66,18 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             _id: song.topicId,
             deleted: false
         });
-        const isFavorite = yield favorite_song_model_1.default.findOne({
-            songId: song.id,
-            userId: res.locals.user.id
-        });
-        song["isFavorite"] = (isFavorite != null) ? true : false;
+        let find = {
+            songId: song.id
+        };
+        if (res.locals.user != null) {
+            find["userId"] = res.locals.user.id;
+            console.log(find);
+            const isFavorite = yield favorite_song_model_1.default.findOne(find);
+            song["isFavorite"] = (isFavorite != null) ? true : false;
+        }
+        else {
+            song["isFavorite"] = false;
+        }
         song["topicInfo"] = topicInfo;
         res.render("client/pages/songs/detail.pug", {
             pageTitle: `${song.title} | ${singerInfo.fullName}`,
@@ -78,6 +85,7 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
+        console.log(error);
         res.render("client/pages/error/404", {
             pageTitle: "404 Not Found"
         });

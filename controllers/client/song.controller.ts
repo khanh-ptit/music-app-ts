@@ -60,18 +60,25 @@ export const detail = async (req: Request, res: Response): Promise<void> => {
             deleted: false
         })
 
-        const isFavorite = await FavoriteSong.findOne({
-            songId: song.id,
-            userId: res.locals.user.id
-        })
-
-        song["isFavorite"] = (isFavorite != null) ? true : false
+        let find = {
+            songId: song.id
+        }
+        if (res.locals.user != null) {
+            find["userId"] = res.locals.user.id
+            console.log(find)
+            const isFavorite = await FavoriteSong.findOne(find)
+            song["isFavorite"] = (isFavorite != null) ? true : false
+        } else {
+            song["isFavorite"] = false
+        }
+        
         song["topicInfo"] = topicInfo
         res.render("client/pages/songs/detail.pug", {
             pageTitle: `${song.title} | ${singerInfo.fullName}`,
             song: song
         })
     } catch (error) {
+        console.log(error)
         res.render("client/pages/error/404", {
             pageTitle: "404 Not Found"
         })

@@ -14,7 +14,6 @@ exports.requireAuth = requireAuth;
 const requireAuthApi = (req, res, next) => {
     const tokenUser = req.cookies.tokenUser;
     if (!tokenUser) {
-        console.log("*");
         res.json({
             code: 403,
             message: "Bạn cần đăng nhập để thực hiện quyền này!"
