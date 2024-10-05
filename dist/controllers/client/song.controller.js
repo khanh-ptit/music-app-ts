@@ -67,7 +67,8 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             deleted: false
         });
         const isFavorite = yield favorite_song_model_1.default.findOne({
-            songId: song.id
+            songId: song.id,
+            userId: res.locals.user.id
         });
         song["isFavorite"] = (isFavorite != null) ? true : false;
         song["topicInfo"] = topicInfo;
@@ -122,10 +123,12 @@ const favorite = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     switch (typeFavorite) {
         case "favorite":
             const existFavoriteSong = yield favorite_song_model_1.default.findOne({
-                songId: idSong
+                songId: idSong,
+                userId: res.locals.user.id
             });
             if (!existFavoriteSong) {
                 const newFavoriteSong = new favorite_song_model_1.default({
+                    userId: res.locals.user.id,
                     songId: idSong
                 });
                 yield newFavoriteSong.save();
@@ -133,7 +136,8 @@ const favorite = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             break;
         case "unfavorite":
             yield favorite_song_model_1.default.deleteOne({
-                songId: idSong
+                songId: idSong,
+                userId: res.locals.user.id
             });
             break;
         default:

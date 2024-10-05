@@ -15,7 +15,7 @@ block main
                                 img(src=item.songInfo.avatar)
                         div(class="inner-content")
                             div(class="inner-title") 
-                                a(href=`/songs/detail/cat-doi-noi-sau`) #{item.songInfo.title}
+                                a(href=`/songs/detail/${item.songInfo.slug}`) #{item.songInfo.title}
                             div(class="inner-singer")
                                 i(class="fa-solid fa-microphone-lines")
                                 |  #{item.singerInfo.fullName}

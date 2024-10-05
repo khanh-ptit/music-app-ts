@@ -61,7 +61,8 @@ export const detail = async (req: Request, res: Response): Promise<void> => {
         })
 
         const isFavorite = await FavoriteSong.findOne({
-            songId: song.id
+            songId: song.id,
+            userId: res.locals.user.id
         })
 
         song["isFavorite"] = (isFavorite != null) ? true : false
@@ -122,11 +123,12 @@ export const favorite = async (req: Request, res: Response) => {
     switch (typeFavorite) {
         case "favorite":
             const existFavoriteSong = await FavoriteSong.findOne({
-                songId: idSong
+                songId: idSong,
+                userId: res.locals.user.id
             })
             if (!existFavoriteSong) {
                 const newFavoriteSong = new FavoriteSong({
-                    // userId: "", (sau này làm tính năng đăng nhập thì add vào)
+                    userId: res.locals.user.id, //(sau này làm tính năng đăng nhập thì add vào)
                     songId: idSong
                 })
                 await newFavoriteSong.save()
@@ -134,7 +136,8 @@ export const favorite = async (req: Request, res: Response) => {
             break;
         case "unfavorite":
             await FavoriteSong.deleteOne({
-                songId: idSong
+                songId: idSong,
+                userId: res.locals.user.id
             })
             break;
         default:
