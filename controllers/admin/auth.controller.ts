@@ -5,6 +5,11 @@ import { systemConfig } from "../../config/system";
 
 // [GET] /admin/auth/login
 export const login = (req: Request, res: Response) => {
+    if (req.cookies.token) {
+        res.redirect(`${systemConfig.prefixAdmin}/dashboard`)
+        return
+    }
+    
     res.render("admin/pages/auth/login.pug", {
         pageTitle: "Đăng nhập quản trị"
     })

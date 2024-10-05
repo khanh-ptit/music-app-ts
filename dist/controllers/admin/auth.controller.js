@@ -17,6 +17,10 @@ const md5_1 = __importDefault(require("md5"));
 const account_model_1 = __importDefault(require("../../models/account.model"));
 const system_1 = require("../../config/system");
 const login = (req, res) => {
+    if (req.cookies.token) {
+        res.redirect(`${system_1.systemConfig.prefixAdmin}/dashboard`);
+        return;
+    }
     res.render("admin/pages/auth/login.pug", {
         pageTitle: "Đăng nhập quản trị"
     });

@@ -36,15 +36,25 @@ header.header
                             a(href="/topics")
                                 i(class="fa-solid fa-music")
                                 span Chủ đề
-                        li  
-                            a(href="/favorite-songs")
-                                i(class="fa-solid fa-heart")
-                                span Yêu thích
-                        li
-                            a(href="/user/register")
-                                i(class="fa-solid fa-user")
-                                span Đăng ký
-                        li
-                            a(href="/user/login")
-                                i(class="fa fa-sign-in" aria-hidden="true")
-                                span Đăng nhập
+                        if (!user) 
+                            li
+                                a(href="/user/register")
+                                    i(class="fa fa-user-plus")
+                                    span Đăng ký
+                            li
+                                a(href="/user/login")
+                                    i(class="fa fa-sign-in" aria-hidden="true")
+                                    span Đăng nhập
+                        if (user)
+                            li  
+                                a(href="/favorite-songs")
+                                    i(class="fa-solid fa-heart")
+                                    span Yêu thích
+                            li  
+                                a(href="/user/info")
+                                    i(class="fa fa-user")
+                                    span Cá nhân
+                            li
+                                a(href="/user/logout")
+                                    i(class="fa fa-sign-out" aria-hidden="true")
+                                    span Đăng xuất
