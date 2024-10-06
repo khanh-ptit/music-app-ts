@@ -112,7 +112,7 @@ block main
                 //- Tài khoản
                 tr 
                     td(colspan="4")
-                        b Tài khoản
+                        b Tài khoản admin
                 tr(data-name="account_view")
                     td Xem 
                     each item in roles
@@ -130,6 +130,19 @@ block main
                             input(type="checkbox")
                 tr(data-name="account_delete")
                     td Xóa
+                    each item in roles
+                        td(class="text-center")
+                            input(type="checkbox")
+                tr 
+                    td(colspan="4")
+                        b Tài khoản client
+                tr(data-name="user_view")
+                    td Xem 
+                    each item in roles
+                        td(class="text-center")
+                            input(type="checkbox")
+                tr(data-name="user_create")
+                    td Thêm mới
                     each item in roles
                         td(class="text-center")
                             input(type="checkbox")

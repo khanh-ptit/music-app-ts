@@ -33,6 +33,7 @@ const account_route_1 = require("./account.route");
 const role_route_1 = require("./role.route");
 const auth_route_1 = require("./auth.route");
 const authMiddleware = __importStar(require("../../middlewares/admin/auth.middleware"));
+const user_route_1 = require("./user.route");
 const routeAdmin = (app) => {
     const PATH_ADMIN = system_1.systemConfig.prefixAdmin;
     app.use(PATH_ADMIN + "/dashboard", authMiddleware.requireAuth, dashboard_route_1.dashboardRoutes);
@@ -42,5 +43,6 @@ const routeAdmin = (app) => {
     app.use(PATH_ADMIN + "/accounts", authMiddleware.requireAuth, account_route_1.accountRoutes);
     app.use(PATH_ADMIN + "/roles", authMiddleware.requireAuth, role_route_1.roleRoutes);
     app.use(PATH_ADMIN + "/auth", auth_route_1.authRoutes);
+    app.use(PATH_ADMIN + "/users", authMiddleware.requireAuth, user_route_1.userRoutes);
 };
 exports.routeAdmin = routeAdmin;

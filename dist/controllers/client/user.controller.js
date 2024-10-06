@@ -132,14 +132,19 @@ const verifyUserPost = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.verifyUserPost = verifyUserPost;
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.cookies.tokenUser;
-    if (token) {
-        res.redirect("/");
-        return;
+    try {
+        const token = req.cookies.tokenUser;
+        if (token) {
+            res.redirect("/");
+            return;
+        }
+        res.render("client/pages/user/login.pug", {
+            pageTitle: "Đăng nhập tài khoản"
+        });
     }
-    res.render("client/pages/user/login.pug", {
-        pageTitle: "Đăng nhập tài khoản"
-    });
+    catch (error) {
+        console.log(error);
+    }
 });
 exports.login = login;
 const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

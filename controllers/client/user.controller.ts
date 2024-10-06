@@ -126,15 +126,19 @@ export const verifyUserPost = async (req: Request, res: Response) => {
 
 // [GET] /user/login
 export const login = async (req: Request, res: Response) => {
-    const token = req.cookies.tokenUser
-    if (token) {
-        res.redirect("/")
-        return
+    try {
+        const token = req.cookies.tokenUser
+        if (token) {
+            res.redirect("/")
+            return
+        }
+    
+        res.render("client/pages/user/login.pug", {
+            pageTitle: "Đăng nhập tài khoản"
+        })
+    } catch (error) {
+        console.log(error)
     }
-
-    res.render("client/pages/user/login.pug", {
-        pageTitle: "Đăng nhập tài khoản"
-    })
 }
 
 // [POST] /user/login
