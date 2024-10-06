@@ -9,7 +9,7 @@ include ../../mixins/pagination.pug
 block main 
     +alert-success(5000)
     +alert-error(5000)
-    h1.mb-3 Danh sách chủ đề
+    h1.mb-3 Danh sách ca sĩ
 
     .card.mb-3 
         .card-header Bộ lọc và tìm kiếm 
@@ -20,20 +20,20 @@ block main
                 .col-6
                     +form-search()
 
-    +sort("topics")
+    +sort("singers")
 
-    if (roles.permissions.includes("topic_edit") || roles.permissions.includes("topic_delete") || roles.permissions.includes("topic_create"))
+    if (roles.permissions.includes("singer_edit") || roles.permissions.includes("singer_delete") || roles.permissions.includes("singer_create"))
         .card.mb-3 
             .card-header Danh sách 
             .card-body 
                 .row
                     .col-8
-                        if (roles.permissions.includes("topic_edit") || roles.permissions.includes("topic_delete")) 
-                            +form-change-multi(`${prefixAdmin}/topics/change-multi?_method=PATCH`, 'topics') 
+                        if (roles.permissions.includes("singer_edit") || roles.permissions.includes("singer_delete")) 
+                            +form-change-multi(`${prefixAdmin}/singers/change-multi?_method=PATCH`, 'singers') 
                     .col-4
-                        if (roles.permissions.includes("topic_create"))    
+                        if (roles.permissions.includes("singer_create"))    
                             a(
-                                href=`${prefixAdmin}/topics/create`
+                                href=`${prefixAdmin}/singers/create`
                                 class="btn btn-outline-success"
                             ) + Thêm mới
 
@@ -50,12 +50,12 @@ block main
                             input(type="checkbox" name="checkall")
                         th STT
                         th Hình ảnh
-                        th Tiêu đề
+                        th Tên
                         th Vị trí
                         th Trạng thái
                         th Hành động
                 tbody
-                    each item, index in topics
+                    each item, index in singers
                         tr 
                             td 
                                 input(
@@ -69,7 +69,7 @@ block main
                                     alt=item.title
                                     width="100px" 
                                     height="auto")
-                            td #{item.title}
+                            td #{item.fullName}
                             td 
                                 input(
                                     type="number"
@@ -79,17 +79,17 @@ block main
                                     name="position"
                                 )
                             td
-                                if (roles.permissions.includes("topic_edit"))
+                                if (roles.permissions.includes("singer_edit"))
                                     if (item.status == "active")
-                                        a(
-                                            href="javascript:;" 
+                                        button(
+                                            style="border: none"
                                             data-status="active"
                                             data-id=item.id
                                             button-change-status
                                             class="badge badge-success") Hoạt động
                                     else 
-                                        a(
-                                            href="javascript:;"
+                                        button(
+                                            style="border: none"
                                             data-status="inactive"
                                             data-id=item.id
                                             button-change-status
@@ -103,15 +103,15 @@ block main
                                             class="badge badge-danger") Dừng hoạt động
                             td
                                 a(
-                                    href=`${prefixAdmin}/topics/detail/${item.id}`
+                                    href=`${prefixAdmin}/singers/detail/${item.id}`
                                     class="btn btn-secondary btn-sm"
                                 ) Chi tiết
-                                if (roles.permissions.includes("topic_edit"))
+                                if (roles.permissions.includes("singer_edit"))
                                     a(
-                                        href=`${prefixAdmin}/topics/edit/${item.id}`
+                                        href=`${prefixAdmin}/singers/edit/${item.id}`
                                         class="btn btn-warning btn-sm ml-1"
                                     ) Sửa
-                                if (roles.permissions.includes("topic_delete"))
+                                if (roles.permissions.includes("singer_delete"))
                                     button(
                                         class="btn btn-danger btn-sm ml-1"
                                         button-delete 
@@ -120,18 +120,4 @@ block main
 
     +pagination(pagination)                         
 
-    form(
-        action=``
-        method="POST"
-        form-change-status 
-        data-path=`${prefixAdmin}/topics/change-status`
-    )
-
-    form(
-        action=``
-        method="POST"
-        form-delete-item 
-        data-path=`${prefixAdmin}/topics/delete`
-    )
-
-    script(src="/admin/js/topic.js") 
+    script(src="/admin/js/singer.js") 

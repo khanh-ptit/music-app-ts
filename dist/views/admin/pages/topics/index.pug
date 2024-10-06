@@ -20,7 +20,7 @@ block main
                 .col-6
                     +form-search()
 
-    +sort()
+    +sort("topics")
 
     if (roles.permissions.includes("topic_edit") || roles.permissions.includes("topic_delete") || roles.permissions.includes("topic_create"))
         .card.mb-3 

@@ -1,0 +1,83 @@
+extends ../../layouts/default.pug
+
+block main 
+    h1.mb-3 Chỉnh sửa ca sĩ
+
+    form(
+        action=`${prefixAdmin}/singers/edit/${singer.id}?_method=PATCH`
+        method="POST"
+        enctype="multipart/form-data"
+    )
+        div(class="form-group")
+            label(for="fullName") Họ tên
+            input(
+                type="text"
+                class="form-control"
+                id="fullName"
+                name="fullName"
+                value=singer.fullName
+                required
+            )
+        div(
+            class="form-group"
+            upload-image
+        )
+            label(for="avatar") Ảnh 
+            input(
+                type="file"
+                class="form-control-file"
+                id="avatar"
+                name="avatar"
+                accept="image/*"
+                upload-image-input
+            )
+            div(class="image-container")
+                img(
+                    src=singer.avatar
+                    class="image-preview"
+                    upload-image-preview
+                )
+                span.button-cancel X
+        div(class="form-group")
+            label(for="description") Mô tả
+            input(
+                type="text"
+                class="form-control"
+                id="description"
+                name="description"
+                value=singer.description
+            )
+        div(class="form-group")
+            label(for="position") Vị trí
+            input(
+                class="form-control"
+                type="number"
+                id="position"
+                name="position"
+                value=singer.position
+            )
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                name="status"
+                value="active"
+                id="statusActive"
+                checked=(singer.status == "active" ? true : false)
+            )
+            label(for="statusActive" class="form-check-label") Hoạt động
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                name="status"
+                value="inactive"
+                id="statusInactive"
+                checked=(singer.status == "inactive" ? true : false)
+            )
+            label(for="statusInactive" class="form-check-label") Dừng hoạt động
+        div(class="form-group")
+            button(
+                class="btn btn-primary"
+                type="submit"
+            ) Cập nhật

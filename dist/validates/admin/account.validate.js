@@ -56,11 +56,6 @@ const editPatch = (req, res, next) => {
         res.redirect("back");
         return;
     }
-    if (!req.body.avatar) {
-        req.flash("error", "Vui lòng upload ảnh!");
-        res.redirect("back");
-        return;
-    }
     if (!req.body.role_id) {
         req.flash("error", "Vui lòng chọn nhóm quyền!");
         res.redirect("back");

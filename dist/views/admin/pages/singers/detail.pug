@@ -1,0 +1,28 @@
+extends ../../layouts/default.pug
+
+block main 
+    if (singer.fullName)
+        h1.mb-4 #{singer.fullName}
+    
+    if (singer.description)
+        div.mb-4 <b>Mô tả:</b> #{singer.description}
+    
+    if (singer.avatar)
+        div.mb-4 
+            <b>Ảnh: </b> 
+            img(src=singer.avatar, alt=singer.fullName, style="width: 160px")
+    
+    if (singer.position)   
+        div.mb-4 <b>Vị trí: </b> #{singer.position}
+
+    if (singer.status)
+        div.mb-4 <b>Trạng thái: </b>
+            if (singer.status == "active")
+                span(class="badge badge-success") Hoạt động
+            else 
+                span(class="badge badge-danger") Dừng hoạt động
+    
+    a(
+        href=`${prefixAdmin}/singers/edit/${singer.id}`
+        class="btn btn-warning"
+    ) Chỉnh sửa

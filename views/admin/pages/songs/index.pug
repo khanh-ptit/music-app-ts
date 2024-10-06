@@ -20,7 +20,7 @@ block main
                     .col-6 
                         +form-search()
 
-    +sort()
+    +sort("songs")
 
     if (roles.permissions.includes("song_edit") || roles.permissions.includes("song_create") || roles.permissions.includes("song_delete"))
         .card.mb-3

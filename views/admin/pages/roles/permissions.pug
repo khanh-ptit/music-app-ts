@@ -79,6 +79,30 @@ block main
                     each item in roles
                         td(class="text-center")
                             input(type="checkbox")
+                //- Danh sách bài hát
+                tr 
+                    td(colspan="4")
+                        b Danh mục ca sĩ
+                tr(data-name="singer_view")
+                    td Xem 
+                    each item in roles
+                        td(class="text-center")
+                            input(type="checkbox")
+                tr(data-name="singer_create")
+                    td Thêm mới
+                    each item in roles
+                        td(class="text-center")
+                            input(type="checkbox")
+                tr(data-name="singer_edit")
+                    td Chỉnh sửa
+                    each item in roles
+                        td(class="text-center")
+                            input(type="checkbox")
+                tr(data-name="singer_delete")
+                    td Xóa
+                    each item in roles
+                        td(class="text-center")
+                            input(type="checkbox")
                 //- Nhóm quyền
                 tr 
                     td(colspan="4")
