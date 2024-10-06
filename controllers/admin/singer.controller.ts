@@ -5,6 +5,7 @@ import searchHelper from "../../helpers/search";
 import paginationHelper from "../../helpers/pagination";
 import { SortOrder } from "mongoose";
 import { systemConfig } from "../../config/system";
+import Account from "../../models/account.model";
 
 // [GET] /admin/singers
 export const index = async (req: Request, res: Response) => {
@@ -56,6 +57,24 @@ export const index = async (req: Request, res: Response) => {
         .limit(objectPagination.limitItems)
         .skip(objectPagination.skip)
         .sort(sort)
+    
+    for (const item of singers) {
+        if (item.createdBy.accountId != "") {
+            const infoAccountCreate = await Account.findOne({
+                _id: item.createdBy.accountId
+            }).select("fullName")
+            item["infoAccountCreate"] = infoAccountCreate
+        }
+
+        if (item.updatedBy.length > 0) {
+            const lastLog = item.updatedBy[item.updatedBy.length - 1]
+            const infoAccountUpdate = await Account.findOne({
+                _id: lastLog.accountId
+            }).select("fullName")
+            item["updatedAt"] = lastLog.updatedAt
+            item["infoAccountUpdate"] = infoAccountUpdate
+        }
+    }
 
     res.render("admin/pages/singers/index", {
         pageTitle: "Danh sách ca sĩ",
@@ -85,10 +104,18 @@ export const changeStatus = async (req: Request, res: Response) => {
             return
         }
 
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await Singer.updateOne({
             _id: id
         }, {
-            status: status
+            status: status,
+            $push: {
+                updatedBy: updatedBy
+            }
         })
     
         res.status(200).json({
@@ -126,7 +153,11 @@ export const deleteItem = async (req: Request, res: Response) => {
         await Singer.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                accountId: res.locals.user.id,
+                deletedAt: new Date()
+            }
         })
     
         res.json({
@@ -160,7 +191,11 @@ export const createPost = async (req: Request, res: Response) => {
         avatar: String,
         description: String,
         position: Number,
-        status: String
+        status: String,
+        createdBy: {
+            accountId: String,
+            createdAt: Date
+        }
     }
 
     const dataSinger: Singer = {
@@ -168,7 +203,11 @@ export const createPost = async (req: Request, res: Response) => {
         avatar: req.body.avatar,
         description: req.body.description,
         position: parseInt(req.body.position),
-        status: req.body.status
+        status: req.body.status,
+        createdBy: {
+            accountId: res.locals.user.id,
+            createdAt: new Date()
+        }
     }
 
     const newSinger = new Singer(dataSinger)
@@ -182,6 +221,15 @@ export const createPost = async (req: Request, res: Response) => {
 export const changeMulti = async (req: Request, res: Response) => {
     try {
         // const roles = res.locals.roles
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
+        const deletedBy = {
+            accountId: res.locals.user.id,
+            deletedAt: new Date()
+        }
 
         const type = req.body.type
         const ids = req.body.ids.split(", ")
@@ -199,7 +247,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                         $in: ids
                     }
                 }, {
-                    status: "active"
+                    status: "active",
+                    $push: {
+                        updatedBy: updatedBy
+                    }
                 })
                 req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`)
                 res.redirect(`${systemConfig.prefixAdmin}/singers`)
@@ -217,7 +268,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                         $in: ids
                     }
                 }, {
-                    status: "inactive"
+                    status: "inactive",
+                    $push: {
+                        updatedBy: updatedBy
+                    }
                 })
                 req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`)
                 res.redirect(`${systemConfig.prefixAdmin}/singers`)
@@ -235,7 +289,8 @@ export const changeMulti = async (req: Request, res: Response) => {
                         $in: ids
                     }
                 }, {
-                    deleted: true
+                    deleted: true,
+                    deletedBy: deletedBy
                 })
                 req.flash("success", `Đã xóa ${ids.length} bản ghi`)
                 res.redirect(`${systemConfig.prefixAdmin}/singers`)
@@ -255,7 +310,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                     await Singer.updateOne({
                         _id: id
                     }, {
-                        position: pos
+                        position: pos,
+                        $push: {
+                            updatedBy: updatedBy
+                        }
                     })
                 }
                 req.flash("success", `Đã cập nhật vị trí cho ${ids.length} bản ghi`)
@@ -364,9 +422,19 @@ export const editPatch = async (req: Request, res: Response) => {
             dataSinger.description = req.body.description
         }
 
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await Singer.updateOne({
             _id: id
-        }, dataSinger)
+        }, {
+            $set: dataSinger,
+            $push: {
+                updatedBy: updatedBy
+            }
+        })
 
         req.flash("success", "Cập nhật thành công ca sĩ!")
         res.redirect(`${systemConfig.prefixAdmin}/singers`)

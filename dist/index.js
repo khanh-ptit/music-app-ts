@@ -38,6 +38,7 @@ const system_1 = require("./config/system");
 const path_1 = __importDefault(require("path"));
 const method_override_1 = __importDefault(require("method-override"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const moment_1 = __importDefault(require("moment"));
 dotenv_1.default.config();
 database.connect();
 const app = (0, express_1.default)();
@@ -57,6 +58,7 @@ app.use((0, express_flash_1.default)());
 app.use((0, method_override_1.default)("_method"));
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.locals.prefixAdmin = system_1.systemConfig.prefixAdmin;
+app.locals.moment = moment_1.default;
 (0, index_route_1.default)(app);
 (0, index_route_2.routeAdmin)(app);
 app.get("*", (req, res) => {

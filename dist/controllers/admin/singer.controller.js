@@ -18,6 +18,7 @@ const filterStatus_1 = __importDefault(require("../../helpers/filterStatus"));
 const search_1 = __importDefault(require("../../helpers/search"));
 const pagination_1 = __importDefault(require("../../helpers/pagination"));
 const system_1 = require("../../config/system");
+const account_model_1 = __importDefault(require("../../models/account.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let find = {
         deleted: false
@@ -47,6 +48,22 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         .limit(objectPagination.limitItems)
         .skip(objectPagination.skip)
         .sort(sort);
+    for (const item of singers) {
+        if (item.createdBy.accountId != "") {
+            const infoAccountCreate = yield account_model_1.default.findOne({
+                _id: item.createdBy.accountId
+            }).select("fullName");
+            item["infoAccountCreate"] = infoAccountCreate;
+        }
+        if (item.updatedBy.length > 0) {
+            const lastLog = item.updatedBy[item.updatedBy.length - 1];
+            const infoAccountUpdate = yield account_model_1.default.findOne({
+                _id: lastLog.accountId
+            }).select("fullName");
+            item["updatedAt"] = lastLog.updatedAt;
+            item["infoAccountUpdate"] = infoAccountUpdate;
+        }
+    }
     res.render("admin/pages/singers/index", {
         pageTitle: "Danh sách ca sĩ",
         filterStatus: filterStatus,
@@ -71,10 +88,17 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             });
             return;
         }
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        };
         yield singer_model_1.default.updateOne({
             _id: id
         }, {
-            status: status
+            status: status,
+            $push: {
+                updatedBy: updatedBy
+            }
         });
         res.status(200).json({
             code: 200,
@@ -107,7 +131,11 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         yield singer_model_1.default.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                accountId: res.locals.user.id,
+                deletedAt: new Date()
+            }
         });
         res.json({
             code: 200,
@@ -138,7 +166,11 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         avatar: req.body.avatar,
         description: req.body.description,
         position: parseInt(req.body.position),
-        status: req.body.status
+        status: req.body.status,
+        createdBy: {
+            accountId: res.locals.user.id,
+            createdAt: new Date()
+        }
     };
     const newSinger = new singer_model_1.default(dataSinger);
     yield newSinger.save();
@@ -148,6 +180,14 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.createPost = createPost;
 const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        };
+        const deletedBy = {
+            accountId: res.locals.user.id,
+            deletedAt: new Date()
+        };
         const type = req.body.type;
         const ids = req.body.ids.split(", ");
         switch (type) {
@@ -157,7 +197,10 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                         $in: ids
                     }
                 }, {
-                    status: "active"
+                    status: "active",
+                    $push: {
+                        updatedBy: updatedBy
+                    }
                 });
                 req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`);
                 res.redirect(`${system_1.systemConfig.prefixAdmin}/singers`);
@@ -168,7 +211,10 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                         $in: ids
                     }
                 }, {
-                    status: "inactive"
+                    status: "inactive",
+                    $push: {
+                        updatedBy: updatedBy
+                    }
                 });
                 req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`);
                 res.redirect(`${system_1.systemConfig.prefixAdmin}/singers`);
@@ -179,7 +225,8 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                         $in: ids
                     }
                 }, {
-                    deleted: true
+                    deleted: true,
+                    deletedBy: deletedBy
                 });
                 req.flash("success", `Đã xóa ${ids.length} bản ghi`);
                 res.redirect(`${system_1.systemConfig.prefixAdmin}/singers`);
@@ -192,7 +239,10 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     yield singer_model_1.default.updateOne({
                         _id: id
                     }, {
-                        position: pos
+                        position: pos,
+                        $push: {
+                            updatedBy: updatedBy
+                        }
                     });
                 }
                 req.flash("success", `Đã cập nhật vị trí cho ${ids.length} bản ghi`);
@@ -266,9 +316,18 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (req.body.description) {
             dataSinger.description = req.body.description;
         }
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        };
         yield singer_model_1.default.updateOne({
             _id: id
-        }, dataSinger);
+        }, {
+            $set: dataSinger,
+            $push: {
+                updatedBy: updatedBy
+            }
+        });
         req.flash("success", "Cập nhật thành công ca sĩ!");
         res.redirect(`${system_1.systemConfig.prefixAdmin}/singers`);
     }

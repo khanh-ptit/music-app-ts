@@ -10,6 +10,7 @@ import { systemConfig } from "./config/system"
 import path from "path"
 import methodOverride from "method-override"
 import bodyParser from "body-parser"
+import moment from "moment"
 
 dotenv.config()
 database.connect()
@@ -36,6 +37,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 // App local variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin
+app.locals.moment = moment
 
 routeClient(app)
 routeAdmin(app)

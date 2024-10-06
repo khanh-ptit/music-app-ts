@@ -17,9 +17,19 @@ const singerSchema = new mongoose.Schema({
         default: false
     },
     position: Number,
-    deletedAt: Date
-}, {
-    timestamps: true
+    deletedAt: Date,
+    createdBy: {
+        accountId: String,
+        createdAt: Date
+    },
+    updatedBy: [{
+        accountId: String,
+        updatedAt: Date
+    }],
+    deletedBy: {
+        accountId: String,
+        deletedAt: Date
+    }
 })
 
 const Singer = mongoose.model("Singer", singerSchema, "singers")
