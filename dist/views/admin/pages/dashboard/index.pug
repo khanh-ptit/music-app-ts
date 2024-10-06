@@ -2,6 +2,72 @@ extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 
 block main
-    +alert-success(5000)
-    +alert-error(5000)
-    h1 Trang tổng quan
+    if (roles.permissions.length > 0)
+        +alert-success(5000)
+        h1.mb-3 Trang tổng quan
+        
+        .row 
+            .col-12 
+                .card.mb-3 
+                    .card-header Thông tin tài khoản
+                    .card-body 
+                        div(class="mb-3") <b>Họ tên: </b> #{user.fullName}
+                        div(class="mb-3") <b>Email: </b> #{user.email}
+                        div(class="mb-3") <b>Số điện thoại: </b> #{user.phone}
+                        div(class="mb-3") <b>Nhóm quyền: </b> #{roles.title}
+        
+        .row 
+            .col-6
+                .card.mb-4 
+                    .card-header Danh mục chủ đề
+                    .card-body 
+                        p Số lượng: <b> #{statistic.topic.total} </b>
+                        p Hoạt động: <b> #{statistic.topic.active} </b>
+                        p Dừng hoạt động: <b> #{statistic.topic.inactive} </b>
+
+            .col-6
+                .card.mb-4 
+                    .card-header Danh mục bài hát
+                    .card-body 
+                        p Số lượng: <b> #{statistic.song.total} </b>
+                        p Hoạt động: <b> #{statistic.song.active} </b>
+                        p Dừng hoạt động: <b> #{statistic.song.inactive} </b>
+        
+        .row 
+            .col-6
+                .card.mb-4 
+                    .card-header Tài khoản admin
+                    .card-body 
+                        p Số lượng: <b> #{statistic.adminAccount.total} </b>
+                        p Hoạt động: <b> #{statistic.adminAccount.active} </b>
+                        p Dừng hoạt động: <b> #{statistic.adminAccount.inactive} </b>
+
+            .col-6
+                .card.mb-4 
+                    .card-header Tài khoản client
+                    .card-body 
+                        p Số lượng: <b> #{statistic.clientAccount.total} </b>
+                        p Hoạt động: <b> #{statistic.clientAccount.active} </b>
+                        p Dừng hoạt động / Khởi tạo: <b> #{statistic.clientAccount.inactive + statistic.clientAccount.initial} </b>
+        
+        .row 
+            .col-6
+                .card.mb-4 
+                    .card-header Danh mục ca sĩ 
+                    .card-body 
+                        p Số lượng: <b> #{statistic.singer.total} </b>
+                        p Hoạt động: <b> #{statistic.singer.active} </b>
+                        p Dừng hoạt động: <b> #{statistic.singer.inactive} </b>
+
+            .col-6
+                .card.mb-4 
+                    .card-header Nhóm quyền
+                    .card-body 
+                        p Số lượng: <b> #{statistic.role.total} </b>
+                        p Hoạt động: <b> N/A </b>
+                        p Dừng hoạt động: <b> N/A </b>
+
+
+        
+    //- else 
+    //-     h1 Bạn không có quyền truy cập nào
