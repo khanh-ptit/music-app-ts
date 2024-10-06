@@ -1,0 +1,104 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+    +alert-error(5000)
+    +alert-success(5000)
+
+    h1.mb-3 Cài đặt chung
+    form(
+        action=`${prefixAdmin}/settings/general?_method=PATCH`
+        enctype="multipart/form-data"
+        method="POST"
+    )
+        div(class="form-group")
+            label(for="websiteName") Tên website 
+            input(
+                name="websiteName"
+                class="form-control"
+                id="websiteName"
+                type="text"
+                value=settingGeneral.websiteName
+            )
+        div(
+            upload-image
+            class="form-group"
+        )
+            label(for="favicon") Favicon
+            input(
+                type="file"
+                class="form-control-file"
+                id="favicon"
+                name="favicon"
+                accept="image/*"
+                upload-image-input
+            )
+            div(class="image-container")
+                img(
+                    src=settingGeneral.favicon
+                    upload-image-preview
+                    class="image-preview"
+                )
+                span.button-cancel X
+        div(
+            upload-image
+            class="form-group"
+        )
+            label(for="logo") Logo
+            input(
+                type="file"
+                class="form-control-file"
+                id="logo"
+                name="logo"
+                accept="image/*"
+                upload-image-input
+            )
+            div(class="image-container")
+                img(
+                    src=settingGeneral.logo
+                    upload-image-preview
+                    class="image-preview"
+                )
+                span.button-cancel X
+        div(class="form-group")
+            label(for="phone") Số điện thoại
+            input(
+                type="text"
+                name="phone"
+                id="phone"
+                class="form-control"
+                value=settingGeneral.phone
+            ) 
+        div(class="form-group")
+            label(for="email") Email
+            input(
+                type="email"
+                name="email"
+                id="email"
+                class="form-control"
+                value=settingGeneral.email
+            ) 
+        div(class="form-group")
+            label(for="address") Địa chỉ
+            input(
+                type="text"
+                name="address"
+                id="address"
+                class="form-control"
+                value=settingGeneral.address
+            ) 
+        div(class="form-group")
+            label(for="copyright") Copyright
+            input(
+                type="text"
+                name="copyright"
+                id="copyright"
+                class="form-control"
+                value=settingGeneral.copyright
+            ) 
+        div(class="form-group")
+            button(
+                class="btn btn-primary"
+                type="submit"
+            ) Cập nhật          
+            

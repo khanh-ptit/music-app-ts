@@ -10,6 +10,7 @@ import { authRoutes } from "./auth.route";
 import * as authMiddleware from "../../middlewares/admin/auth.middleware";
 import { userRoutes } from "./user.route";
 import { singerRoutes } from "./singer.route";
+import { settingRoutes } from "./setting.route";
 
 export const routeAdmin = (app: Application) => {
     const PATH_ADMIN = systemConfig.prefixAdmin
@@ -23,4 +24,5 @@ export const routeAdmin = (app: Application) => {
     app.use(PATH_ADMIN + "/auth", authRoutes)
     app.use(PATH_ADMIN + "/users", authMiddleware.requireAuth, userRoutes)
     app.use(PATH_ADMIN + "/singers", authMiddleware.requireAuth, singerRoutes)
+    app.use(PATH_ADMIN + "/settings", authMiddleware.requireAuth, settingRoutes)
 }
