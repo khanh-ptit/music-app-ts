@@ -16,9 +16,19 @@ const accountSchema = new mongoose.Schema({
     },
     phone: String,
     role_id: String,
-    avatar: String
-}, {
-    timestamps: true
+    avatar: String,
+    createdBy: {
+        accountId: String,
+        createdAt: Date
+    },
+    updatedBy: [{
+        accountId: String,
+        updatedAt: Date
+    }],
+    deletedBy: {
+        accountId: String,
+        deletedAt: Date
+    }
 })
 
 const Account = mongoose.model("Account", accountSchema, "accounts")

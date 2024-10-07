@@ -3,6 +3,7 @@ include ../../mixins/form-change-multi.pug
 include ../../mixins/alert.pug
 include ../../mixins/filter-status.pug
 include ../../mixins/pagination.pug
+include ../../mixins/moment.pug
 
 block main 
     +alert-success(5000)
@@ -45,6 +46,8 @@ block main
                         th Nhóm quyền
                         th Trạng thái
                         th Hành động
+                        th Người tạo
+                        th Người chỉnh sửa
                 tbody
                     each item, index in accounts
                         tr 
@@ -91,6 +94,18 @@ block main
                                     button-delete 
                                     data-id=item.id
                                 ) Xóa
+                            td 
+                                if (item.createdBy.createdAt)
+                                    p Tom 
+                                else 
+                                    p N/A
+                            td 
+                                if (item.updatedBy.length > 0)
+                                    p #{item.infoAccountUpdate.fullName}
+                                    +format-dateTime(item.updatedAt)
+                                else 
+                                    p N/A
+
 
     +pagination(pagination)
 

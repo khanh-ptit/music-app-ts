@@ -38,6 +38,26 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             deleted: false
         });
         item["roleInfo"] = roleInfo;
+        if (item.createdBy.createdAt) {
+            if (item.createdBy.createdAt) {
+                const infoAccountCreate = yield account_model_1.default.findOne({
+                    _id: item.createdBy.accountId
+                }).select("fullName");
+                if (infoAccountCreate) {
+                    item["infoAccountCreate"] = infoAccountCreate;
+                }
+            }
+        }
+        if (item.updatedBy.length > 0) {
+            const lastLog = item.updatedBy[item.updatedBy.length - 1];
+            const infoAccountUpdate = yield account_model_1.default.findOne({
+                _id: lastLog.accountId
+            });
+            if (infoAccountUpdate) {
+                item["infoAccountUpdate"] = infoAccountUpdate;
+                item["updatedAt"] = lastLog.updatedAt;
+            }
+        }
     }
     res.render("admin/pages/accounts/index.pug", {
         pageTitle: "Tài khoản admin",
@@ -74,7 +94,11 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         phone: req.body.phone,
         role_id: req.body.role_id,
         status: req.body.status,
-        avatar: req.body.avatar
+        avatar: req.body.avatar,
+        createdBy: {
+            accountId: res.locals.user.id,
+            createdAt: new Date()
+        }
     };
     const newAccount = new account_model_1.default(dataAccount);
     yield newAccount.save();
@@ -97,10 +121,17 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             });
             return;
         }
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        };
         yield account_model_1.default.updateOne({
             _id: id
         }, {
-            status: status
+            status: status,
+            $push: {
+                updatedBy: updatedBy
+            }
         });
         res.status(200).json({
             code: 200,
@@ -133,7 +164,11 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         yield account_model_1.default.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                account_id: res.locals.user.id,
+                deletedAt: new Date()
+            }
         });
         res.json({
             code: 200,
@@ -219,11 +254,20 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (req.body.avatar) {
             dataAccount.avatar = (0, md5_1.default)(req.body.avatar);
         }
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        };
         yield account_model_1.default.updateOne({
             _id: id
-        }, dataAccount);
+        }, {
+            $set: dataAccount,
+            $push: {
+                updatedBy: updatedBy
+            }
+        });
         req.flash("success", "Cập nhật tài khoản thành công!");
-        res.redirect("back");
+        res.redirect(`${system_1.systemConfig.prefixAdmin}/accounts`);
     }
     catch (error) {
         res.json({
@@ -273,6 +317,10 @@ exports.detail = detail;
 const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const type = req.body.type;
     const ids = req.body.ids.split(", ");
+    const updatedBy = {
+        accountId: res.locals.user.id,
+        updatedAt: new Date()
+    };
     switch (type) {
         case "active":
             yield account_model_1.default.updateMany({
@@ -280,7 +328,10 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     $in: ids
                 }
             }, {
-                status: "active"
+                status: "active",
+                $push: {
+                    updatedBy: updatedBy
+                }
             });
             req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} tài khoản`);
             res.redirect("back");
@@ -291,7 +342,10 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     $in: ids
                 }
             }, {
-                status: "inactive"
+                status: "inactive",
+                $push: {
+                    updatedBy: updatedBy
+                }
             });
             req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} tài khoản`);
             res.redirect("back");
@@ -302,7 +356,11 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     $in: ids
                 }
             }, {
-                deleted: true
+                deleted: true,
+                deletedBy: {
+                    accountId: res.locals.user.id,
+                    deletedAt: new Date()
+                }
             });
             req.flash("success", `Đã xóa ${ids.length} tài khoản`);
             res.redirect("back");

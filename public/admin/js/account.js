@@ -34,6 +34,10 @@ if (listButtonChangeStatus.length > 0) {
                             button.setAttribute("data-status", "inactive");
                         }
                         toastr.success(data.message); // Hiển thị thông báo Toastr
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 5000)
                     } else if (data.code == 404) {
                         toastr.warning(data.message); // Hiển thị thông báo Toastr
                     } else if (data.code == 400) {

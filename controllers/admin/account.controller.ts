@@ -35,6 +35,28 @@ export const index = async (req: Request, res: Response) => {
             deleted: false
         })
         item["roleInfo"] = roleInfo
+
+        if (item.createdBy.createdAt) {
+            if (item.createdBy.createdAt) {
+                const infoAccountCreate = await Account.findOne({
+                    _id: item.createdBy.accountId
+                }).select("fullName")
+                if (infoAccountCreate) {
+                    item["infoAccountCreate"] = infoAccountCreate
+                }
+            }
+        }
+
+        if (item.updatedBy.length > 0) {
+            const lastLog = item.updatedBy[item.updatedBy.length - 1]
+            const infoAccountUpdate = await Account.findOne({
+                _id: lastLog.accountId
+            })
+            if (infoAccountUpdate) {
+                item["infoAccountUpdate"] = infoAccountUpdate
+                item["updatedAt"] = lastLog.updatedAt
+            }
+        }
     }
 
     res.render("admin/pages/accounts/index.pug", {
@@ -77,7 +99,11 @@ export const createPost = async (req: Request, res: Response) => {
         phone: String,
         role_id: String,
         avatar: String,
-        status: String
+        status: String,
+        createdBy: {
+            accountId: String,
+            createdAt: Date
+        }
     }
 
     const dataAccount: Account = {
@@ -87,7 +113,11 @@ export const createPost = async (req: Request, res: Response) => {
         phone: req.body.phone,
         role_id: req.body.role_id,
         status: req.body.status,
-        avatar: req.body.avatar
+        avatar: req.body.avatar,
+        createdBy: {
+            accountId: res.locals.user.id,
+            createdAt: new Date()
+        }
     }
 
     const newAccount = new Account(dataAccount)
@@ -115,10 +145,18 @@ export const changeStatus = async (req: Request, res: Response) => {
             return
         }
 
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await Account.updateOne({
             _id: id
         }, {
-            status: status
+            status: status,
+            $push: {
+                updatedBy: updatedBy
+            }
         })
     
         res.status(200).json({
@@ -156,7 +194,11 @@ export const deleteItem = async (req: Request, res: Response) => {
         await Account.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                account_id: res.locals.user.id,
+                deletedAt: new Date()
+            }
         })
     
         res.json({
@@ -267,11 +309,21 @@ export const editPatch = async (req: Request, res: Response) => {
             dataAccount.avatar = md5(req.body.avatar)
         }
 
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await Account.updateOne({
             _id: id
-        }, dataAccount)
+        }, {
+            $set: dataAccount,
+            $push: {
+                updatedBy: updatedBy
+            }
+        })
         req.flash("success", "Cập nhật tài khoản thành công!")
-        res.redirect("back")
+        res.redirect(`${systemConfig.prefixAdmin}/accounts`)
     } catch (error) {
         res.json({
             code: 400,
@@ -327,6 +379,12 @@ export const detail = async (req: Request, res: Response) => {
 export const changeMulti = async (req: Request, res: Response) => {
     const type = req.body.type
     const ids = req.body.ids.split(", ")
+
+    const updatedBy = {
+        accountId: res.locals.user.id,
+        updatedAt: new Date()
+    }
+
     switch (type) {
         case "active":
             await Account.updateMany({
@@ -334,7 +392,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                     $in: ids
                 }
             }, {
-                status: "active"
+                status: "active",
+                $push: {
+                    updatedBy: updatedBy
+                }
             })
             req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} tài khoản`)
             res.redirect("back")
@@ -345,7 +406,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                     $in: ids
                 }
             }, {
-                status: "inactive"
+                status: "inactive",
+                $push: {
+                    updatedBy: updatedBy
+                }
             })
             req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} tài khoản`)
             res.redirect("back")
@@ -356,7 +420,11 @@ export const changeMulti = async (req: Request, res: Response) => {
                     $in: ids
                 }
             }, {
-                deleted: true
+                deleted: true,
+                deletedBy: {
+                    accountId: res.locals.user.id,
+                    deletedAt: new Date()
+                }
             })
             req.flash("success", `Đã xóa ${ids.length} tài khoản`)
             res.redirect("back")
