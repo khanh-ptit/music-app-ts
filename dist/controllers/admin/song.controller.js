@@ -20,6 +20,7 @@ const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const singer_model_1 = __importDefault(require("../../models/singer.model"));
 const system_1 = require("../../config/system");
 const pagination_1 = __importDefault(require("../../helpers/pagination"));
+const account_model_1 = __importDefault(require("../../models/account.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const roles = res.locals.roles;
     if (!roles.permissions.includes("song_view")) {
@@ -32,7 +33,7 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         deleted: false
     };
     let objectSort = {
-        position: "asc".toLowerCase()
+        position: "desc".toLowerCase()
     };
     if (req.query.status) {
         find["status"] = req.query.status;
@@ -59,6 +60,24 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         .sort(objectSort)
         .limit(objectPagination.limitItems)
         .skip(objectPagination.skip);
+    for (const item of songs) {
+        const infoAccountCreate = yield account_model_1.default.findOne({
+            _id: item.createdBy.accountId
+        }).select("fullName");
+        if (infoAccountCreate) {
+            item["infoAccountCreate"] = infoAccountCreate;
+        }
+        const lastLog = item.updatedBy[item.updatedBy.length - 1];
+        if (lastLog) {
+            const infoAccountUpdate = yield account_model_1.default.findOne({
+                _id: lastLog.accountId
+            }).select("fullName");
+            if (infoAccountUpdate) {
+                item["infoAccountUpdate"] = infoAccountUpdate;
+                item["updatedAt"] = lastLog.updatedAt;
+            }
+        }
+    }
     res.render("admin/pages/songs/index", {
         pageTitle: "Danh sách bài hát",
         songs: songs,
@@ -90,10 +109,17 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             });
             return;
         }
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        };
         yield song_model_1.default.updateOne({
             _id: id
         }, {
-            status: status
+            status: status,
+            $push: {
+                updatedBy: updatedBy
+            }
         });
         req.flash("success", "Cập nhật trạng thái thành công!");
         res.redirect("back");
@@ -109,6 +135,10 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const roles = res.locals.roles;
     const type = req.body.type;
     const ids = req.body.ids.split(", ");
+    const updatedBy = {
+        accountId: res.locals.user.id,
+        updatedAt: new Date()
+    };
     switch (type) {
         case "active":
             if (!roles.permissions.includes("song_edit")) {
@@ -123,7 +153,10 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     $in: ids
                 }
             }, {
-                status: "active"
+                status: "active",
+                $push: {
+                    updatedBy: updatedBy
+                }
             });
             req.flash("success", `Cập nhật trạng thái thành công cho ${ids.length} bài hát`);
             res.redirect("back");
@@ -141,7 +174,10 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     $in: ids
                 }
             }, {
-                status: "inactive"
+                status: "inactive",
+                $push: {
+                    updatedBy: updatedBy
+                }
             });
             req.flash("success", `Cập nhật trạng thái thành công cho ${ids.length} bài hát`);
             res.redirect("back");
@@ -159,7 +195,11 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     $in: ids
                 }
             }, {
-                deleted: true
+                deleted: true,
+                deletedBy: {
+                    accountId: res.locals.user.id,
+                    deletedAt: new Date()
+                }
             });
             req.flash("success", `Xóa thành công ${ids.length} bài hát`);
             res.redirect("back");
@@ -179,7 +219,10 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 yield song_model_1.default.updateOne({
                     _id: id
                 }, {
-                    position: pos
+                    position: pos,
+                    $push: {
+                        updatedBy: updatedBy
+                    }
                 });
             }
             req.flash("success", `Đã cập nhật vị trí cho ${ids.length} bài hát`);
@@ -217,7 +260,11 @@ const deleteSong = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         yield song_model_1.default.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                accountId: res.locals.user.id,
+                deletedAt: new Date()
+            }
         });
         req.flash("success", "Xóa thành công bài hát!");
         res.redirect("back");
@@ -285,7 +332,11 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         description: req.body.description,
         status: req.body.status,
         avatar: avatar,
-        audio: audio
+        audio: audio,
+        createdBy: {
+            accountId: res.locals.user.id,
+            createdAt: new Date()
+        }
     };
     if (req.body.position) {
         dataSong.position = parseInt(req.body.position);
@@ -293,7 +344,11 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     else {
         dataSong.position = countSong + 1;
     }
+    if (req.body.lyrics) {
+        dataSong.lyrics = req.body.lyrics;
+    }
     const newSong = new song_model_1.default(dataSong);
+    console.log(newSong);
     yield newSong.save();
     req.flash("success", "Tạo thành công bài hát!");
     res.redirect(`${system_1.systemConfig.prefixAdmin}/songs`);
@@ -376,9 +431,18 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (req.body.audio) {
             dataSong.audio = req.body.audio[0];
         }
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        };
         yield song_model_1.default.updateOne({
             _id: id
-        }, dataSong);
+        }, {
+            $set: dataSong,
+            $push: {
+                updatedBy: updatedBy
+            }
+        });
         req.flash("success", "Cập nhật thành công bài hát!");
         res.redirect(`${system_1.systemConfig.prefixAdmin}/songs`);
     }

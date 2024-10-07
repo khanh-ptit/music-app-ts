@@ -7,6 +7,7 @@ import Topic from "../../models/topic.model";
 import Singer from "../../models/singer.model";
 import { systemConfig } from "../../config/system";
 import paginationHelper from "../../helpers/pagination";
+import Account from "../../models/account.model";
 
 // [GET] /admin/songs
 export const index = async (req: Request, res: Response) => {
@@ -28,7 +29,7 @@ export const index = async (req: Request, res: Response) => {
     }
 
     let objectSort: Sort = {
-        position: "asc".toLowerCase() as SortOrder
+        position: "desc".toLowerCase() as SortOrder
     }
 
     // Filter status
@@ -64,6 +65,26 @@ export const index = async (req: Request, res: Response) => {
         .sort(objectSort)
         .limit(objectPagination.limitItems)
         .skip(objectPagination.skip)
+    
+    for (const item of songs) {
+        const infoAccountCreate = await Account.findOne({
+            _id: item.createdBy.accountId
+        }).select("fullName")
+        if (infoAccountCreate) {
+            item["infoAccountCreate"] = infoAccountCreate
+        }
+        const lastLog = item.updatedBy[item.updatedBy.length - 1]
+        if (lastLog) {
+            const infoAccountUpdate = await Account.findOne({
+                _id: lastLog.accountId
+            }).select("fullName")
+            if (infoAccountUpdate) {
+                item["infoAccountUpdate"] = infoAccountUpdate
+                item["updatedAt"] = lastLog.updatedAt
+            }
+        }
+    }
+
     res.render("admin/pages/songs/index", {
         pageTitle: "Danh sách bài hát",
         songs: songs,
@@ -101,10 +122,18 @@ export const changeStatus = async (req: Request, res: Response) => {
             return
         }
 
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await Song.updateOne({
             _id: id
         }, {
-            status: status
+            status: status,
+            $push: {
+                updatedBy: updatedBy
+            }
         })
     
         req.flash("success", "Cập nhật trạng thái thành công!")
@@ -123,6 +152,11 @@ export const changeMulti = async (req: Request, res: Response) => {
 
     const type: string = req.body.type
     const ids: string[] = req.body.ids.split(", ")
+
+    const updatedBy = {
+        accountId: res.locals.user.id,
+        updatedAt: new Date()
+    }
     switch (type) {
         case "active":
             if (!roles.permissions.includes("song_edit")) {
@@ -137,7 +171,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                     $in: ids
                 }
             }, {
-                status: "active"
+                status: "active",
+                $push: {
+                    updatedBy: updatedBy
+                }
             })
             req.flash("success", `Cập nhật trạng thái thành công cho ${ids.length} bài hát`)
             res.redirect("back")
@@ -155,7 +192,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                     $in: ids
                 }
             }, {
-                status: "inactive"
+                status: "inactive",
+                $push: {
+                    updatedBy: updatedBy
+                }
             })
             req.flash("success", `Cập nhật trạng thái thành công cho ${ids.length} bài hát`)
             res.redirect("back")
@@ -173,7 +213,11 @@ export const changeMulti = async (req: Request, res: Response) => {
                     $in: ids
                 }
             }, {
-                deleted: true
+                deleted: true,
+                deletedBy: {
+                    accountId: res.locals.user.id,
+                    deletedAt: new Date()
+                }
             })
             req.flash("success", `Xóa thành công ${ids.length} bài hát`)
             res.redirect("back")
@@ -193,7 +237,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                 await Song.updateOne({
                     _id: id
                 }, {
-                    position: pos
+                    position: pos,
+                    $push: {
+                        updatedBy: updatedBy
+                    }
                 })
             }
             req.flash("success", `Đã cập nhật vị trí cho ${ids.length} bài hát`)
@@ -236,7 +283,11 @@ export const deleteSong = async (req: Request, res: Response) => {
         await Song.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                accountId: res.locals.user.id,
+                deletedAt: new Date()
+            }
         })
         req.flash("success", "Xóa thành công bài hát!")
         res.redirect("back")
@@ -304,7 +355,11 @@ export const createPost = async (req: Request, res: Response) => {
         audio?: String,
         status: String,
         avatar: String,
-        description: String
+        description: String,
+        createdBy: {
+            accountId: String,
+            createdAt: Date
+        }
     }
 
     let avatar = ""
@@ -326,7 +381,11 @@ export const createPost = async (req: Request, res: Response) => {
         description: req.body.description,
         status: req.body.status,
         avatar: avatar,
-        audio: audio
+        audio: audio,
+        createdBy: {
+            accountId: res.locals.user.id,
+            createdAt: new Date()
+        }
     }
 
     if (req.body.position) {
@@ -334,8 +393,13 @@ export const createPost = async (req: Request, res: Response) => {
     } else {
         dataSong.position = countSong + 1
     }
+
+    if (req.body.lyrics) {
+        dataSong.lyrics = req.body.lyrics
+    }
     
     const newSong = new Song(dataSong)
+    console.log(newSong)
     await newSong.save()
 
     req.flash("success", "Tạo thành công bài hát!")
@@ -446,9 +510,19 @@ export const editPatch = async (req: Request, res: Response) => {
             dataSong.audio = req.body.audio[0]
         }
         
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await Song.updateOne({
             _id: id
-        }, dataSong)
+        }, {
+            $set: dataSong,
+            $push: {
+                updatedBy: updatedBy
+            }
+        })
 
         req.flash("success", "Cập nhật thành công bài hát!")
         res.redirect(`${systemConfig.prefixAdmin}/songs`)

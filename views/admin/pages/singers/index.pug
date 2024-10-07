@@ -130,6 +130,8 @@ block main
                                 if (item.updatedBy.length > 0)
                                     p #{item.infoAccountUpdate.fullName}
                                     +format-dateTime(item.updatedAt)
+                                else 
+                                    p N/A
 
     +pagination(pagination)                         
 

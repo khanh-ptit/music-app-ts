@@ -33,9 +33,18 @@ const songSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false
     },
-    deletedAt: Date
-}, {
-    timestamps: true
+    createdBy: {
+        accountId: String,
+        createdAt: Date
+    },
+    updatedBy: [{
+            accountId: String,
+            updatedAt: Date
+        }],
+    deletedBy: {
+        accountId: String,
+        deletedAt: Date
+    }
 });
 const Song = mongoose_1.default.model("Song", songSchema, "songs");
 exports.default = Song;

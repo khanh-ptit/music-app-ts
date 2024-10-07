@@ -29,9 +29,18 @@ const songSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    deletedAt: Date
-}, {
-    timestamps: true
+    createdBy: {
+        accountId: String,
+        createdAt: Date
+    },
+    updatedBy: [{
+        accountId: String,
+        updatedAt: Date
+    }],
+    deletedBy: {
+        accountId: String,
+        deletedAt: Date
+    }
 })
 
 const Song = mongoose.model("Song", songSchema, "songs")
