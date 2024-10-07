@@ -1,6 +1,7 @@
 extends ../../layouts/default.pug
 include ../../mixins/box-head.pug
 include ../../mixins/alert.pug
+include ../../mixins/moment.pug
 
 block main 
     +alert-success(5000)
@@ -13,7 +14,12 @@ block main
 
                     .inner-actions 
                         div(class="inner-action inner-time")
-                            <i class="fa-regular fa-clock"></i> 20/10/2023
+                            <i class="fa-regular fa-clock"></i>
+                                span
+                                if (song.createdBy.createdAt)
+                                    +format-date(song.createdBy.createdAt)
+                                else  
+                                    | 01/01/2024 
                         div(class="inner-action inner-singer")
                             <i class="fa-solid fa-microphone-lines"></i> 
                             a(href=`/songs/${song.singerInfo.slug}` class="no-underline") #{song.singerInfo.fullName}

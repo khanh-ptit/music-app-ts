@@ -1,4 +1,58 @@
 extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+include ../../mixins/moment.pug
 
 block main 
-    h1 Trang chủ
+    .container.my-3 
+        .row 
+            .col-12 
+                +box-head("Chủ đề nổi bật")
+    
+        .row
+            each item in topics 
+                .col-4.mb-3
+                    div(class="card")
+                        img(src=item.avatar)
+                        div(class="card-body")
+                            h5(class="card-title") #{item.title}
+                            p(class="card-text") #{item.description}
+                            a(href=`/songs/${item.slug}` class="btn btn-primary") Xem chi tiết
+        .row.d-flex.justify-content-center.align-items-center
+            button(
+                class="btn btn-secondary"
+                button-more-topics
+            ) Xem Thêm
+    
+    .container.my-3 
+        .row 
+            .col-12 
+                +box-head("Bài hát mới nhất")
+    
+        .row
+            each item in newSongs
+                .col-6.mb-3
+                    div(class="song-item")
+                        div(class="inner-image")
+                            a(href=`/songs/detail/${item.slug}`)
+                                img(src=item.avatar)
+                        div(class="inner-content")
+                            div(class="inner-title")
+                                a(href=`/songs/detail/${item.slug}`) #{item.title}
+                            div(class="inner-singer")
+                                i(class="fa-solid fa-microphone-lines")
+                                |  #{item.infoSinger.fullName}
+                            div(class="inner-like")
+                                i(class="fa-solid fa-thumbs-up")
+                                |  #{item.like.length} 
+                            div(class="inner-time" style="display: inline-block")
+                                i(class="fa-regular fa-clock")
+                                span
+                                    if (item.createdBy.createdAt)
+                                        +format-date(item.createdBy.createdAt)
+
+        .row.d-flex.justify-content-center.align-items-center
+            button(
+                class="btn btn-secondary"
+                button-more-songs
+            ) Xem Thêm
+        

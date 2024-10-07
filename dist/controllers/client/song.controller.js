@@ -29,7 +29,7 @@ const list = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             topicId: topicId,
             status: "active",
             deleted: false
-        }).select("avatar title slug singerId like");
+        }).select("avatar title slug singerId like createdBy");
         for (const item of songs) {
             const singerInfo = yield singer_model_1.default.findOne({
                 _id: item.singerId

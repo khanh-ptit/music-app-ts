@@ -453,3 +453,16 @@
     color: #ffffff !important; /* Màu chữ trắng */
 }
 /* End toast */
+
+.song-item .inner-time {
+    display: flex;
+    align-items: center; /* Đảm bảo icon và span nằm trên cùng một dòng */
+}
+
+.song-item .inner-time i {
+    margin-right: 5px; /* Thêm khoảng cách giữa icon và nội dung */
+}
+
+.song-item .inner-time span {
+    display: inline-block;
+}

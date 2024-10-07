@@ -1,9 +1,40 @@
 import { Request, Response } from "express";
+import Topic from "../../models/topic.model";
+import { SortOrder } from "mongoose";
+import Song from "../../models/song.model";
+import Singer from "../../models/singer.model";
 
 // [GET] /
-export const index = (req: Request, res: Response) => {
+export const index = async (req: Request, res: Response) => {
     const settingGeneral = res.locals.settingGeneral
+
+    let find = {
+        deleted: false
+    }
+    let sort = {
+        position: "desc" as SortOrder
+    }
+    const topics = await Topic
+        .find(find)
+        .sort(sort)
+        .limit(3)
+        .select("-status -position")
+
+    const newSongs = await Song
+        .find(find)
+        .sort(sort)
+        .limit(4)
+
+    for (const item of newSongs) {
+        const infoSinger = await Singer.findOne({
+            _id: item.singerId
+        })
+        item["infoSinger"] = infoSinger
+    }
+
     res.render("client/pages/home/index.pug", {
-        pageTitle: settingGeneral.websiteName
+        pageTitle: settingGeneral.websiteName,
+        topics: topics,
+        newSongs: newSongs
     })
 }
