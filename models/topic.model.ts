@@ -17,9 +17,18 @@ const topicSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    deletedAt: Date
-}, {
-    timestamps: true
+    createdBy: {
+        accountId: String,
+        createdAt: Date
+    },
+    updatedBy: [{
+        accountId: String,
+        updatedAt: Date
+    }],
+    deletedBy: {
+        accountId: String,
+        deletedAt: Date
+    }
 })
 
 const Topic = mongoose.model("Topic", topicSchema, "topics")

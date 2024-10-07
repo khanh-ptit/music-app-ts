@@ -5,6 +5,7 @@ import filterStatusHelper from "../../helpers/filterStatus";
 import searchHelper from "../../helpers/search";
 import { SortOrder } from "mongoose";
 import paginationHelper from "../../helpers/pagination";
+import Account from "../../models/account.model";
 
 // [GET] /admin/topics/
 export const index = async (req: Request, res: Response) => {
@@ -40,7 +41,7 @@ export const index = async (req: Request, res: Response) => {
     }
 
     let sort: ObjectSort = {
-        position: "asc"
+        position: "desc"
     }
 
     if (req.query.sortKey && req.query.sortValue) {
@@ -63,7 +64,29 @@ export const index = async (req: Request, res: Response) => {
         .sort(sort)
         .limit(objectPagination.limitItems)
         .skip(objectPagination.skip)
-    // console.log(topics)
+    
+    for (const item of topics) {
+        if (item.createdBy.createdAt) {
+            const infoAccountCreate = await Account.findOne({
+                _id: item.createdBy.accountId
+            }).select("fullName")
+            if (infoAccountCreate) {
+                item["infoAccountCreate"] = infoAccountCreate
+            }
+        }
+
+        if (item.updatedBy.length > 0) {
+            const lastLog = item.updatedBy[item.updatedBy.length - 1]
+            const infoAccountUpdate = await Account.findOne({
+                _id: lastLog.accountId
+            })
+            if (infoAccountUpdate) {
+                item["infoAccountUpdate"] = infoAccountUpdate
+                item["updatedAt"] = lastLog.updatedAt
+            }
+        }
+    }
+
     res.render("admin/pages/topics/index", {
         pageTitle: "Danh sách chủ đề",
         topics: topics,
@@ -102,10 +125,18 @@ export const changeStatus = async (req: Request, res: Response) => {
             return
         }
 
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await Topic.updateOne({
             _id: id
         }, {
-            status: status
+            status: status, 
+            $push: {
+                updatedBy: updatedBy
+            }
         })
 
         req.flash("success", "Cập nhật thành công trạng thái!")
@@ -149,7 +180,11 @@ export const deleteItem = async (req: Request, res: Response) => {
         await Topic.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                accountId: res.locals.user.id,
+                deletedAt: new Date()
+            }
         })
 
         req.flash("success", "Xóa thành công chủ đề!")
@@ -169,6 +204,12 @@ export const changeMulti = async (req: Request, res: Response) => {
 
         const type = req.body.type
         const ids = req.body.ids.split(", ")
+
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         switch (type) {
             case "active":
                 if (!roles.permissions.includes("topic_edit")) {
@@ -183,7 +224,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                         $in: ids
                     }
                 }, {
-                    status: "active"
+                    status: "active",
+                    $push: {
+                        updatedBy: updatedBy
+                    }
                 })
                 req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`)
                 res.redirect(`${systemConfig.prefixAdmin}/topics`)
@@ -201,7 +245,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                         $in: ids
                     }
                 }, {
-                    status: "inactive"
+                    status: "inactive",
+                    $push: {
+                        updatedBy: updatedBy
+                    }
                 })
                 req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} bản ghi`)
                 res.redirect(`${systemConfig.prefixAdmin}/topics`)
@@ -219,7 +266,11 @@ export const changeMulti = async (req: Request, res: Response) => {
                         $in: ids
                     }
                 }, {
-                    deleted: true
+                    deleted: true,
+                    deletedBy: {
+                        accountId: res.locals.user.id,
+                        deletedAt: new Date()
+                    }
                 })
                 req.flash("success", `Đã xóa ${ids.length} bản ghi`)
                 res.redirect(`${systemConfig.prefixAdmin}/topics`)
@@ -239,7 +290,10 @@ export const changeMulti = async (req: Request, res: Response) => {
                     await Topic.updateOne({
                         _id: id
                     }, {
-                        position: pos
+                        position: pos,
+                        $push: {
+                            updatedBy: updatedBy
+                        }
                     })
                 }
                 req.flash("success", `Đã cập nhật vị trí cho ${ids.length} bản ghi`)
@@ -347,9 +401,20 @@ export const editPatch = async (req: Request, res: Response) => {
         if (req.body.description) {
             dataTopic.description = req.body.description
         }
+
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await Topic.updateOne({
             _id: id
-        }, dataTopic)
+        }, {
+            $set: dataTopic,
+            $push: {
+                updatedBy: updatedBy
+            }
+        })
 
         req.flash("success", "Cập nhật thành công chủ đề!")
         res.redirect(`${systemConfig.prefixAdmin}/topics`)
@@ -376,7 +441,7 @@ export const create = async (req: Request, res: Response) => {
         deleted: false
     })
     res.render("admin/pages/topics/create.pug", {
-        pageTitle: "Thêm mới danh mục",
+        pageTitle: "Thêm mới chủ đề",
         countTopic: countTopic
     })
 }
@@ -398,7 +463,12 @@ export const createPost = async (req: Request, res: Response) => {
         avatar: String,
         description: String,
         position: Number,
-        status: String
+        status: String,
+        createdBy: {
+            accountId: String,
+            createdAt: Date
+        }
+        
     }
 
     const dataTopic: Topic = {
@@ -406,7 +476,11 @@ export const createPost = async (req: Request, res: Response) => {
         avatar: req.body.avatar,
         description: req.body.description,
         position: parseInt(req.body.position),
-        status: req.body.status
+        status: req.body.status,
+        createdBy: {
+            accountId: res.locals.user.id,
+            createdAt: new Date()
+        }
     }
 
     const newTopic = new Topic(dataTopic)

@@ -5,6 +5,7 @@ include ../../mixins/form-search.pug
 include ../../mixins/form-change-multi.pug
 include ../../mixins/sort.pug
 include ../../mixins/pagination.pug
+include ../../mixins/moment.pug
 
 block main 
     +alert-success(5000)
@@ -54,6 +55,8 @@ block main
                         th Vị trí
                         th Trạng thái
                         th Hành động
+                        th Người tạo
+                        th Người sửa
                 tbody
                     each item, index in topics
                         tr 
@@ -117,6 +120,16 @@ block main
                                         button-delete 
                                         data-id=item.id
                                     ) Xóa
+                            td 
+                                if (item.createdBy.createdAt)
+                                    p #{item.infoAccountCreate.fullName}
+                                    +format-dateTime(item.createdBy.createdAt)
+                                else 
+                                    p N/A
+                            td 
+                                if (item.updatedBy.length > 0)
+                                    p #{item.infoAccountUpdate.fullName}
+                                    +format-dateTime(item.updatedAt)
 
     +pagination(pagination)                         
 

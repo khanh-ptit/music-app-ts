@@ -21,9 +21,18 @@ const topicSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false
     },
-    deletedAt: Date
-}, {
-    timestamps: true
+    createdBy: {
+        accountId: String,
+        createdAt: Date
+    },
+    updatedBy: [{
+            accountId: String,
+            updatedAt: Date
+        }],
+    deletedBy: {
+        accountId: String,
+        deletedAt: Date
+    }
 });
 const Topic = mongoose_1.default.model("Topic", topicSchema, "topics");
 exports.default = Topic;
