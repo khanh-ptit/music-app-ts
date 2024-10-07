@@ -15,10 +15,33 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.permissionsPatch = exports.permissions = exports.detail = exports.editPatch = exports.edit = exports.deleteItem = exports.createPost = exports.create = exports.index = void 0;
 const system_1 = require("../../config/system");
 const role_model_1 = __importDefault(require("../../models/role.model"));
+const account_model_1 = __importDefault(require("../../models/account.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const roles = yield role_model_1.default.find({
         deleted: false
     });
+    for (const item of roles) {
+        if (item.createdBy.createdAt) {
+            if (item.createdBy.createdAt) {
+                const infoAccountCreate = yield account_model_1.default.findOne({
+                    _id: item.createdBy.accountId
+                }).select("fullName");
+                if (infoAccountCreate) {
+                    item["infoAccountCreate"] = infoAccountCreate;
+                }
+            }
+        }
+        if (item.updatedBy.length > 0) {
+            const lastLog = item.updatedBy[item.updatedBy.length - 1];
+            const infoAccountUpdate = yield account_model_1.default.findOne({
+                _id: lastLog.accountId
+            });
+            if (infoAccountUpdate) {
+                item["infoAccountUpdate"] = infoAccountUpdate;
+                item["updatedAt"] = lastLog.updatedAt;
+            }
+        }
+    }
     res.render("admin/pages/roles/index", {
         pageTitle: "Nhóm quyền",
         roles: roles
@@ -34,7 +57,11 @@ exports.create = create;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const dataRole = {
         title: req.body.title,
-        description: req.body.description
+        description: req.body.description,
+        createdBy: {
+            accountId: res.locals.user.id,
+            createdAt: new Date()
+        }
     };
     const newRole = new role_model_1.default(dataRole);
     yield newRole.save();
@@ -58,7 +85,11 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         yield role_model_1.default.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                accountId: res.locals.user.id,
+                deletedAt: new Date()
+            }
         });
         req.flash("success", "Xoá thành công nhóm quyền!");
         res.redirect(`${system_1.systemConfig.prefixAdmin}/roles`);
@@ -118,9 +149,18 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (req.body.description) {
             dataRole.description = req.body.description;
         }
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        };
         yield role_model_1.default.updateOne({
             _id: id
-        }, dataRole);
+        }, {
+            $set: dataRole,
+            $push: {
+                updatedBy: updatedBy
+            }
+        });
         req.flash("success", "Cập nhật thành công role!");
         res.redirect(`${system_1.systemConfig.prefixAdmin}/roles`);
     }

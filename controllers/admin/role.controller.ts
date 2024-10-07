@@ -1,12 +1,37 @@
 import { Request, Response } from "express";
 import { systemConfig } from "../../config/system";
 import Role from "../../models/role.model";
+import Account from "../../models/account.model";
 
 // [GET] /admin/roles
 export const index = async (req: Request, res: Response) => {
     const roles = await Role.find({
         deleted: false
     })
+
+    for (const item of roles) {
+        if (item.createdBy.createdAt) {
+            if (item.createdBy.createdAt) {
+                const infoAccountCreate = await Account.findOne({
+                    _id: item.createdBy.accountId
+                }).select("fullName")
+                if (infoAccountCreate) {
+                    item["infoAccountCreate"] = infoAccountCreate
+                }
+            }
+        }
+
+        if (item.updatedBy.length > 0) {
+            const lastLog = item.updatedBy[item.updatedBy.length - 1]
+            const infoAccountUpdate = await Account.findOne({
+                _id: lastLog.accountId
+            })
+            if (infoAccountUpdate) {
+                item["infoAccountUpdate"] = infoAccountUpdate
+                item["updatedAt"] = lastLog.updatedAt
+            }
+        }
+    }
 
     res.render("admin/pages/roles/index", {
         pageTitle: "Nhóm quyền",
@@ -25,12 +50,20 @@ export const create = (req: Request, res: Response) => {
 export const createPost = async (req: Request, res: Response) => {
     interface Role {
         title: String,
-        description: String
+        description: String,
+        createdBy: {
+            accountId: String,
+            createdAt: Date
+        }
     }
 
     const dataRole: Role = {
         title: req.body.title,
-        description: req.body.description
+        description: req.body.description,
+        createdBy: {
+            accountId: res.locals.user.id,
+            createdAt: new Date()
+        }
     }
 
     const newRole = new Role(dataRole)
@@ -61,7 +94,11 @@ export const deleteItem = async (req: Request, res: Response) => {
         await Role.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                accountId: res.locals.user.id,
+                deletedAt: new Date()
+            }
         })
 
         req.flash("success", "Xoá thành công nhóm quyền!")
@@ -135,9 +172,19 @@ export const editPatch = async (req: Request, res: Response) => {
             dataRole.description = req.body.description
         }
 
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await Role.updateOne({
             _id: id
-        }, dataRole)
+        }, {
+            $set: dataRole,
+            $push: {
+                updatedBy: updatedBy
+            }
+        })
 
         req.flash("success", "Cập nhật thành công role!")
         res.redirect(`${systemConfig.prefixAdmin}/roles`)

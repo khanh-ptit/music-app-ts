@@ -1,6 +1,7 @@
 extends ../../layouts/default.pug
 include ../../mixins/form-change-multi.pug
 include ../../mixins/alert.pug
+include ../../mixins/moment.pug
 
 block main 
     +alert-success(5000)
@@ -33,6 +34,8 @@ block main
                         th Tiêu đề
                         th Mô tả ngắn
                         th Hành động
+                        th Người tạo
+                        th Người sửa
                 tbody 
                     each item, index in roles
                         tr
@@ -52,6 +55,18 @@ block main
                                     class="btn btn-danger btn-sm ml-1"
                                     button-delete=item.id
                                 ) Xóa
+                            td 
+                                if (item.createdBy.createdAt)
+                                    p #{item.infoAccountCreate.fullName}
+                                    +format-dateTime(item.createdBy.createdAt)
+                                else 
+                                    p N/A
+                            td 
+                                if (item.updatedBy.length > 0)
+                                    p #{item.infoAccountUpdate.fullName}
+                                    +format-dateTime(item.updatedAt)
+                                else 
+                                    p N/A
     
     form(
         action=``
