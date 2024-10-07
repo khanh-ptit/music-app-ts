@@ -43,9 +43,16 @@ const userSchema = new mongoose_1.default.Schema({
     deleted: {
         type: Boolean,
         default: false
+    },
+    createdAt: Date,
+    updatedBy: [{
+            accountId: String,
+            updatedAt: Date
+        }],
+    deletedBy: {
+        accountId: String,
+        deletedAt: Date
     }
-}, {
-    timestamps: true
 });
 const User = mongoose_1.default.model("User", userSchema, "users");
 exports.default = User;

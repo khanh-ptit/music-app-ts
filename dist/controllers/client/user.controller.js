@@ -58,7 +58,8 @@ const registerPost = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const dataUser = {
             fullName: req.body.fullName,
             email: req.body.email,
-            password: (0, md5_1.default)(req.body.password)
+            password: (0, md5_1.default)(req.body.password),
+            createdAt: new Date()
         };
         const existEmail = yield user_model_1.default.findOne({
             email: dataUser.email,

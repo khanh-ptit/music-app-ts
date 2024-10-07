@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteItem = exports.changeStatus = exports.index = void 0;
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const filterStatusUser_1 = __importDefault(require("../../helpers/filterStatusUser"));
+const account_model_1 = __importDefault(require("../../models/account.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filterStatus = (0, filterStatusUser_1.default)(req.query);
     let find = {
@@ -26,6 +27,18 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const users = yield user_model_1.default
         .find(find)
         .select("-password -tokenUser");
+    for (const item of users) {
+        if (item.updatedBy.length > 0) {
+            const lastLog = item.updatedBy[item.updatedBy.length - 1];
+            const infoAccountUpdate = yield account_model_1.default.findOne({
+                _id: lastLog.accountId
+            });
+            if (infoAccountUpdate) {
+                item["infoAccountUpdate"] = infoAccountUpdate;
+                item["updatedAt"] = lastLog.updatedAt;
+            }
+        }
+    }
     res.render("admin/pages/users/index", {
         pageTitle: "Tài khoản Client",
         users: users,
@@ -48,10 +61,17 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             });
             return;
         }
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        };
         yield user_model_1.default.updateOne({
             _id: id
         }, {
-            status: status
+            status: status,
+            $push: {
+                updatedBy: updatedBy
+            }
         });
         res.json({
             code: 200,
@@ -84,7 +104,11 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         yield user_model_1.default.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                accountId: res.locals.user.id,
+                deletedAt: new Date()
+            }
         });
         res.json({
             code: 200,

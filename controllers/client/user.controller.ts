@@ -25,11 +25,13 @@ export const registerPost = async (req: Request, res: Response) => {
             fullName: String,
             email: String,
             password: String,
+            createdAt: Date
         }
         const dataUser: ObjectUser = {
             fullName: req.body.fullName,
             email: req.body.email,
-            password: md5(req.body.password)
+            password: md5(req.body.password),
+            createdAt: new Date()
         }
 
         const existEmail = await User.findOne({

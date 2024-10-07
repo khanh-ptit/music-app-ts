@@ -1,22 +1,24 @@
 // Button change status
-const listButtonChangeStatus = document.querySelectorAll("[button-change-status]")
+const listButtonChangeStatus = document.querySelectorAll("[button-change-status]");
 if (listButtonChangeStatus.length > 0) {
     listButtonChangeStatus.forEach(button => {
         button.addEventListener("click", () => {
-            let status = button.getAttribute("data-status")
-            const id = button.getAttribute("data-id")
+            let status = button.getAttribute("data-status");
+            const id = button.getAttribute("data-id");
 
-            status = (status == "active") ? "inactive" : "active"
+            // Toggle status between active and inactive
+            status = (status === "active") ? "inactive" : "active";
 
-            const link = `/admin/users/change-status/${status}/${id}`
+            const link = `/admin/users/change-status/${status}/${id}`;
             const option = {
                 method: "PATCH"
-            }
+            };
 
             fetch(link, option)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.code == 200) {
+                    if (data.code === 200) {
+                        // Update button based on new status
                         if (data.status === "active") {
                             button.classList.remove("badge-danger");
                             button.classList.add("badge-success");
@@ -28,16 +30,24 @@ if (listButtonChangeStatus.length > 0) {
                             button.textContent = "Dừng hoạt động";
                             button.setAttribute("data-status", "inactive");
                         }
-                        toastr.success(data.message)
+                        toastr.success(data.message);
+
+                        // Optional: Reload the page after a delay (uncomment if needed)
+                        // setTimeout(() => {
+                        //     window.location.reload();
+                        // }, 5000);
                     } else {
-                        toastr.error(data.message)
+                        toastr.error(data.message);
                     }
                 })
-            
-        })
-    })
+                .catch(err => {
+                    toastr.error("Đã xảy ra lỗi trong quá trình kết nối với server!");
+                });
+        });
+    });
 }
-// End buuton change status
+// End button change status
+
 
 // Button delete
 const listButtonDelete = document.querySelectorAll("[button-delete]")

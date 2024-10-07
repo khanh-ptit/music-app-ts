@@ -1,6 +1,7 @@
 extends ../../layouts/default.pug
 include ../../mixins/filter-status.pug
 include ../../mixins/form-change-multi.pug
+include ../../mixins/moment.pug
 
 block main 
     h1.mb-4 Danh sách tài khoản Client
@@ -25,6 +26,7 @@ block main
                         th Trạng thái
                         th Hành động
                         th Thời gian tạo
+                        th Người sửa
                 tbody
                     each item, index in users 
                         tr 
@@ -47,7 +49,7 @@ block main
                                         data-id=item.id
                                         button-change-status
                                         class="badge badge-danger"
-                                    ) Hoạt động
+                                    ) Dừng hoạt động
                                 else 
                                     span(
                                         style="width="
@@ -60,7 +62,16 @@ block main
                                     button-delete
                                 ) Xóa
                             td 
-                                p None
+                                if (item.createdAt)
+                                    +format-dateTime(item.createdAt)
+                                else 
+                                    p N/A
+                            td 
+                                if (item.updatedBy.length > 0)
+                                    p #{item.infoAccountUpdate.fullName}
+                                    +format-dateTime(item.updatedAt)
+                                else 
+                                    p N/A
                                 
     script(src="/admin/js/user.js") 
 

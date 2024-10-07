@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../../models/user.model";
 import filterStatusHelper from "../../helpers/filterStatusUser";
+import Account from "../../models/account.model";
 
 // [GET] /admin/users
 export const index = async (req: Request, res: Response) => {
@@ -17,6 +18,19 @@ export const index = async (req: Request, res: Response) => {
     const users = await User
         .find(find)
         .select("-password -tokenUser")
+
+    for (const item of users) {
+        if (item.updatedBy.length > 0) {
+            const lastLog = item.updatedBy[item.updatedBy.length - 1]
+            const infoAccountUpdate = await Account.findOne({
+                _id: lastLog.accountId
+            })
+            if (infoAccountUpdate) {
+                item["infoAccountUpdate"] = infoAccountUpdate
+                item["updatedAt"] = lastLog.updatedAt
+            }
+        }
+    }
     
     res.render("admin/pages/users/index", {
         pageTitle: "Tài khoản Client",
@@ -45,10 +59,18 @@ export const changeStatus = async (req: Request, res: Response) => {
             return
         }
 
+        const updatedBy = {
+            accountId: res.locals.user.id,
+            updatedAt: new Date()
+        }
+
         await User.updateOne({
             _id: id
         }, {
-            status: status
+            status: status,
+            $push: {
+                updatedBy: updatedBy
+            }
         })
 
         res.json({
@@ -86,7 +108,11 @@ export const deleteItem = async (req: Request, res: Response) => {
         await User.updateOne({
             _id: id
         }, {
-            deleted: true
+            deleted: true,
+            deletedBy: {
+                accountId: res.locals.user.id,
+                deletedAt: new Date()
+            }
         })
 
         res.json({
