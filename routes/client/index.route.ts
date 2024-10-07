@@ -5,14 +5,19 @@ import { favoriteSongRoutes } from "./favorite-song.route"
 import { searchRoutes } from "./search.route"
 import { userRoutes } from "./user.route"
 import { setUser } from "../../middlewares/client/user.middleware"
+import { settingGeneral } from "../../middlewares/client/setting.middleware"
+import { homeRoutes } from "./home.route"
+import * as authMiddleware from "../../middlewares/client/auth.middleware"
 
 const routeClient = (app: Express): void => {
     app.use(setUser)
+    app.use(settingGeneral)
     app.use("/topics", topicRoutes)
     app.use("/songs", songRoutes)
-    app.use("/favorite-songs", favoriteSongRoutes)
+    app.use("/favorite-songs", authMiddleware.requireAuth, favoriteSongRoutes)
     app.use("/search", searchRoutes)
     app.use("/user", userRoutes)
+    app.use("/", homeRoutes)
 }
 
 export default routeClient
