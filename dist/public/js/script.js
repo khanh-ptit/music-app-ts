@@ -218,3 +218,29 @@ if (boxSearch) {
     })
 }
 // End search suggest
+
+// Btn-more-topics
+const btnMoreTopics = document.querySelector("[button-more-topics]")
+if (btnMoreTopics) {
+    btnMoreTopics.addEventListener("click", () => {
+
+    })
+}
+
+// Pagination
+const listButtonPagination = document.querySelectorAll("[button-pagination]")
+if (listButtonPagination.length > 0) {
+    let url = new URL(window.location.href)
+    listButtonPagination.forEach(button => {
+        button.addEventListener("click", () => {
+            const currentPage = button.getAttribute("button-pagination")
+            if (currentPage) {
+                url.searchParams.set("page", currentPage)
+            } else {
+                url.searchParams.delete("page")
+            }
+            window.location.href = url.href
+        })
+    })
+}
+// End Pagination

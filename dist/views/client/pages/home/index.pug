@@ -19,9 +19,10 @@ block main
                             a(href=`/songs/${item.slug}` class="btn btn-primary") Xem chi tiết
         .row.d-flex.justify-content-center.align-items-center
             button(
-                class="btn btn-secondary"
+                class="btn btn-info"
                 button-more-topics
-            ) Xem Thêm
+            )
+                <i class="fa-solid fa-angles-down"></i>
     
     .container.my-3 
         .row 
@@ -52,7 +53,26 @@ block main
 
         .row.d-flex.justify-content-center.align-items-center
             button(
-                class="btn btn-secondary"
+                class="btn btn-info"
                 button-more-songs
             ) Xem Thêm
-        
+    
+    .container.my-3 
+        .row 
+            .col-12 
+                +box-head("Ca sĩ nổi bật")
+    
+        .row
+            each item in newSingers
+                .col-4.mb-3
+                    div(class="card")
+                        img(src=item.avatar)
+                        div(class="card-body")
+                            h6(class="card-title") #{item.fullName}
+                            //- p(class="card-text") #{item.description}
+                            a(href=`/songs/${item.slug}` class="btn btn-primary") Xem 
+        .row.d-flex.justify-content-center.align-items-center
+            button(
+                class="btn btn-secondary"
+                button-more-topics
+            ) Xem Thêm

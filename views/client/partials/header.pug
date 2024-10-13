@@ -1,7 +1,7 @@
 header.header
     .container 
         .row.align-items-center 
-            .col-2.align-items-left
+            .col-2
                 .inner-logo 
                     a(href="/")
                         img(src=settingGeneral.logo, alt="Logo")
@@ -10,8 +10,9 @@ header.header
                     form(
                         action="/search/result"
                         method="GET"
+                        autocomplete="off"  
                     )
-                        div(class="form-group d-flex mb-0")
+                        .form-group.d-flex.mb-0
                             input(
                                 type="text"
                                 placeholder="Nhập từ khóa..."
@@ -24,7 +25,7 @@ header.header
                                 class="btn btn-primary"
                             ) Tìm
                     .inner-suggest
-                        .inner-list
+                        .inner-list  
             .col-6
                 .inner-menu 
                     ul 

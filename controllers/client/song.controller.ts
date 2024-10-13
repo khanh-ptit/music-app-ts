@@ -3,6 +3,7 @@ import Topic from "../../models/topic.model"
 import Song from "../../models/song.model"
 import Singer from "../../models/singer.model"
 import FavoriteSong from "../../models/favorite-song.model"
+import pagination from "../../helpers/pagination-client"
 
 // [GET] /songs/:slugTopic
 export const list = async (req: Request, res: Response): Promise<void> => {
@@ -14,11 +15,22 @@ export const list = async (req: Request, res: Response): Promise<void> => {
             deleted: false
         })
         const topicId = topic.id
+
+        // Pagination 
+        const countDocuments = await Song.countDocuments({deleted: false})
+        const objectPagination = pagination(req.query, res, countDocuments, "/songs/nhac-tre")
+        if (!objectPagination) return
+        // console.log(objectPagination)
+        // End pagination
+
         const songs = await Song.find({
             topicId: topicId,
             status: "active",
             deleted: false
-        }).select("avatar title slug singerId like createdBy")
+        })
+            .select("avatar title slug singerId like createdBy")
+            .limit(objectPagination["limitItems"])
+            .skip(objectPagination["skip"])
         
         for (const item of songs) {
             const singerInfo = await Singer.findOne({
@@ -29,7 +41,8 @@ export const list = async (req: Request, res: Response): Promise<void> => {
 
         res.render("client/pages/songs/list", {
             pageTitle: topic.title,
-            songs: songs
+            songs: songs,
+            pagination: objectPagination
         })
     } catch (error) {
         res.render("client/pages/error/404", {

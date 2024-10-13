@@ -17,6 +17,7 @@ const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const song_model_1 = __importDefault(require("../../models/song.model"));
 const singer_model_1 = __importDefault(require("../../models/singer.model"));
 const favorite_song_model_1 = __importDefault(require("../../models/favorite-song.model"));
+const pagination_client_1 = __importDefault(require("../../helpers/pagination-client"));
 const list = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const topic = yield topic_model_1.default.findOne({
@@ -25,11 +26,18 @@ const list = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             deleted: false
         });
         const topicId = topic.id;
+        const countDocuments = yield song_model_1.default.countDocuments({ deleted: false });
+        const objectPagination = (0, pagination_client_1.default)(req.query, res, countDocuments, "/songs/nhac-tre");
+        if (!objectPagination)
+            return;
         const songs = yield song_model_1.default.find({
             topicId: topicId,
             status: "active",
             deleted: false
-        }).select("avatar title slug singerId like createdBy");
+        })
+            .select("avatar title slug singerId like createdBy")
+            .limit(objectPagination["limitItems"])
+            .skip(objectPagination["skip"]);
         for (const item of songs) {
             const singerInfo = yield singer_model_1.default.findOne({
                 _id: item.singerId
@@ -38,7 +46,8 @@ const list = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         res.render("client/pages/songs/list", {
             pageTitle: topic.title,
-            songs: songs
+            songs: songs,
+            pagination: objectPagination
         });
     }
     catch (error) {

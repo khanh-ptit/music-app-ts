@@ -1,2 +1,41 @@
-footer.footer 
-    | #{settingGeneral.copyright}
+footer.footer(style="background-color: orange; padding: 20px; color: white;")
+    .container
+        .row
+            .col-md-3
+                h5 Liên hệ
+                p Địa chỉ: 123 Đường Phố, Thành phố, Quốc gia
+                p Điện thoại: +123 456 789
+                p Email: contact@example.com
+                
+
+            .col-md-3
+                h5 Chuyên mục
+                ul.list-unstyled
+                    li 
+                        a(href="/") Trang chủ
+                    li 
+                        a(href="/topics") Chủ đề
+                    li 
+                        a(href="/user/info") Thông tin cá nhân
+
+            .col-md-3
+                h5 Theo dõi chúng tôi
+                a(href="https://facebook.com" target="_blank") 
+                    <i class="fa-brands fa-facebook"> Facebook</i>
+                br 
+                a(href="https://twitter.com" target="_blank") 
+                    <i class="fa-brands fa-twitter"> Twitter</i> 
+                br
+                a(href="https://instagram.com" target="_blank") 
+                    <i class="fa-brands fa-tiktok"> Tiktok</i> 
+            .col-md-3
+                iframe(
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509826!2d144.95373531584423!3d-37.81627944202183!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f11fd81%3A0x5045675218ce7e33!2zMTIzIMSQxrDhu51uZyBQaOG7pSwgVGjhuqFuaCBwaOG7kSBQaMO6YywgUXXhuq1jIGdpYQ!5e0!3m2!1sen!2sau!4v1614211806000!5m2!1sen!2sau"
+                        width="100%"
+                        height="200"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                    )
+        .text-center.mt-3
+            | © #{settingGeneral.copyright} Bản quyền © 2024. Tất cả quyền được bảo lưu.

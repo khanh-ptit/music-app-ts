@@ -32,9 +32,15 @@ export const index = async (req: Request, res: Response) => {
         item["infoSinger"] = infoSinger
     }
 
+    const newSingers = await Singer
+        .find(find)
+        .sort(sort)
+        .limit(6)
+
     res.render("client/pages/home/index.pug", {
         pageTitle: settingGeneral.websiteName,
         topics: topics,
-        newSongs: newSongs
+        newSongs: newSongs,
+        newSingers: newSingers
     })
 }

@@ -1,6 +1,7 @@
 extends ../../layouts/default.pug
 include ../../mixins/box-head.pug
 include ../../mixins/moment.pug
+include ../../mixins/pagination.pug
 
 block main 
     .container.my-3 
@@ -30,3 +31,4 @@ block main
                                         +format-date(item.createdBy.createdAt)
                                     else  
                                         | 01/01/2024
+    +pagination(pagination)

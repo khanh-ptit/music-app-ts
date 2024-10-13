@@ -39,10 +39,15 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         item["infoSinger"] = infoSinger;
     }
+    const newSingers = yield singer_model_1.default
+        .find(find)
+        .sort(sort)
+        .limit(6);
     res.render("client/pages/home/index.pug", {
         pageTitle: settingGeneral.websiteName,
         topics: topics,
-        newSongs: newSongs
+        newSongs: newSongs,
+        newSingers: newSingers
     });
 });
 exports.index = index;
