@@ -862,3 +862,42 @@ footer.footer span {
     cursor: pointer;
 }
 
+.floating-buttons a {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.floating-buttons a:hover {
+    transform: scale(1.1);
+}
+
+#phone-button {
+    position: fixed; 
+    bottom: 80px; 
+    right: 20px; 
+    z-index: 1000; 
+    border-radius: 50%; 
+    width: 60px; 
+    height: 60px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background-color: #007bff; 
+    color: white; 
+    margin-bottom: 10px;
+}
+
+#messenger-button {
+    position: fixed; 
+    bottom: 20px; 
+    right: 20px; 
+    z-index: 1000; 
+    border-radius: 50%; 
+    width: 60px; 
+    height: 60px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background-color: #25D366; 
+    color: white;
+}
