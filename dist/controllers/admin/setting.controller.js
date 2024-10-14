@@ -24,22 +24,28 @@ const general = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.general = general;
 const generalPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
+    const ensureHttps = (url) => {
+        if (url.startsWith("http://")) {
+            return url.replace("http://", "https://");
+        }
+        return url;
+    };
     const dataSettingGeneral = {
         websiteName: req.body.websiteName,
         phone: req.body.phone,
         email: req.body.email,
         address: req.body.address,
         copyright: req.body.copyright,
-        facebook: req.body.facebook,
-        tiktok: req.body.tiktok,
-        twitter: req.body.twitter,
-        maps: req.body.maps
+        facebook: ensureHttps(req.body.facebook),
+        tiktok: ensureHttps(req.body.tiktok),
+        twitter: ensureHttps(req.body.twitter),
+        maps: ensureHttps(req.body.maps)
     };
     if (req.body.favicon) {
-        dataSettingGeneral.favicon = req.body.favicon[0];
+        dataSettingGeneral.favicon = ensureHttps(req.body.favicon[0]);
     }
     if (req.body.logo) {
-        dataSettingGeneral.logo = req.body.logo[0];
+        dataSettingGeneral.logo = ensureHttps(req.body.logo[0]);
     }
     yield setting_general_model_1.default.updateOne({
         _id: "67026270a95afb66c54704d5"
