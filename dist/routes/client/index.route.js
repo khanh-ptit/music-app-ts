@@ -32,6 +32,7 @@ const user_middleware_1 = require("../../middlewares/client/user.middleware");
 const setting_middleware_1 = require("../../middlewares/client/setting.middleware");
 const home_route_1 = require("./home.route");
 const authMiddleware = __importStar(require("../../middlewares/client/auth.middleware"));
+const singer_route_1 = require("./singer.route");
 const routeClient = (app) => {
     app.use(user_middleware_1.setUser);
     app.use(setting_middleware_1.settingGeneral);
@@ -41,5 +42,6 @@ const routeClient = (app) => {
     app.use("/search", search_route_1.searchRoutes);
     app.use("/user", user_route_1.userRoutes);
     app.use("/", home_route_1.homeRoutes);
+    app.use("/singers", singer_route_1.singerRoutes);
 };
 exports.default = routeClient;

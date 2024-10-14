@@ -360,3 +360,49 @@ export const passwordResetPost = async (req: Request, res: Response) => {
     req.flash("success", "Đổi mật khẩu thành công. Vui lòng đăng nhập để tiếp tục")
     res.redirect("/user/login")
 }
+
+// [GET] /user/info
+export const info = async (req: Request, res: Response) => {
+    const user = res.locals.user
+    res.render("client/pages/user/info", {
+        pageTitle: "Thông tin tài khoản",
+        user: user
+    })
+}
+
+// [GET] /user/edit
+export const edit = async (req: Request, res: Response) => {
+    res.render("client/pages/user/edit", {
+        pageTitle: "Chỉnh sửa tài khoản"
+    })
+}
+
+// [PATCH] /user/update-avatar
+export const updateAvatar = async (req: Request, res: Response) => {
+    try {
+        const id = res.locals.user.id
+        console.log(id)
+        console.log(req.body)
+        await User.updateOne({
+            _id: id
+        }, {
+            avatar: req.body.avatar
+        })
+        res.redirect("back")
+    } catch (error) {
+        res.redirect("back")
+    }
+}
+
+// [PATCH] /user/edit
+export const editPatch = async (req: Request, res: Response) => {
+    try {
+        const id = res.locals.user.id
+        await User.updateOne({
+            _id: id
+        }, req.body)
+        res.redirect("back")
+    } catch (error) {
+        res.redirect("back")
+    }
+}

@@ -8,6 +8,7 @@ import { setUser } from "../../middlewares/client/user.middleware"
 import { settingGeneral } from "../../middlewares/client/setting.middleware"
 import { homeRoutes } from "./home.route"
 import * as authMiddleware from "../../middlewares/client/auth.middleware"
+import { singerRoutes } from "./singer.route"
 
 const routeClient = (app: Express): void => {
     app.use(setUser)
@@ -18,6 +19,7 @@ const routeClient = (app: Express): void => {
     app.use("/search", searchRoutes)
     app.use("/user", userRoutes)
     app.use("/", homeRoutes)
+    app.use("/singers", singerRoutes)
 }
 
 export default routeClient

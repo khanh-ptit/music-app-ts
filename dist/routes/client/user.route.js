@@ -22,13 +22,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRoutes = void 0;
 const express_1 = require("express");
 const router = (0, express_1.Router)();
+const multer_1 = __importDefault(require("multer"));
+const upload = (0, multer_1.default)();
 const controller = __importStar(require("../../controllers/client/user.controller"));
 const validate = __importStar(require("../../validates/client/user.validate"));
 const authMiddleware = __importStar(require("../../middlewares/client/auth.middleware"));
+const uploadCloud = __importStar(require("../../middlewares/client/uploadCloud.middleware"));
 router.get("/register", controller.register);
 router.post("/register", validate.registerPost, controller.registerPost);
 router.get("/verify-user", controller.verifyUser);
@@ -44,4 +50,8 @@ router.get("/password/otp", controller.passwordOtp);
 router.post("/password/otp", controller.passwordOtpPost);
 router.get("/password/reset", authMiddleware.requireAuth, controller.passwordReset);
 router.post("/password/reset", authMiddleware.requireAuth, controller.passwordResetPost);
+router.get("/info", authMiddleware.requireAuth, controller.info);
+router.get("/edit", authMiddleware.requireAuth, controller.edit);
+router.patch("/update-avatar", upload.single("avatar"), uploadCloud.uploadSingle, authMiddleware.requireAuth, controller.updateAvatar);
+router.patch("/edit", authMiddleware.requireAuth, controller.editPatch);
 exports.userRoutes = router;

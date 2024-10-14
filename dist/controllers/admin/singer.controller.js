@@ -167,6 +167,10 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         description: req.body.description,
         position: parseInt(req.body.position),
         status: req.body.status,
+        realName: req.body.realName,
+        birthYear: parseInt(req.body.birthYear),
+        hometown: req.body.hometown,
+        nationality: req.body.nationality,
         createdBy: {
             accountId: res.locals.user.id,
             createdAt: new Date()
@@ -308,7 +312,11 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const dataSinger = {
             fullName: req.body.fullName,
             position: parseInt(req.body.position),
-            status: req.body.status
+            status: req.body.status,
+            realName: req.body.realName,
+            birthYear: parseInt(req.body.birthYear),
+            hometown: req.body.hometown,
+            nationality: req.body.nationality,
         };
         if (req.body.avatar) {
             dataSinger.avatar = req.body.avatar;

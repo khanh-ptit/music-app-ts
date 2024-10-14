@@ -1,0 +1,23 @@
+extends ../../layouts/default.pug
+
+block main
+    .edit-account-info.container.my-4
+        .row.mb-4
+            .col-12
+                .card
+                    .card-body
+                        h3.page-title.text-center Chỉnh sửa thông tin tài khoản
+                        form(action="/user/edit?_method=PATCH" method="POST" class="edit-account-form")
+                            .form-group
+                                label.form-label(for="fullName") Tên:
+                                input.form-control(type="text" id="fullName" name="fullName" value=user.fullName required)
+                            .form-group
+                                label.form-label(for="email") Email:
+                                input.form-control(type="email" id="email" name="email" value=user.email disabled readonly)
+                            .form-group
+                                label.form-label(for="phone") Số điện thoại:
+                                input.form-control(type="tel" id="phone" name="phone" value=user.phone || "")
+                            .form-group
+                                label.form-label(for="address") Địa chỉ:
+                                input.form-control(type="text" id="address" name="address" value=user.address || "")
+                            button.btn.btn-primary.mt-3(type="submit") Lưu thông tin

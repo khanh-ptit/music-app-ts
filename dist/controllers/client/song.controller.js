@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listen = exports.favorite = exports.like = exports.detail = exports.list = void 0;
+exports.singer = exports.listen = exports.favorite = exports.like = exports.detail = exports.list = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const song_model_1 = __importDefault(require("../../models/song.model"));
 const singer_model_1 = __importDefault(require("../../models/singer.model"));
@@ -27,7 +27,7 @@ const list = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         const topicId = topic.id;
         const countDocuments = yield song_model_1.default.countDocuments({ deleted: false });
-        const objectPagination = (0, pagination_client_1.default)(req.query, res, countDocuments, "/songs/nhac-tre");
+        const objectPagination = (0, pagination_client_1.default)(req.query, res, countDocuments, "/songs/nhac-tre", 8);
         if (!objectPagination)
             return;
         const songs = yield song_model_1.default.find({
@@ -35,7 +35,7 @@ const list = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             status: "active",
             deleted: false
         })
-            .select("avatar title slug singerId like createdBy")
+            .select("avatar title slug singerId like createdBy createdAt")
             .limit(objectPagination["limitItems"])
             .skip(objectPagination["skip"]);
         for (const item of songs) {
@@ -190,3 +190,8 @@ const listen = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.listen = listen;
+const singer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.params.slugSinger);
+    res.send("OK");
+});
+exports.singer = singer;

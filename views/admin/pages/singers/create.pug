@@ -17,6 +17,44 @@ block main
                 name="fullName"
                 required
             )
+        div(class="form-group")
+            label(for="realName") Tên thật
+            input(
+                type="text"
+                class="form-control"
+                id="realName"
+                name="realName"
+                required
+            )
+        div(class="form-group")
+            label(for="birthYear") Năm sinh
+            input(
+                type="number"
+                id="birthYear"
+                name="birthYear"
+                class="form-control"
+                min="1900"
+                max="2025"
+                required
+            )
+        div(class="form-group")
+            label(for="hometown") Quê quán
+            input(
+                type="text"
+                class="form-control"
+                id="hometown"
+                name="hometown"
+                required
+            )
+        div(class="form-group")
+            label(for="nationality") Quốc tịch
+            input(
+                type="text"
+                class="form-control"
+                id="nationality"
+                name="nationality"
+                required
+            )
         div(
             class="form-group"
             upload-image

@@ -1,0 +1,45 @@
+extends ../../layouts/default.pug
+include ../../mixins/moment-span.pug
+
+block main
+    .account-info.container.my-4
+        .row.mb-4
+            .col-12
+                .card
+                    .card-body
+                        h3.page-title.text-center Thông tin tài khoản
+                        .row
+                            .col-md-4.text-center
+                                .avatar-wrapper(position="relative")
+                                    img(src=user.avatar alt="User Avatar" class="img-fluid rounded-circle mb-3")
+                                    //- File input for uploading a new avatar
+                                    form(
+                                        action="/user/update-avatar?_method=PATCH" 
+                                        method="POST" 
+                                        enctype="multipart/form-data"
+                                    )
+                                        input(
+                                            type="file" 
+                                            name="avatar" 
+                                            accept="image/*" 
+                                            class="file-input"
+                                            onchange="this.form.submit()"
+                                        )
+                                p.text-muted #{user.username}
+                            .col-md-8
+                                p
+                                    strong Tên: 
+                                    | #{user.fullName}
+                                p
+                                    strong Email: 
+                                    | #{user.email}
+                                p
+                                    strong Ngày tạo tài khoản: 
+                                    +format-date(user.createdAt)
+                                p
+                                    strong Số điện thoại: 
+                                    | #{user.phone || 'Chưa cập nhật'}
+                                p
+                                    strong Địa chỉ: 
+                                    | #{user.address || 'Chưa cập nhật'}
+                                a(href="/user/edit" class="btn btn-primary mt-3") Chỉnh sửa thông tin

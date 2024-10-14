@@ -18,7 +18,7 @@ export const list = async (req: Request, res: Response): Promise<void> => {
 
         // Pagination 
         const countDocuments = await Song.countDocuments({deleted: false})
-        const objectPagination = pagination(req.query, res, countDocuments, "/songs/nhac-tre")
+        const objectPagination = pagination(req.query, res, countDocuments, "/songs/nhac-tre", 8)
         if (!objectPagination) return
         // console.log(objectPagination)
         // End pagination
@@ -28,7 +28,7 @@ export const list = async (req: Request, res: Response): Promise<void> => {
             status: "active",
             deleted: false
         })
-            .select("avatar title slug singerId like createdBy")
+            .select("avatar title slug singerId like createdBy createdAt")
             .limit(objectPagination["limitItems"])
             .skip(objectPagination["skip"])
         
@@ -200,4 +200,10 @@ export const listen = async (req: Request, res: Response) => {
             listen: updatedSong.listen
         })
     }
+}
+
+// [GET] /songs/:slugSinger
+export const singer = async (req: Request, res: Response) => {
+    console.log(req.params.slugSinger)
+    res.send("OK")
 }

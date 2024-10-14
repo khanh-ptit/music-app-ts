@@ -14,4 +14,6 @@ router.patch("/favorite/:typeFavorite/:idSong", authMiddleware.requireAuthApi, c
 
 router.patch("/listen/:idSong", controller.listen)
 
+router.get("/belong-to/:slugSinger", controller.singer)
+
 export const songRoutes: Router = router

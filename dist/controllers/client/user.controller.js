@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.passwordResetPost = exports.passwordReset = exports.passwordOtpPost = exports.passwordOtp = exports.passwordForgotPost = exports.passwordForgot = exports.verifyEmailPost = exports.verifyEmail = exports.logout = exports.loginPost = exports.login = exports.verifyUserPost = exports.verifyUser = exports.registerPost = exports.register = void 0;
+exports.editPatch = exports.updateAvatar = exports.edit = exports.info = exports.passwordResetPost = exports.passwordReset = exports.passwordOtpPost = exports.passwordOtp = exports.passwordForgotPost = exports.passwordForgot = exports.verifyEmailPost = exports.verifyEmail = exports.logout = exports.loginPost = exports.login = exports.verifyUserPost = exports.verifyUser = exports.registerPost = exports.register = void 0;
 const md5_1 = __importDefault(require("md5"));
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const verify_user_model_1 = __importDefault(require("../../models/verify-user.model"));
@@ -326,3 +326,47 @@ const passwordResetPost = (req, res) => __awaiter(void 0, void 0, void 0, functi
     res.redirect("/user/login");
 });
 exports.passwordResetPost = passwordResetPost;
+const info = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = res.locals.user;
+    res.render("client/pages/user/info", {
+        pageTitle: "Thông tin tài khoản",
+        user: user
+    });
+});
+exports.info = info;
+const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render("client/pages/user/edit", {
+        pageTitle: "Chỉnh sửa tài khoản"
+    });
+});
+exports.edit = edit;
+const updateAvatar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = res.locals.user.id;
+        console.log(id);
+        console.log(req.body);
+        yield user_model_1.default.updateOne({
+            _id: id
+        }, {
+            avatar: req.body.avatar
+        });
+        res.redirect("back");
+    }
+    catch (error) {
+        res.redirect("back");
+    }
+});
+exports.updateAvatar = updateAvatar;
+const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = res.locals.user.id;
+        yield user_model_1.default.updateOne({
+            _id: id
+        }, req.body);
+        res.redirect("back");
+    }
+    catch (error) {
+        res.redirect("back");
+    }
+});
+exports.editPatch = editPatch;

@@ -7,6 +7,10 @@ const singerSchema = new mongoose.Schema({
     avatar: String,
     status: String,
     description: String,
+    realName: String,
+    birthYear: Number,
+    nationality: String,
+    hometown: String,
     slug: {
         type: String,
         slug: "fullName",

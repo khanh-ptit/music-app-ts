@@ -13,6 +13,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "initial"
     },
+    avatar: {
+        type: String,
+        default: "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"
+    },
+    phone: String,
+    address: String,
     deleted: {
         type: Boolean,
         default: false

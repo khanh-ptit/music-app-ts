@@ -1,0 +1,21 @@
+extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+include ../../mixins/pagination.pug
+
+block main
+    .singer-list
+        .container.my-3
+            .row
+                .col-12
+                    +box-head(`Danh sách ca sĩ`)
+            .row
+                each singer in singers
+                    .col-4.mb-4
+                        .card.singer-card
+                            .card-body.text-center
+                                img(src=singer.avatar alt=`${singer.fullName} Avatar` class="img-fluid rounded-circle mb-3")
+                                h5.card-title #{singer.fullName}
+                                p.text-muted #{singer.nationality}
+                                a.btn.btn-primary(href=`/singers/${singer.slug}`) Xem chi tiết
+
+    +pagination(pagination)

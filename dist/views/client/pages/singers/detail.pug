@@ -1,0 +1,51 @@
+extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+include ../../mixins/moment.pug
+include ../../mixins/pagination.pug
+
+block main 
+    .singer-profile
+        .container.my-3 
+            .row.mb-4
+                .col-12
+                    .card
+                        .card-body
+                            .row
+                                .col-md-4
+                                    img(src=singer.avatar alt=`${singer.fullName} Avatar`) 
+                                .col-md-8
+                                    h3 #{singer.fullName}
+                                    p <b>Tên thật: </b> #{singer.realName} 
+                                    p <b>Năm sinh: </b> #{singer.birthYear}
+                                    p <b>Quê quán: </b> #{singer.hometown}
+                                    p <b>Quốc tịch: </b> #{singer.nationality} 
+                                    p <b>Giới thiệu: </b> #{singer.description}
+
+    .container.my-3 
+        .row 
+            .col-12 
+                +box-head(`Danh sách bài hát - ${pageTitle}`)
+        .row 
+            each item in songs
+                .col-6.mb-3
+                    div(class="song-item")
+                        div(class="inner-image")
+                            a(href=`/songs/detail/${item.slug}`)
+                                img(src=item.avatar)
+                        div(class="inner-content")
+                            div(class="inner-title")
+                                a(href=`/songs/detail/${item.slug}`) #{item.title}
+                            div(class="inner-singer")
+                                i(class="fa-solid fa-microphone-lines")
+                                |  #{singer.fullName}
+                            div(class="inner-like")
+                                i(class="fa-solid fa-thumbs-up")
+                                |  #{item.like.length} 
+                            div(class="inner-time" style="display: inline-block")
+                                i(class="fa-regular fa-clock")
+                                span
+                                    if (item.createdBy.createdAt)
+                                        +format-date(item.createdBy.createdAt)
+                                    else  
+                                        | 01/01/2024
+    //- +pagination(pagination)

@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = (query, res, countDocuments, prefix) => {
+exports.default = (query, res, countDocuments, prefix, limitItems) => {
     let objectPagination = {
         currentPage: 1,
         skip: 0,
-        limitItems: 8
+        limitItems: limitItems
     };
     objectPagination["totalPages"] = Math.ceil(parseInt(countDocuments.toString()) / objectPagination.limitItems);
     if (query.page) {

@@ -1,11 +1,10 @@
 import { Response } from "express"
-import { systemConfig } from "../config/system"
 
-export default (query: Record<string, any>, res: Response, countDocuments: Number, prefix:string) => {
+export default (query: Record<string, any>, res: Response, countDocuments: Number, prefix:string, limitItems: number) => {
     let objectPagination = {
         currentPage: 1,
         skip: 0,
-        limitItems: 8
+        limitItems: limitItems
     }
     objectPagination["totalPages"] = Math.ceil(parseInt(countDocuments.toString()) / objectPagination.limitItems)
     if (query.page) {

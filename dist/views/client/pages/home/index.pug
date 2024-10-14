@@ -18,9 +18,9 @@ block main
                             p(class="card-text") #{item.description}
                             a(href=`/songs/${item.slug}` class="btn btn-primary") Xem chi tiết
         .row.d-flex.justify-content-center.align-items-center
-            button(
+            a(
                 class="btn btn-info"
-                button-more-topics
+                href="/topics"
             )
                 <i class="fa-solid fa-angles-down"></i>
     
@@ -52,10 +52,11 @@ block main
                                         +format-date(item.createdBy.createdAt)
 
         .row.d-flex.justify-content-center.align-items-center
-            button(
-                class="btn btn-info"
-                button-more-songs
-            ) Xem Thêm
+            //- a(
+            //-     class="btn btn-info"
+            //-     href="/songs"
+            //- )
+            //-     <i class="fa-solid fa-angles-down"></i>
     
     .container.my-3 
         .row 
@@ -63,16 +64,17 @@ block main
                 +box-head("Ca sĩ nổi bật")
     
         .row
-            each item in newSingers
-                .col-4.mb-3
-                    div(class="card")
-                        img(src=item.avatar)
-                        div(class="card-body")
-                            h6(class="card-title") #{item.fullName}
-                            //- p(class="card-text") #{item.description}
-                            a(href=`/songs/${item.slug}` class="btn btn-primary") Xem 
+            each singer in newSingers
+                .col-4.mb-4
+                    .card.singer-card
+                        .card-body.text-center
+                            img(src=singer.avatar alt=`${singer.fullName} Avatar` class="img-fluid rounded-circle mb-3")
+                            h5.card-title #{singer.fullName}
+                            p.text-muted #{singer.nationality}
+                            a.btn.btn-primary(href=`/singers/${singer.slug}`) Xem chi tiết
         .row.d-flex.justify-content-center.align-items-center
-            button(
-                class="btn btn-secondary"
-                button-more-topics
-            ) Xem Thêm
+            a(
+                class="btn btn-info"
+                href="/singers"
+            )
+                <i class="fa-solid fa-angles-down"></i>

@@ -18,6 +18,48 @@ block main
                 value=singer.fullName
                 required
             )
+        div(class="form-group")
+            label(for="realName") Tên thật
+            input(
+                type="text"
+                class="form-control"
+                id="realName"
+                name="realName"
+                value=singer.realName
+                required
+            )
+        div(class="form-group")
+            label(for="birthYear") Năm sinh
+            input(
+                type="number"
+                id="birthYear"
+                name="birthYear"
+                class="form-control"
+                min="1900"
+                max="2025"
+                value=singer.birthYear
+                required
+            )
+        div(class="form-group")
+            label(for="hometown") Quê quán
+            input(
+                type="text"
+                class="form-control"
+                id="hometown"
+                name="hometown"
+                value=singer.hometown
+                required
+            )
+        div(class="form-group")
+            label(for="nationality") Quốc tịch
+            input(
+                type="text"
+                class="form-control"
+                id="nationality"
+                name="nationality"
+                value=singer.nationality
+                required
+            )
         div(
             class="form-group"
             upload-image

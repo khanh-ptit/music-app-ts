@@ -3,9 +3,9 @@ footer.footer(style="background-color: orange; padding: 20px; color: white;")
         .row
             .col-md-3
                 h5 Liên hệ
-                p Địa chỉ: 123 Đường Phố, Thành phố, Quốc gia
-                p Điện thoại: +123 456 789
-                p Email: contact@example.com
+                p Địa chỉ: #{settingGeneral.address}
+                p Điện thoại: #{settingGeneral.phone}
+                p Email: #{settingGeneral.email}
                 
 
             .col-md-3
@@ -20,13 +20,13 @@ footer.footer(style="background-color: orange; padding: 20px; color: white;")
 
             .col-md-3
                 h5 Theo dõi chúng tôi
-                a(href="https://facebook.com" target="_blank") 
+                a(href="https://www.facebook.com/khanhleis11/" target="_blank") 
                     <i class="fa-brands fa-facebook"> Facebook</i>
                 br 
                 a(href="https://twitter.com" target="_blank") 
                     <i class="fa-brands fa-twitter"> Twitter</i> 
                 br
-                a(href="https://instagram.com" target="_blank") 
+                a(href="https://www.tiktok.com/@khanhleis11" target="_blank") 
                     <i class="fa-brands fa-tiktok"> Tiktok</i> 
             .col-md-3
                 iframe(
@@ -38,4 +38,4 @@ footer.footer(style="background-color: orange; padding: 20px; color: white;")
                         loading="lazy"
                     )
         .text-center.mt-3
-            | © #{settingGeneral.copyright} Bản quyền © 2024. Tất cả quyền được bảo lưu.
+            | © #{settingGeneral.copyright} | Bản quyền © 2024. Tất cả quyền được bảo lưu.

@@ -192,6 +192,10 @@ export const createPost = async (req: Request, res: Response) => {
         description: String,
         position: Number,
         status: String,
+        realName: String,
+        birthYear: Number,
+        hometown: String,
+        nationality: String,
         createdBy: {
             accountId: String,
             createdAt: Date
@@ -204,6 +208,10 @@ export const createPost = async (req: Request, res: Response) => {
         description: req.body.description,
         position: parseInt(req.body.position),
         status: req.body.status,
+        realName: req.body.realName,
+        birthYear: parseInt(req.body.birthYear),
+        hometown: req.body.hometown,
+        nationality: req.body.nationality,
         createdBy: {
             accountId: res.locals.user.id,
             createdAt: new Date()
@@ -405,13 +413,21 @@ export const editPatch = async (req: Request, res: Response) => {
             avatar?: String,
             description?: String,
             position: Number,
-            status: String
+            status: String,
+            realName: String,
+            birthYear: Number,
+            hometown: String,
+            nationality: String
         }
     
         const dataSinger: Singer = {
             fullName: req.body.fullName,
             position: parseInt(req.body.position),
-            status: req.body.status
+            status: req.body.status,
+            realName: req.body.realName,
+            birthYear: parseInt(req.body.birthYear),
+            hometown: req.body.hometown,
+            nationality: req.body.nationality,
         }
 
         if (req.body.avatar) {
