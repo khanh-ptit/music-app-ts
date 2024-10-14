@@ -11,7 +11,11 @@ const settingGeneralSchema = new mongoose_1.default.Schema({
     phone: String,
     email: String,
     address: String,
-    copyright: String
+    copyright: String,
+    facebook: String,
+    tiktok: String,
+    twitter: String,
+    maps: String
 });
 const SettingGeneral = mongoose_1.default.model("SettingGeneral", settingGeneralSchema, "setting-general");
 exports.default = SettingGeneral;

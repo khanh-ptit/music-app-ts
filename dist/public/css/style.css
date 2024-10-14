@@ -181,6 +181,14 @@ footer.footer .list-unstyled {
 footer.footer .text-center {
     margin-top: 20px; /* Space above copyright text */
 }
+
+footer.footer span {
+    font-family: var(--bs-body-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif); /* Font mặc định của Bootstrap */
+    font-size: 16px; /* Kích thước tùy chỉnh để phù hợp với font trang */
+    font-style: normal; /* Đảm bảo chữ không bị nghiêng */
+    color: inherit; /* Màu giống với màu chữ trong trang web */
+}
+
 /* End footer */
 
 /* box-head */

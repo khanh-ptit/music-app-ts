@@ -29,7 +29,11 @@ const generalPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         phone: req.body.phone,
         email: req.body.email,
         address: req.body.address,
-        copyright: req.body.copyright
+        copyright: req.body.copyright,
+        facebook: req.body.facebook,
+        tiktok: req.body.tiktok,
+        twitter: req.body.twitter,
+        maps: req.body.maps
     };
     if (req.body.favicon) {
         dataSettingGeneral.favicon = req.body.favicon[0];

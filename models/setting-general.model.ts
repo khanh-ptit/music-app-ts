@@ -7,7 +7,11 @@ const settingGeneralSchema = new mongoose.Schema({
     phone: String,
     email: String,
     address: String,
-    copyright: String
+    copyright: String,
+    facebook: String,
+    tiktok: String,
+    twitter: String,
+    maps: String
 })
 
 const SettingGeneral = mongoose.model("SettingGeneral", settingGeneralSchema, "setting-general")

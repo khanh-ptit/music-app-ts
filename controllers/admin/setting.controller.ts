@@ -22,7 +22,11 @@ export const generalPatch = async (req: Request, res: Response) => {
         phone: String,
         email: String,
         address: String,
-        copyright: String
+        copyright: String,
+        facebook: String,
+        tiktok: String,
+        twitter: String,
+        maps: String
     }
 
     const dataSettingGeneral: ObjectSettingGeneral = {
@@ -30,7 +34,11 @@ export const generalPatch = async (req: Request, res: Response) => {
         phone: req.body.phone,
         email: req.body.email,
         address: req.body.address,
-        copyright: req.body.copyright
+        copyright: req.body.copyright,
+        facebook: req.body.facebook,
+        tiktok: req.body.tiktok,
+        twitter: req.body.twitter,
+        maps: req.body.maps
     }
 
     if (req.body.favicon) {
