@@ -26,7 +26,10 @@ const list = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             deleted: false
         });
         const topicId = topic.id;
-        const countDocuments = yield song_model_1.default.countDocuments({ deleted: false });
+        const countDocuments = yield song_model_1.default.countDocuments({
+            topicId: topicId,
+            deleted: false
+        });
         const objectPagination = (0, pagination_client_1.default)(req.query, res, countDocuments, "/songs/nhac-tre", 8);
         if (!objectPagination)
             return;
@@ -44,6 +47,7 @@ const list = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             });
             item["singerInfo"] = singerInfo;
         }
+        console.log(objectPagination);
         res.render("client/pages/songs/list", {
             pageTitle: topic.title,
             songs: songs,

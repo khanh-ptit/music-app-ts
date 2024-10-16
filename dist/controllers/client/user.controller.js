@@ -181,7 +181,7 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.cookie("tokenUser", user.tokenUser);
         req.flash("success", "Đăng nhập thành công!");
         res.locals.user = user;
-        res.redirect("/topics");
+        res.redirect("/");
     }
     catch (error) {
         req.flash("error", "Có lỗi xảy ra!");

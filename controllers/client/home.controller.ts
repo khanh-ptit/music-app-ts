@@ -9,7 +9,8 @@ export const index = async (req: Request, res: Response) => {
     const settingGeneral = res.locals.settingGeneral
 
     let find = {
-        deleted: false
+        deleted: false,
+        status: "active"
     }
     let sort = {
         position: "desc" as SortOrder

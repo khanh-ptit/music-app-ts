@@ -17,7 +17,11 @@ export const list = async (req: Request, res: Response): Promise<void> => {
         const topicId = topic.id
 
         // Pagination 
-        const countDocuments = await Song.countDocuments({deleted: false})
+        const countDocuments = await Song.countDocuments({
+            topicId: topicId,
+            deleted: false
+        })
+        // console.log(countDocuments)
         const objectPagination = pagination(req.query, res, countDocuments, "/songs/nhac-tre", 8)
         if (!objectPagination) return
         // console.log(objectPagination)
@@ -38,7 +42,7 @@ export const list = async (req: Request, res: Response): Promise<void> => {
             })
             item["singerInfo"] = singerInfo
         }
-
+        console.log(objectPagination)
         res.render("client/pages/songs/list", {
             pageTitle: topic.title,
             songs: songs,

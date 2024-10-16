@@ -16,7 +16,8 @@ exports.index = void 0;
 const topic_model_1 = __importDefault(require("../../models/topic.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const topics = yield topic_model_1.default.find({
-        deleted: false
+        deleted: false,
+        status: "active"
     });
     res.render("client/pages/topics/index.pug", {
         pageTitle: "Chủ đề bài hát",

@@ -187,7 +187,7 @@ export const loginPost = async (req: Request, res: Response) => {
         res.cookie("tokenUser", user.tokenUser)
         req.flash("success", "Đăng nhập thành công!")
         res.locals.user = user
-        res.redirect("/topics")
+        res.redirect("/")
 
     } catch (error) {
         req.flash("error", "Có lỗi xảy ra!")

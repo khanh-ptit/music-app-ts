@@ -19,7 +19,8 @@ const singer_model_1 = __importDefault(require("../../models/singer.model"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const settingGeneral = res.locals.settingGeneral;
     let find = {
-        deleted: false
+        deleted: false,
+        status: "active"
     };
     let sort = {
         position: "desc"
