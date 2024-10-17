@@ -24,6 +24,27 @@ block main
             )
                 <i class="fa-solid fa-angles-down"></i>
     
+    .container.my-4 
+        .row 
+            .col-12 
+                +box-head("Top 10 bài hát nghe nhiều nhất")
+        
+        .row 
+            .col-12
+                table.top-songs-table
+                    tbody
+                        each song, index in popularSongs
+                            tr
+                                td.rank #{index + 1}
+                                td.cover
+                                    img(src=song.avatar, alt=`${song.title} Cover`)
+                                td.title
+                                    a(href=`/songs/detail/${song.slug}`) #{song.title}
+                                    p.text-muted #{song.infoSinger.fullName}
+                                td.plays
+                                    i(class="fa fa-play-circle") 
+                                    span #{song.listen}
+
     .container.my-3 
         .row 
             .col-12 
@@ -52,11 +73,6 @@ block main
                                         +format-date(item.createdBy.createdAt)
 
         .row.d-flex.justify-content-center.align-items-center
-            //- a(
-            //-     class="btn btn-info"
-            //-     href="/songs"
-            //- )
-            //-     <i class="fa-solid fa-angles-down"></i>
     
     .container.my-3 
         .row 

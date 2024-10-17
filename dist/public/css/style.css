@@ -7,7 +7,7 @@
 
 .inner-logo img {
     width: 130px;
-    max-height: 55px;
+    max-height: 50px;
     transition: transform 0.3s ease;
 }
 
@@ -901,4 +901,81 @@ footer.footer span {
     justify-content: center; 
     background-color: #25D366; 
     color: white;
+}
+
+.top-songs-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Thêm khoảng cách giữa các hàng */
+}
+
+.top-songs-table tr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    margin-bottom: 10px;
+}
+
+.top-songs-table td {
+    display: flex;
+    align-items: center;
+}
+
+.top-songs-table td.rank {
+    width: 5%;
+    font-weight: bold;
+    justify-content: center;
+}
+
+.top-songs-table td.cover {
+    width: 15%;
+    justify-content: center;
+}
+
+.top-songs-table td.cover img {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+}
+
+.top-songs-table td.title {
+    width: 50%;
+    flex-direction: column;
+}
+
+.top-songs-table td.plays {
+    width: 10%;
+    justify-content: center;
+}
+
+.top-songs-table td.actions {
+    width: 20%;
+    justify-content: center;
+}
+
+.top-songs-table td.title a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+
+.top-songs-table td.title p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.top-songs-table td.plays i {
+    color: #007bff; /* Thay đổi màu nút Play */
+    font-size: 1.5rem; /* Kích thước biểu tượng play */
+}
+
+.top-songs-table td.plays span {
+    font-weight: bold;  /* Làm đậm số lượt nghe */
+    color: black;     /* Màu xanh lá cây, có thể thay đổi theo màu chủ đạo của trang */
+    font-size: 1.2rem;  /* Kích thước chữ lớn hơn để dễ nhìn */
+    margin-left: 5px;   /* Khoảng cách giữa biểu tượng play và số lượt nghe */
 }

@@ -33,7 +33,7 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const newSongs = yield song_model_1.default
         .find(find)
         .sort(sort)
-        .limit(4);
+        .limit(6);
     for (const item of newSongs) {
         const infoSinger = yield singer_model_1.default.findOne({
             _id: item.singerId
@@ -44,11 +44,22 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         .find(find)
         .sort(sort)
         .limit(6);
+    const popularSongs = yield song_model_1.default
+        .find(find)
+        .sort({ listen: -1 })
+        .limit(10);
+    for (const song of popularSongs) {
+        const infoSinger = yield singer_model_1.default.findOne({
+            _id: song.singerId
+        });
+        song["infoSinger"] = infoSinger;
+    }
     res.render("client/pages/home/index.pug", {
         pageTitle: settingGeneral.websiteName,
         topics: topics,
         newSongs: newSongs,
-        newSingers: newSingers
+        newSingers: newSingers,
+        popularSongs: popularSongs
     });
 });
 exports.index = index;
