@@ -35,12 +35,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.editPatch = exports.updateAvatar = exports.edit = exports.info = exports.passwordResetPost = exports.passwordReset = exports.passwordOtpPost = exports.passwordOtp = exports.passwordForgotPost = exports.passwordForgot = exports.verifyEmailPost = exports.verifyEmail = exports.logout = exports.loginPost = exports.login = exports.verifyUserPost = exports.verifyUser = exports.registerPost = exports.register = void 0;
+exports.editPatch = exports.updateAvatar = exports.edit = exports.info = exports.passwordResetPost = exports.passwordReset = exports.passwordOtpPost = exports.passwordOtp = exports.passwordForgotPhonePost = exports.passwordForgotPhone = exports.passwordForgotPost = exports.passwordForgot = exports.verifyEmailPost = exports.verifyEmail = exports.logout = exports.loginPost = exports.login = exports.verifyUserPost = exports.verifyUser = exports.registerPost = exports.register = void 0;
 const md5_1 = __importDefault(require("md5"));
 const user_model_1 = __importDefault(require("../../models/user.model"));
 const verify_user_model_1 = __importDefault(require("../../models/verify-user.model"));
 const generateHelper = __importStar(require("../../helpers/generate"));
 const sendMailHelper = __importStar(require("../../helpers/sendMail"));
+const sendSmsHelper = __importStar(require("../../helpers/sendSms"));
 const forgot_password_model_1 = __importDefault(require("../../models/forgot-password.model"));
 const register = (req, res) => {
     const token = req.cookies.tokenUser;
@@ -262,14 +263,45 @@ const passwordForgotPost = (req, res) => __awaiter(void 0, void 0, void 0, funct
     };
     const newForgotPassword = new forgot_password_model_1.default(objectForgotPassword);
     yield newForgotPassword.save();
-    const subject = `Mã xác thực OTP kích hoạt tài khoản`;
+    const subject = `Mã xác thực OTP đặt lại mật khẩu`;
     const html = `
-        Mã OTP kích hoạt tài khoản là <b>${otp}</b>. Lưu ý không được chia sẻ mã này. Thời hạn sử dụng là 3 phút.
+        Mã OTP đặt lại mật khẩu là <b>${otp}</b>. Lưu ý không được chia sẻ mã này. Thời hạn sử dụng là 3 phút.
     `;
     sendMailHelper.sendMail(email.toString(), subject, html);
     res.redirect(`/user/password/otp?email=${email}`);
 });
 exports.passwordForgotPost = passwordForgotPost;
+const passwordForgotPhone = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render("client/pages/user/password-forgot-phone.pug", {
+        pageTitle: "Lấy lại mật khẩu"
+    });
+});
+exports.passwordForgotPhone = passwordForgotPhone;
+const passwordForgotPhonePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const phone = req.body.phone;
+    const existPhone = yield user_model_1.default.findOne({
+        phone: phone,
+        deleted: false
+    });
+    if (!existPhone) {
+        req.flash("error", "Số điện thoại không tồn tại hoặc chưa được đăng ký!");
+        res.redirect("back");
+        return;
+    }
+    const otp = generateHelper.generateRandomNumber(8);
+    const objectForgotPassword = {
+        phone: phone,
+        otp: otp,
+        expireAt: new Date(Date.now() + 180 * 1000)
+    };
+    const newForgotPassword = new forgot_password_model_1.default(objectForgotPassword);
+    yield newForgotPassword.save();
+    const content = `Mã OTP đặt lại mật khẩu là ${otp}. Lưu ý không được chia sẻ mã này. Thời hạn sử dụng là 3 phút.`;
+    const sender = '84923361329';
+    sendSmsHelper.sendSMS([phone], content, 3);
+    res.redirect(`/user/password/otp?phone=${phone}`);
+});
+exports.passwordForgotPhonePost = passwordForgotPhonePost;
 const passwordOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.query.email;
     res.render("client/pages/user/password-otp.pug", {

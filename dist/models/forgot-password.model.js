@@ -7,6 +7,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const forgotPasswordSchema = new mongoose_1.default.Schema({
     email: String,
     otp: String,
+    phone: String,
     expireAt: {
         type: Date,
         expires: 0

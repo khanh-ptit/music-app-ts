@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const forgotPasswordSchema = new mongoose.Schema({
     email: String,
     otp: String,
+    phone: String,
     expireAt: {
         type: Date,
         expires: 0

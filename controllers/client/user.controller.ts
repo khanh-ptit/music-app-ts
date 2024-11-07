@@ -4,6 +4,7 @@ import User from "../../models/user.model";
 import VerifyUser from "../../models/verify-user.model";
 import * as generateHelper from "../../helpers/generate"
 import * as sendMailHelper from "../../helpers/sendMail"
+import * as sendSmsHelper from "../../helpers/sendSms"
 import ForgotPassword from "../../models/forgot-password.model";
 
 // [GET] /user/register
@@ -289,13 +290,54 @@ export const passwordForgotPost = async (req: Request, res: Response) => {
     await newForgotPassword.save()
 
     // Bước 2: Gửi OTP về mail
-    const subject = `Mã xác thực OTP kích hoạt tài khoản`
+    const subject = `Mã xác thực OTP đặt lại mật khẩu`
     const html = `
-        Mã OTP kích hoạt tài khoản là <b>${otp}</b>. Lưu ý không được chia sẻ mã này. Thời hạn sử dụng là 3 phút.
+        Mã OTP đặt lại mật khẩu là <b>${otp}</b>. Lưu ý không được chia sẻ mã này. Thời hạn sử dụng là 3 phút.
     `
     sendMailHelper.sendMail(email.toString(), subject, html)
     res.redirect(`/user/password/otp?email=${email}`)
 }
+
+// [GET] /user/password/forgot
+export const passwordForgotPhone = async (req: Request, res: Response) => {
+    res.render("client/pages/user/password-forgot-phone.pug", {
+        pageTitle: "Lấy lại mật khẩu"
+    })
+}
+
+// [POST] /user/password/forgot-phone
+export const passwordForgotPhonePost = async (req: Request, res: Response) => {
+    const phone = req.body.phone;
+
+    const existPhone = await User.findOne({
+        phone: phone,
+        deleted: false
+    });
+
+    if (!existPhone) {
+        req.flash("error", "Số điện thoại không tồn tại hoặc chưa được đăng ký!");
+        res.redirect("back");
+        return;
+    }
+
+    // Bước 1: Tạo OTP rồi lưu bản ghi vào collection forgot-password
+    const otp = generateHelper.generateRandomNumber(8);  // Tạo OTP 8 chữ số
+    const objectForgotPassword = {
+        phone: phone,
+        otp: otp,
+        expireAt: new Date(Date.now() + 180 * 1000)  // OTP hết hạn sau 3 phút
+    };
+    const newForgotPassword = new ForgotPassword(objectForgotPassword);
+    await newForgotPassword.save();
+
+    // Bước 2: Gửi OTP qua SMS
+    const content = `Mã OTP đặt lại mật khẩu là ${otp}. Lưu ý không được chia sẻ mã này. Thời hạn sử dụng là 3 phút.`;
+    const sender = '84923361329';  // Tên người gửi SMS (có thể thay đổi)
+    sendSmsHelper.sendSMS([phone], content, 3);  // Gửi OTP qua SMS
+
+    res.redirect(`/user/password/otp?phone=${phone}`);  // Redirect đến trang OTP để nhập mã
+};
+
 
 // [GET] /user/password/otp
 export const passwordOtp = async (req: Request, res: Response) => {

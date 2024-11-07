@@ -46,6 +46,8 @@ router.get("/verify-email", controller.verifyEmail);
 router.post("/verify-email", controller.verifyEmailPost);
 router.get("/password/forgot", controller.passwordForgot);
 router.post("/password/forgot", controller.passwordForgotPost);
+router.get("/password/forgot-phone", controller.passwordForgotPhone);
+router.post("/password/forgot-phone", controller.passwordForgotPhonePost);
 router.get("/password/otp", controller.passwordOtp);
 router.post("/password/otp", controller.passwordOtpPost);
 router.get("/password/reset", authMiddleware.requireAuth, controller.passwordReset);

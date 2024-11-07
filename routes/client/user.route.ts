@@ -30,6 +30,10 @@ router.get("/password/forgot", controller.passwordForgot)
 
 router.post("/password/forgot", controller.passwordForgotPost)
 
+router.get("/password/forgot-phone", controller.passwordForgotPhone)
+
+router.post("/password/forgot-phone", controller.passwordForgotPhonePost)
+
 router.get("/password/otp", controller.passwordOtp)
 
 router.post("/password/otp", controller.passwordOtpPost)
