@@ -4,8 +4,10 @@ import User from "../../models/user.model";
 import VerifyUser from "../../models/verify-user.model";
 import * as generateHelper from "../../helpers/generate"
 import * as sendMailHelper from "../../helpers/sendMail"
-import * as sendSmsHelper from "../../helpers/sendSms"
+const textflow = require("textflow.js")
 import ForgotPassword from "../../models/forgot-password.model";
+textflow.useKey("3fuOyj0c910SwOEMQWXgO71snWEq2WuK9dXgjmncndnJln5LbqdzE7Aq7phz9TGt"); // Thay thế bằng API Key thực tế
+
 
 // [GET] /user/register
 export const register = (req: Request, res: Response) => {
@@ -298,7 +300,7 @@ export const passwordForgotPost = async (req: Request, res: Response) => {
     res.redirect(`/user/password/otp?email=${email}`)
 }
 
-// [GET] /user/password/forgot
+// [GET] /user/password/forgot-phone
 export const passwordForgotPhone = async (req: Request, res: Response) => {
     res.render("client/pages/user/password-forgot-phone.pug", {
         pageTitle: "Lấy lại mật khẩu"
@@ -309,6 +311,7 @@ export const passwordForgotPhone = async (req: Request, res: Response) => {
 export const passwordForgotPhonePost = async (req: Request, res: Response) => {
     const phone = req.body.phone;
 
+    // Kiểm tra xem số điện thoại có tồn tại trong hệ thống không
     const existPhone = await User.findOne({
         phone: phone,
         deleted: false
@@ -322,6 +325,7 @@ export const passwordForgotPhonePost = async (req: Request, res: Response) => {
 
     // Bước 1: Tạo OTP rồi lưu bản ghi vào collection forgot-password
     const otp = generateHelper.generateRandomNumber(8);  // Tạo OTP 8 chữ số
+    console.log("Generated OTP:", otp); // Log OTP để kiểm tra
     const objectForgotPassword = {
         phone: phone,
         otp: otp,
@@ -329,14 +333,22 @@ export const passwordForgotPhonePost = async (req: Request, res: Response) => {
     };
     const newForgotPassword = new ForgotPassword(objectForgotPassword);
     await newForgotPassword.save();
+    console.log("OTP record saved to database:", objectForgotPassword); // Log lưu vào DB
 
     // Bước 2: Gửi OTP qua SMS
-    const content = `Mã OTP đặt lại mật khẩu là ${otp}. Lưu ý không được chia sẻ mã này. Thời hạn sử dụng là 3 phút.`;
-    const sender = '84923361329';  // Tên người gửi SMS (có thể thay đổi)
-    sendSmsHelper.sendSMS([phone], content, 3);  // Gửi OTP qua SMS
+    try {
+        console.log("Sending OTP via SMS to phone:", phone); // Log trước khi gửi OTP
+        await textflow.sendVerificationSMS(phone, otp);
 
-    res.redirect(`/user/password/otp?phone=${phone}`);  // Redirect đến trang OTP để nhập mã
+        console.log("OTP sent successfully via SMS."); // Log sau khi gửi thành công
+        res.redirect(`/user/password/otp?phone=${phone}`);  // Redirect đến trang OTP để nhập mã
+    } catch (error) {
+        console.error("Error sending OTP via SMS:", error.response?.data || error); // Hiển thị chi tiết lỗi từ TextFlow nếu có
+        req.flash("error", "Gửi OTP thất bại. Vui lòng thử lại!");
+        res.redirect("back");
+    }
 };
+
 
 
 // [GET] /user/password/otp

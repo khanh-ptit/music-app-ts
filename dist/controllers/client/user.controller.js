@@ -41,8 +41,9 @@ const user_model_1 = __importDefault(require("../../models/user.model"));
 const verify_user_model_1 = __importDefault(require("../../models/verify-user.model"));
 const generateHelper = __importStar(require("../../helpers/generate"));
 const sendMailHelper = __importStar(require("../../helpers/sendMail"));
-const sendSmsHelper = __importStar(require("../../helpers/sendSms"));
+const textflow = require("textflow.js");
 const forgot_password_model_1 = __importDefault(require("../../models/forgot-password.model"));
+textflow.useKey("3fuOyj0c910SwOEMQWXgO71snWEq2WuK9dXgjmncndnJln5LbqdzE7Aq7phz9TGt");
 const register = (req, res) => {
     const token = req.cookies.tokenUser;
     if (token) {
@@ -278,6 +279,7 @@ const passwordForgotPhone = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 exports.passwordForgotPhone = passwordForgotPhone;
 const passwordForgotPhonePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const phone = req.body.phone;
     const existPhone = yield user_model_1.default.findOne({
         phone: phone,
@@ -289,6 +291,7 @@ const passwordForgotPhonePost = (req, res) => __awaiter(void 0, void 0, void 0, 
         return;
     }
     const otp = generateHelper.generateRandomNumber(8);
+    console.log("Generated OTP:", otp);
     const objectForgotPassword = {
         phone: phone,
         otp: otp,
@@ -296,10 +299,18 @@ const passwordForgotPhonePost = (req, res) => __awaiter(void 0, void 0, void 0, 
     };
     const newForgotPassword = new forgot_password_model_1.default(objectForgotPassword);
     yield newForgotPassword.save();
-    const content = `Mã OTP đặt lại mật khẩu là ${otp}. Lưu ý không được chia sẻ mã này. Thời hạn sử dụng là 3 phút.`;
-    const sender = '84923361329';
-    sendSmsHelper.sendSMS([phone], content, 3);
-    res.redirect(`/user/password/otp?phone=${phone}`);
+    console.log("OTP record saved to database:", objectForgotPassword);
+    try {
+        console.log("Sending OTP via SMS to phone:", phone);
+        yield textflow.sendVerificationSMS(phone, otp);
+        console.log("OTP sent successfully via SMS.");
+        res.redirect(`/user/password/otp?phone=${phone}`);
+    }
+    catch (error) {
+        console.error("Error sending OTP via SMS:", ((_a = error.response) === null || _a === void 0 ? void 0 : _a.data) || error);
+        req.flash("error", "Gửi OTP thất bại. Vui lòng thử lại!");
+        res.redirect("back");
+    }
 });
 exports.passwordForgotPhonePost = passwordForgotPhonePost;
 const passwordOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
