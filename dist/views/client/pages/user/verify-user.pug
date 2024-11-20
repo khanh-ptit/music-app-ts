@@ -34,7 +34,13 @@ block main
                             name="otp"
                             required
                         )
-
+                    div(class="form-group d-flex justify-content-between align-items-center mt-3")
+                        span.text-muted OTP sẽ hết hạn sau: 
+                        span.text-danger.font-weight-bold(id="countdownTimer") 03:00
+                    div(class="form-group text-right")
+                        a(
+                            href="/user/verify-email"
+                        ) Chưa nhận được OTP? Gửi lại
                     div(class="form-group")
                         button(
                             class="btn btn-primary"

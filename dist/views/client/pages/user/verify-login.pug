@@ -11,16 +11,16 @@ block main
             .col-8
                 h1.text-center Nhập mã OTP xác thực
                 form(
-                    action="/user/verify-user"
+                    action="/user/verify-login"
                     method="POST"
                 )
                     div(class="form-group mt-3")
-                        label(for="email") Email 
+                        label(for="emailOrPhone") Email hoặc Số điện thoại
                         input(
-                            type="email"
-                            id="email"
-                            name="email"
-                            value=email
+                            type="text"
+                            id="emailOrPhone"
+                            name="emailOrPhone"
+                            value=emailOrPhone
                             class="form-control"
                             required
                             readonly
@@ -39,7 +39,7 @@ block main
                         span.text-danger.font-weight-bold(id="countdownTimer") 03:00
                     div(class="form-group text-right")
                         a(
-                            href="/user/verify-email"
+                            href="/user/login"  
                         ) Chưa nhận được OTP? Gửi lại
                     div(class="form-group")
                         button(

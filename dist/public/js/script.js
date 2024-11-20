@@ -244,3 +244,55 @@ if (listButtonPagination.length > 0) {
     })
 }
 // End Pagination
+
+document.addEventListener("DOMContentLoaded", () => {
+    const countdownTimer = document.getElementById("countdownTimer");
+    const resendOtpButton = document.getElementById("resendOtpButton");
+
+    let timeLeft = 180; // Thời gian đếm ngược (tính bằng giây)
+
+    const updateTimerDisplay = () => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        countdownTimer.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    };
+
+    const timerInterval = setInterval(() => {
+        if (timeLeft > 0) {
+            timeLeft--;
+            updateTimerDisplay();
+        } else {
+            clearInterval(timerInterval);
+            resendOtpButton.disabled = false;
+            countdownTimer.textContent = "OTP đã hết hạn!";
+        }
+    }, 1000);
+
+    // Kích hoạt gửi lại OTP
+    resendOtpButton.addEventListener("click", () => {
+        resendOtpButton.disabled = true;
+        timeLeft = 180; // Reset lại thời gian
+        updateTimerDisplay();
+        clearInterval(timerInterval);
+        setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateTimerDisplay();
+            } else {
+                resendOtpButton.disabled = false;
+                countdownTimer.textContent = "OTP đã hết hạn!";
+            }
+        }, 1000);
+
+        // Gửi yêu cầu gửi lại OTP tới server (nếu cần)
+        fetch('/user/password/resend-otp', { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    alert("OTP mới đã được gửi!");
+                } else {
+                    alert("Không thể gửi OTP. Vui lòng thử lại.");
+                }
+            })
+            .catch(error => console.error("Lỗi gửi OTP:", error));
+    });
+});

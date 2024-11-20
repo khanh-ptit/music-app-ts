@@ -30,7 +30,18 @@ block main
                             name="email"
                             class="form-control"
                             required
+                            
                         ) 
+                    div(class="form-group")
+                        label(for="phone") Số điện thoại
+                        input(
+                            type="text"
+                            id="phone"
+                            name="phone"
+                            class="form-control"
+                            
+                            required
+                        )                     
                     div(class="form-group")
                         label(for="password") Mật khẩu
                         input(
@@ -38,6 +49,7 @@ block main
                             id="password"
                             name="password"
                             class="form-control"
+                            placeholder="Mật khẩu phải có ít nhất 8 ký tự kèm ký tự đặc biệt"
                             required
                         ) 
                     div(class="form-group")
@@ -47,12 +59,12 @@ block main
                             id="confirm_password"
                             name="confirm_password"
                             class="form-control"
+                            placeholder="Mật khẩu phải có ít nhất 8 ký tự kèm ký tự đặc biệt"
                             required
                         ) 
                     div(class="form-group")
                         button(
                             class="btn btn-primary"
                             type="submit"
-                            style="width: 100%"
-                            
+                            style="width: 100%"               
                         ) Đăng ký

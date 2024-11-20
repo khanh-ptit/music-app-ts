@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import * as generateHelper from "../helpers/generate"
+import * as generateHelper from "../helpers/generate";
 
 const userSchema = new mongoose.Schema({
     fullName: String,
@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: "initial"
+        default: "initial" // Các trạng thái có thể: "initial", "active", "inactive"
     },
     avatar: {
         type: String,
@@ -23,7 +23,19 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    createdAt: Date,
+    lockedUntil: {
+        type: Date,
+        default: null // Thời điểm mà tài khoản sẽ được mở khóa, null nếu không bị khóa
+    },
+    lockedBy: {
+        type: String,
+        enum: ['passwordForgotPost', 'verifyEmailPost', null],  // Thêm trường này
+        default: null // Lưu thông tin nguồn khóa tài khoản
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
     updatedBy: [{
         accountId: String,
         updatedAt: Date
@@ -32,8 +44,8 @@ const userSchema = new mongoose.Schema({
         accountId: String,
         deletedAt: Date
     }    
-})
+});
 
-const User = mongoose.model("User", userSchema, "users")
+const User = mongoose.model("User", userSchema, "users");
 
-export default User
+export default User;

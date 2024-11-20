@@ -18,7 +18,11 @@ router.post("/verify-user", controller.verifyUserPost)
 
 router.get("/login", controller.login)
 
-router.post("/login", controller.loginPost)
+router.get("/verify-login", controller.verifyLogin)
+
+router.post("/verify-login", controller.verifyLoginPost)
+
+router.post("/login", validate.loginPost, controller.loginPost)
 
 router.get("/logout", authMiddleware.requireAuth, controller.logout)
 
@@ -36,11 +40,15 @@ router.post("/password/forgot-phone", controller.passwordForgotPhonePost)
 
 router.get("/password/otp", controller.passwordOtp)
 
+router.get("/password/otp-phone", controller.passwordOtpPhone)
+
 router.post("/password/otp", controller.passwordOtpPost)
+
+router.post("/password/otp-phone", controller.passwordOtpPhonePost)
 
 router.get("/password/reset", authMiddleware.requireAuth, controller.passwordReset)
 
-router.post("/password/reset", authMiddleware.requireAuth, controller.passwordResetPost)
+router.post("/password/reset", authMiddleware.requireAuth, validate.passwordResetPost, controller.passwordResetPost)
 
 router.get("/info", authMiddleware.requireAuth, controller.info)
 

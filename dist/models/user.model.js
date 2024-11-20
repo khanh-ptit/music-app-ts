@@ -50,7 +50,19 @@ const userSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false
     },
-    createdAt: Date,
+    lockedUntil: {
+        type: Date,
+        default: null
+    },
+    lockedBy: {
+        type: String,
+        enum: ['passwordForgotPost', 'verifyEmailPost', null],
+        default: null
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
     updatedBy: [{
             accountId: String,
             updatedAt: Date
