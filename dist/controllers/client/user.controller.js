@@ -379,7 +379,9 @@ const verifyEmailPost = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.redirect("back");
         return;
     }
-    const otp = generateHelper.generateRandomNumber(6);
+    const secretKey = process.env.SECRET_KEY_HOTP;
+    const counter = Math.floor(Date.now() / 1000);
+    const otp = generateHelper.generateHOTP(secretKey, counter, 6);
     const objectVerifyUser = {
         email: email,
         otp: otp,
@@ -545,7 +547,7 @@ const passwordForgotPhonePost = (req, res) => __awaiter(void 0, void 0, void 0, 
     yield newForgotPassword.save();
     try {
         const sendPhone = "+84" + phone.slice(1);
-        const customMessage = `Mã OTP của bạn là ${otp}. Vui lòng không chia sẻ mã này với bất kỳ ai.`;
+        const customMessage = `Mã OTP khôi phục mật khẩu của bạn là ${otp}. Vui lòng không chia sẻ mã này với bất kỳ ai.`;
         yield textflow_js_1.default.sendSMS(sendPhone, customMessage);
         res.redirect(`/user/password/otp-phone?phone=${phone}`);
     }

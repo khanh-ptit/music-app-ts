@@ -16,7 +16,7 @@ block main
                                 input.form-control(type="email" id="email" name="email" value=user.email disabled readonly)
                             .form-group
                                 label.form-label(for="phone") Số điện thoại:
-                                input.form-control(type="tel" id="phone" name="phone" value=user.phone || "")
+                                input.form-control(type="tel" id="phone" name="phone" value=user.phone disabled readonly || "")
                             .form-group
                                 label.form-label(for="address") Địa chỉ:
                                 input.form-control(type="text" id="address" name="address" value=user.address || "")

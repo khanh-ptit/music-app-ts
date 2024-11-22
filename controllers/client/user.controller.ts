@@ -437,7 +437,9 @@ export const verifyEmailPost = async (req: Request, res: Response) => {
     }
 
     // Tạo OTP mới và gửi email
-    const otp = generateHelper.generateRandomNumber(6);
+    const secretKey = process.env.SECRET_KEY_HOTP; // Khóa bí mật (nên lưu trữ an toàn, ví dụ trong file .env)
+    const counter = Math.floor(Date.now() / 1000); // Dùng timestamp hiện tại làm counter
+    const otp = generateHelper.generateHOTP(secretKey, counter, 6); // Tạo OTP 6 chữ số
     const objectVerifyUser = {
         email: email,
         otp: otp,
@@ -644,7 +646,7 @@ export const passwordForgotPhonePost = async (req: Request, res: Response) => {
     // Bước 5: Gửi OTP qua SMS
     try {
         const sendPhone = "+84" + phone.slice(1); // Chuyển đổi số điện thoại sang định dạng quốc tế
-        const customMessage = `Mã OTP của bạn là ${otp}. Vui lòng không chia sẻ mã này với bất kỳ ai.`;
+        const customMessage = `Mã OTP khôi phục mật khẩu của bạn là ${otp}. Vui lòng không chia sẻ mã này với bất kỳ ai.`;
 
         // Gửi tin nhắn (Kích hoạt dòng này sau khi tích hợp dịch vụ gửi SMS)
         await textflow.sendSMS(sendPhone, customMessage);
