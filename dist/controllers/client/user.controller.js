@@ -211,6 +211,11 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 return;
             }
         }
+        if (user.status == "initial") {
+            req.flash("error", "Tài khoản của bạn chưa được kích hoạt. Vui lòng kích hoạt trước !");
+            res.redirect("back");
+            return;
+        }
         const recentVerifications = yield verify_login_model_1.default.find({
             email: isEmail ? dataLogin.identifier : null,
             phone: !isEmail ? dataLogin.identifier : null,

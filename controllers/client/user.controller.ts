@@ -224,6 +224,12 @@ export const loginPost = async (req: Request, res: Response) => {
             }
         }
 
+        if (user.status == "initial") {
+            req.flash("error", "Tài khoản của bạn chưa được kích hoạt. Vui lòng kích hoạt trước !");
+            res.redirect("back");
+            return;
+        }
+
         // Kiểm tra số lần yêu cầu OTP trong 3 phút
         const recentVerifications = await VerifyLogin.find({
             email: isEmail ? dataLogin.identifier : null, 
