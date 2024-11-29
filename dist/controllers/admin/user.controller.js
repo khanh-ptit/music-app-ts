@@ -90,9 +90,8 @@ exports.changeStatus = changeStatus;
 const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const existUser = yield user_model_1.default.findOne({
-            _id: id,
-            deleted: false
+        const existUser = yield user_model_1.default.deleteOne({
+            _id: id
         });
         if (!existUser) {
             res.json({

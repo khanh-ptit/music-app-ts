@@ -86,7 +86,9 @@ const registerPost = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
         const newUser = new user_model_1.default(dataUser);
         yield newUser.save();
-        const otp = generateHelper.generateRandomNumber(6);
+        const secretKey = process.env.SECRET_KEY_HOTP;
+        const counter = Math.floor(Date.now() / 1000);
+        const otp = generateHelper.generateHOTP(secretKey, counter, 6);
         const objectVerifyUser = {
             email: dataUser.email,
             otp: otp,
@@ -143,11 +145,15 @@ const verifyUserPost = (req, res) => __awaiter(void 0, void 0, void 0, function*
             otp: req.body.otp
         };
         const checkUserOtp = yield verify_user_model_1.default.findOne({
-            email: objectVerifyUser.email,
-            otp: objectVerifyUser.otp
-        });
-        if (!checkUserOtp) {
-            req.flash("error", "OTP không hợp lệ!");
+            email: objectVerifyUser.email
+        }).sort({ expireAt: -1 });
+        if (!checkUserOtp || checkUserOtp.otp !== objectVerifyUser.otp) {
+            req.flash("error", "OTP không hợp lệ hoặc đã hết hạn!");
+            res.redirect("back");
+            return;
+        }
+        if (new Date() > checkUserOtp.expireAt) {
+            req.flash("error", "OTP đã hết hạn!");
             res.redirect("back");
             return;
         }
@@ -156,12 +162,14 @@ const verifyUserPost = (req, res) => __awaiter(void 0, void 0, void 0, function*
         }, {
             status: "active"
         });
+        yield verify_user_model_1.default.deleteMany({ email: objectVerifyUser.email });
         req.flash("success", "Xác thực thành công. Đăng nhập để tiếp tục!");
         res.redirect("/user/login");
     }
     catch (error) {
-        res.status(4040).json({
-            code: 400,
+        console.error(error);
+        res.status(500).json({
+            code: 500,
             message: "Có lỗi xảy ra!"
         });
     }
@@ -327,6 +335,12 @@ const verifyLoginPost = (req, res) => __awaiter(void 0, void 0, void 0, function
             req.flash("error", "Người dùng không tồn tại.");
             return res.redirect("back");
         }
+        yield verify_login_model_1.default.deleteMany({
+            $or: [
+                { email: emailOrPhone },
+                { phone: emailOrPhone }
+            ]
+        });
         res.cookie("tokenUser", user.tokenUser);
         req.flash("success", "Đăng nhập thành công!");
         res.locals.user = user;
@@ -346,7 +360,7 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.logout = logout;
 const verifyEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render("client/pages/user/verify-email", {
-        pageTitle: "Xác thực email"
+        pageTitle: "Xác thực tài khoản"
     });
 });
 exports.verifyEmail = verifyEmail;
@@ -632,6 +646,9 @@ const passwordOtpPhonePost = (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.redirect("back");
         return;
     }
+    yield forgot_password_model_1.default.deleteMany({
+        phone: phone
+    });
     res.cookie("tokenUser", user.tokenUser);
     res.redirect("/user/password/reset");
 });
@@ -666,6 +683,9 @@ const passwordOtpPost = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.redirect("back");
         return;
     }
+    yield forgot_password_model_1.default.deleteMany({
+        email: email
+    });
     res.cookie("tokenUser", user.tokenUser);
     res.redirect("/user/password/reset");
 });

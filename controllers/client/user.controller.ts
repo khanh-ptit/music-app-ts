@@ -10,7 +10,6 @@ import cron from "node-cron";
 import VerifyLogin from "../../models/verify-login.model";
 textflow.useKey("Ef42D9XEN1OEm1YfrKnAfoLIBzYa9nGYEDOWjJgo6NDI9tkG3EpSNK71HtCyrWM0"); // Thay thế bằng API Key thực tế
 
-
 // [GET] /user/register
 export const register = (req: Request, res: Response) => {
     const token = req.cookies.tokenUser
@@ -70,7 +69,9 @@ export const registerPost = async (req: Request, res: Response) => {
         // Gửi OTP về mail của nó để xác thực rồi mới cho đăng nhập
         
         // Bước 1: Tạo ra bản ghi email kèm password
-        const otp = generateHelper.generateRandomNumber(6)
+        const secretKey = process.env.SECRET_KEY_HOTP; // Khóa bí mật (nên lưu trữ an toàn, ví dụ trong file .env)
+        const counter = Math.floor(Date.now() / 1000); // Dùng timestamp hiện tại làm counter
+        const otp = generateHelper.generateHOTP(secretKey, counter, 6); // Tạo OTP 6 chữ số
         const objectVerifyUser = {
             email: dataUser.email,
             otp: otp,
@@ -78,7 +79,7 @@ export const registerPost = async (req: Request, res: Response) => {
         }
         const newVerifyUser = new VerifyUser(objectVerifyUser)
         // console.log(newVerifyUser)
-        await newVerifyUser.save()
+        await newVerifyUser.save() // Lưu vào csdl
 
         // Bước 2: Gửi mail OTP về mail người dùng
         const subject = `Mã xác thực OTP kích hoạt tài khoản`
@@ -128,8 +129,8 @@ export const verifyUser = (req: Request, res: Response) => {
 export const verifyUserPost = async (req: Request, res: Response) => {
     try {
         interface ObjectVerifyUser {
-            email: String,
-            otp: String
+            email: string,
+            otp: string
         }
 
         const objectVerifyUser: ObjectVerifyUser = {
@@ -137,33 +138,45 @@ export const verifyUserPost = async (req: Request, res: Response) => {
             otp: req.body.otp
         }
 
+        // Kiểm tra OTP mới nhất dựa trên email và sắp xếp theo expireAt
         const checkUserOtp = await VerifyUser.findOne({
-            email: objectVerifyUser.email,
-            otp: objectVerifyUser.otp
-        })
+            email: objectVerifyUser.email
+        }).sort({ expireAt: -1 }); // Sắp xếp giảm dần theo expireAt (OTP mới nhất)
 
-        if (!checkUserOtp) {
-            req.flash("error", "OTP không hợp lệ!")
-            res.redirect("back")
-            return
+        if (!checkUserOtp || checkUserOtp.otp !== objectVerifyUser.otp) {
+            req.flash("error", "OTP không hợp lệ hoặc đã hết hạn!");
+            res.redirect("back");
+            return;
         }
-        
+
+        // Kiểm tra xem OTP đã hết hạn hay chưa
+        if (new Date() > checkUserOtp.expireAt) {
+            req.flash("error", "OTP đã hết hạn!");
+            res.redirect("back");
+            return;
+        }
+
+        // Cập nhật trạng thái người dùng
         await User.updateOne({
             email: checkUserOtp.email
         }, {
             status: "active"
-        })
+        });
 
-        req.flash("success", "Xác thực thành công. Đăng nhập để tiếp tục!")
-        res.redirect("/user/login")
+        // Xóa tất cả các OTP liên quan đến email (OTP cũ không còn hợp lệ)
+        await VerifyUser.deleteMany({ email: objectVerifyUser.email });
 
+        req.flash("success", "Xác thực thành công. Đăng nhập để tiếp tục!");
+        res.redirect("/user/login");
     } catch (error) {
-        res.status(4040).json({
-            code: 400, 
+        console.error(error);
+        res.status(500).json({
+            code: 500,
             message: "Có lỗi xảy ra!"
-        })
+        });
     }
-}
+};
+
 
 // [GET] /user/login
 export const login = async (req: Request, res: Response) => {
@@ -323,7 +336,7 @@ export const loginPost = async (req: Request, res: Response) => {
 };
 
 
-// [GET] /user/verify-email
+// [GET] /user/verify-login
 export const verifyLogin = async (req: Request, res: Response) => {
     const { identifier } = req.query;  // Lấy email hoặc số điện thoại từ query string
 
@@ -372,6 +385,14 @@ export const verifyLoginPost = async (req: Request, res: Response) => {
             return res.redirect("back");
         }
 
+        // Xóa toàn bộ bản ghi liên quan đến email hoặc phone trong VerifyLogin
+        await VerifyLogin.deleteMany({
+            $or: [
+                { email: emailOrPhone }, // Xóa theo email
+                { phone: emailOrPhone }  // Xóa theo phone
+            ]
+        });
+
         // Đăng nhập thành công, tạo token hoặc session
         res.cookie("tokenUser", user.tokenUser);  // Ví dụ sử dụng cookie để lưu trữ thông tin đăng nhập
         req.flash("success", "Đăng nhập thành công!");
@@ -394,7 +415,7 @@ export const logout = async (req: Request, res: Response) => {
 // [GET] /user/verify-email
 export const verifyEmail = async (req: Request, res: Response) => {
     res.render("client/pages/user/verify-email", {
-        pageTitle: "Xác thực email"
+        pageTitle: "Xác thực tài khoản"
     })
 }
 
@@ -762,6 +783,11 @@ export const passwordOtpPhonePost = async (req: Request, res: Response) => {
         return;
     }
 
+    // Xóa tất cả các bản ghi OTP liên quan đến số điện thoại
+    await ForgotPassword.deleteMany({
+        phone: phone
+    });
+
     // Lưu token vào cookie và chuyển hướng đến trang đặt lại mật khẩu
     res.cookie("tokenUser", user.tokenUser);
     res.redirect("/user/password/reset");
@@ -809,6 +835,11 @@ export const passwordOtpPost = async (req: Request, res: Response) => {
         res.redirect("back");
         return;
     }
+
+    // Xóa tất cả các bản ghi OTP liên quan đến số điện thoại
+    await ForgotPassword.deleteMany({
+        email: email
+    });
 
     // Lưu token vào cookie và chuyển hướng đến trang đặt lại mật khẩu
     res.cookie("tokenUser", user.tokenUser);

@@ -91,11 +91,9 @@ export const deleteItem = async (req: Request, res: Response) => {
     try {
         const id = req.params.id
 
-        const existUser = await User.findOne({
-            _id: id,
-            deleted: false
+        const existUser = await User.deleteOne({
+            _id: id
         })
-
 
         if (!existUser) {
             res.json({
