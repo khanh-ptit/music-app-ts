@@ -23,6 +23,7 @@ block main
                         th STT 
                         th Họ Tên 
                         th Email 
+                        th Số điện thoại
                         th Trạng thái
                         th Hành động
                         th Thời gian tạo
@@ -33,6 +34,7 @@ block main
                             td #{index + 1}
                             td #{item.fullName}
                             td #{item.email}
+                            td #{item.phone}
                             td 
                                 if (item.status == "active")
                                     button(

@@ -8,7 +8,7 @@ import textflow from "textflow.js"
 import ForgotPassword from "../../models/forgot-password.model";
 import cron from "node-cron";
 import VerifyLogin from "../../models/verify-login.model";
-textflow.useKey("Ef42D9XEN1OEm1YfrKnAfoLIBzYa9nGYEDOWjJgo6NDI9tkG3EpSNK71HtCyrWM0"); // Thay thế bằng API Key thực tế
+textflow.useKey(process.env.API_TEXTFLOW); // Thay thế bằng API Key thực tế
 
 // [GET] /user/register
 export const register = (req: Request, res: Response) => {

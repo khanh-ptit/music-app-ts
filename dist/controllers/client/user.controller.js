@@ -45,7 +45,7 @@ const textflow_js_1 = __importDefault(require("textflow.js"));
 const forgot_password_model_1 = __importDefault(require("../../models/forgot-password.model"));
 const node_cron_1 = __importDefault(require("node-cron"));
 const verify_login_model_1 = __importDefault(require("../../models/verify-login.model"));
-textflow_js_1.default.useKey("Ef42D9XEN1OEm1YfrKnAfoLIBzYa9nGYEDOWjJgo6NDI9tkG3EpSNK71HtCyrWM0");
+textflow_js_1.default.useKey(process.env.API_TEXTFLOW);
 const register = (req, res) => {
     const token = req.cookies.tokenUser;
     if (token) {
