@@ -9,24 +9,26 @@ const roleSchema = new mongoose_1.default.Schema({
     description: String,
     permissions: {
         type: Array,
-        default: []
+        default: [],
     },
     deleted: {
         type: Boolean,
-        default: false
+        default: false,
     },
     createdBy: {
         accountId: String,
-        createdAt: Date
+        createdAt: Date,
     },
-    updatedBy: [{
+    updatedBy: [
+        {
             accountId: String,
-            updatedAt: Date
-        }],
+            updatedAt: Date,
+        },
+    ],
     deletedBy: {
         accountId: String,
-        deletedAt: Date
-    }
+        deletedAt: Date,
+    },
 });
 const Role = mongoose_1.default.model("Role", roleSchema, "roles");
 exports.default = Role;
