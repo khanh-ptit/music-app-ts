@@ -21,7 +21,7 @@ const filterStatus_1 = __importDefault(require("../../helpers/filterStatus"));
 const pagination_1 = __importDefault(require("../../helpers/pagination"));
 const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let find = {
-        deleted: false
+        deleted: false,
     };
     const filterStatus = (0, filterStatus_1.default)(req.query);
     if (req.query.status) {
@@ -29,19 +29,17 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const countDocuments = yield account_model_1.default.countDocuments(find);
     const objectPagination = (0, pagination_1.default)(req.query, res, countDocuments, "accounts");
-    const accounts = yield account_model_1.default
-        .find(find)
-        .select("-token -password");
+    const accounts = yield account_model_1.default.find(find).select("-token -password");
     for (const item of accounts) {
         const roleInfo = yield role_model_1.default.findOne({
             _id: item.role_id,
-            deleted: false
+            deleted: false,
         });
         item["roleInfo"] = roleInfo;
         if (item.createdBy.createdAt) {
             if (item.createdBy.createdAt) {
                 const infoAccountCreate = yield account_model_1.default.findOne({
-                    _id: item.createdBy.accountId
+                    _id: item.createdBy.accountId,
                 }).select("fullName");
                 if (infoAccountCreate) {
                     item["infoAccountCreate"] = infoAccountCreate;
@@ -51,7 +49,7 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (item.updatedBy.length > 0) {
             const lastLog = item.updatedBy[item.updatedBy.length - 1];
             const infoAccountUpdate = yield account_model_1.default.findOne({
-                _id: lastLog.accountId
+                _id: lastLog.accountId,
             });
             if (infoAccountUpdate) {
                 item["infoAccountUpdate"] = infoAccountUpdate;
@@ -63,24 +61,24 @@ const index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         pageTitle: "Tài khoản admin",
         accounts: accounts,
         filterStatus: filterStatus,
-        pagination: objectPagination
+        pagination: objectPagination,
     });
 });
 exports.index = index;
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const roles = yield role_model_1.default.find({
-        deleted: false
+        deleted: false,
     });
     res.render("admin/pages/accounts/create.pug", {
         pageTitle: "Tạo mới tài khoản admin",
-        roles: roles
+        roles: roles,
     });
 });
 exports.create = create;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const existEmail = yield account_model_1.default.findOne({
         email: req.body.email,
-        deleted: false
+        deleted: false,
     });
     if (existEmail) {
         req.flash("error", "Email đã tồn tại!");
@@ -97,8 +95,8 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         avatar: req.body.avatar,
         createdBy: {
             accountId: res.locals.user.id,
-            createdAt: new Date()
-        }
+            createdAt: new Date(),
+        },
     };
     const newAccount = new account_model_1.default(dataAccount);
     yield newAccount.save();
@@ -112,37 +110,37 @@ const changeStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const status = req.params.status;
         const existAccount = yield account_model_1.default.findOne({
             _id: id,
-            deleted: false
+            deleted: false,
         });
         if (!existAccount) {
             res.json({
                 code: 404,
-                message: "Không tồn tại tài khoản!"
+                message: "Không tồn tại tài khoản!",
             });
             return;
         }
         const updatedBy = {
             accountId: res.locals.user.id,
-            updatedAt: new Date()
+            updatedAt: new Date(),
         };
         yield account_model_1.default.updateOne({
-            _id: id
+            _id: id,
         }, {
             status: status,
             $push: {
-                updatedBy: updatedBy
-            }
+                updatedBy: updatedBy,
+            },
         });
         res.status(200).json({
             code: 200,
             message: "Cập nhật trạng thái thành công!",
-            status: status
+            status: status,
         });
     }
     catch (error) {
         res.json({
             code: 400,
-            message: "Nghịch cái đb"
+            message: "Nghịch cái đb",
         });
     }
 });
@@ -152,33 +150,33 @@ const deleteItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const id = req.params.id;
         const existAccount = yield account_model_1.default.findOne({
             _id: id,
-            deleted: false
+            deleted: false,
         });
         if (!existAccount) {
             res.json({
                 code: 404,
-                message: "Không tồn tại tài khoản!"
+                message: "Không tồn tại tài khoản!",
             });
             return;
         }
         yield account_model_1.default.updateOne({
-            _id: id
+            _id: id,
         }, {
             deleted: true,
             deletedBy: {
                 account_id: res.locals.user.id,
-                deletedAt: new Date()
-            }
+                deletedAt: new Date(),
+            },
         });
         res.json({
             code: 200,
-            message: "Đã xóa thành công"
+            message: "Đã xóa thành công",
         });
     }
     catch (error) {
         res.json({
             code: 400,
-            message: "Nghịch cái đb"
+            message: "Nghịch cái đb",
         });
     }
 });
@@ -188,7 +186,7 @@ const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const id = req.params.id;
         const existAccount = yield account_model_1.default.findOne({
             _id: id,
-            deleted: false
+            deleted: false,
         });
         if (!existAccount) {
             req.flash("error", "Đường dẫn không tồn tại!");
@@ -197,15 +195,15 @@ const edit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const account = yield account_model_1.default.findOne({
             _id: id,
-            deleted: false
+            deleted: false,
         });
         const roles = yield role_model_1.default.find({
-            deleted: false
+            deleted: false,
         });
         res.render("admin/pages/accounts/edit.pug", {
             pageTitle: "Chỉnh sửa tài khoản admin",
             account: account,
-            roles: roles
+            roles: roles,
         });
     }
     catch (error) {
@@ -219,22 +217,22 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const id = req.params.id;
         const existAccount = yield account_model_1.default.findOne({
             _id: id,
-            deleted: false
+            deleted: false,
         });
         if (!existAccount) {
             res.json({
                 code: 404,
-                message: "Không tồn tại tài khoản!"
+                message: "Không tồn tại tài khoản!",
             });
             return;
         }
         const email = req.body.email;
         const existEmail = yield account_model_1.default.findOne({
             _id: {
-                $ne: id
+                $ne: id,
             },
             email: email,
-            deleted: false
+            deleted: false,
         });
         if (existEmail) {
             req.flash("error", "Email đã tồn tại!");
@@ -246,7 +244,7 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             email: req.body.email,
             phone: req.body.phone,
             role_id: req.body.role_id,
-            status: req.body.status
+            status: req.body.status,
         };
         if (req.body.password) {
             dataAccount.password = (0, md5_1.default)(req.body.password);
@@ -256,15 +254,15 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const updatedBy = {
             accountId: res.locals.user.id,
-            updatedAt: new Date()
+            updatedAt: new Date(),
         };
         yield account_model_1.default.updateOne({
-            _id: id
+            _id: id,
         }, {
             $set: dataAccount,
             $push: {
-                updatedBy: updatedBy
-            }
+                updatedBy: updatedBy,
+            },
         });
         req.flash("success", "Cập nhật tài khoản thành công!");
         res.redirect(`${system_1.systemConfig.prefixAdmin}/accounts`);
@@ -272,7 +270,7 @@ const editPatch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         res.json({
             code: 400,
-            message: "Nghịch cái đb"
+            message: "Nghịch cái đb",
         });
     }
 });
@@ -282,7 +280,7 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const id = req.params.id;
         const existAccount = yield account_model_1.default.findOne({
             _id: id,
-            deleted: false
+            deleted: false,
         });
         if (!existAccount) {
             req.flash("error", "Đường dẫn không tồn tại!");
@@ -291,21 +289,21 @@ const detail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const account = yield account_model_1.default.findOne({
             _id: id,
-            deleted: false
+            deleted: false,
         });
         const roles = yield role_model_1.default.find({
-            deleted: false
+            deleted: false,
         });
         for (const item of roles) {
             const roleInfo = yield role_model_1.default.findOne({
-                _id: account.role_id
+                _id: account.role_id,
             });
             account["roleInfo"] = roleInfo;
         }
         res.render("admin/pages/accounts/detail.pug", {
             pageTitle: "Chi tiết tài khoản admin",
             account: account,
-            roles: roles
+            roles: roles,
         });
     }
     catch (error) {
@@ -319,19 +317,19 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const ids = req.body.ids.split(", ");
     const updatedBy = {
         accountId: res.locals.user.id,
-        updatedAt: new Date()
+        updatedAt: new Date(),
     };
     switch (type) {
         case "active":
             yield account_model_1.default.updateMany({
                 _id: {
-                    $in: ids
-                }
+                    $in: ids,
+                },
             }, {
                 status: "active",
                 $push: {
-                    updatedBy: updatedBy
-                }
+                    updatedBy: updatedBy,
+                },
             });
             req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} tài khoản`);
             res.redirect("back");
@@ -339,13 +337,13 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         case "inactive":
             yield account_model_1.default.updateMany({
                 _id: {
-                    $in: ids
-                }
+                    $in: ids,
+                },
             }, {
                 status: "inactive",
                 $push: {
-                    updatedBy: updatedBy
-                }
+                    updatedBy: updatedBy,
+                },
             });
             req.flash("success", `Đã cập nhật trạng thái cho ${ids.length} tài khoản`);
             res.redirect("back");
@@ -353,14 +351,14 @@ const changeMulti = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         case "delete-all":
             yield account_model_1.default.updateMany({
                 _id: {
-                    $in: ids
-                }
+                    $in: ids,
+                },
             }, {
                 deleted: true,
                 deletedBy: {
                     accountId: res.locals.user.id,
-                    deletedAt: new Date()
-                }
+                    deletedAt: new Date(),
+                },
             });
             req.flash("success", `Đã xóa ${ids.length} tài khoản`);
             res.redirect("back");
